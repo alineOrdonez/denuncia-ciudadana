@@ -16,13 +16,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <!-- Required to show current location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Required OpenGL ES 2.0. for Maps V2 -->
     <uses-feature
@@ -34,17 +31,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
-        <!-- Goolge Maps API Key -->
-        <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyD09RLgwiofTtGYOtAzbdBEdQ7shJtdoB0" />
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
         <activity
-            android:name="com.upiicsa.denuncia.MainMenuActivity"
+            android:name="com.upiicsa.denuncia.controller.MainMenuActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,29 +41,41 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.upiicsa.denuncia.ComplaintActivity"
+            android:name="com.upiicsa.denuncia.controller.ComplaintActivity"
             android:label="@string/title_activity_complaint" >
         </activity>
         <activity
-            android:name="com.upiicsa.denuncia.ComplaintListActivity"
+            android:name="com.upiicsa.denuncia.controller.ComplaintListActivity"
             android:label="@string/title_activity_complaint_list" >
         </activity>
         <activity
-            android:name="com.upiicsa.denuncia.NewComplaintActivity"
+            android:name="com.upiicsa.denuncia.controller.NewComplaintActivity"
             android:label="@string/title_activity_new_complaint" >
         </activity>
         <activity
-            android:name="com.upiicsa.denuncia.ConsultActivity"
+            android:name="com.upiicsa.denuncia.controller.ConsultActivity"
             android:label="@string/title_activity_consult" >
         </activity>
         <activity
-            android:name="com.upiicsa.denuncia.MapActivity"
+            android:name="com.upiicsa.denuncia.controller.MapActivity"
             android:label="@string/title_activity_map" >
         </activity>
         <activity
-            android:name="com.upiicsa.denuncia.ComplaintDetailActivity"
+            android:name="com.upiicsa.denuncia.controller.ComplaintDetailActivity"
             android:label="@string/title_activity_complaint_detail" >
         </activity>
+        <activity
+            android:name="com.upiicsa.denuncia.controller.SelectLocationActivity"
+            android:label="@string/title_activity_select_location" >
+        </activity>
+
+        <!-- Goolge Maps API Key -->
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyD09RLgwiofTtGYOtAzbdBEdQ7shJtdoB0" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
