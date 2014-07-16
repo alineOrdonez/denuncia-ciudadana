@@ -2,15 +2,17 @@
 <resources>
 
     <string name="app_name">Denuncia</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_complaint">ComplaintActivity</string>
-    <string name="title_activity_complaint_list">ComplaintListActivity</string>
-    <string name="title_activity_new_complaint">NewComplaintActivity</string>
-    <string name="title_activity_consult">ConsultActivity</string>
-    <string name="title_denuncia_list">Denuncias</string>
-    <string name="title_denuncia_detail">Denuncia Detail</string>
-    <string name="title_activity_map">MapActivity</string>
-    <string name="title_activity_consult_list">ConsultListActivity</string>
+    <string name="title_activity_complaint">Denuncia</string>
+    <string name="title_activity_complaint_list">Lista de denuncias</string>
+    <string name="title_activity_new_complaint">Nueva denuncia</string>
+    <string name="title_activity_consult">Consultar denuncia</string>
+    <string name="title_denuncia_detail">Detalle de la denuncia</string>
+    <string name="title_activity_map">Mapa de denuncias</string>
     <string name="title_activity_complaint_detail">Detalle denuncia</string>
+    <string name="title_activity_select_location">Selecciona la localidad</string>
+    <string name="direccion">Dirección:</string>
+    <string name="imagen">Imagen</string>
+    <string name="categoria">Categoria</string>
+    <string name="descripcion">Descripción</string>
 
 </resources>
