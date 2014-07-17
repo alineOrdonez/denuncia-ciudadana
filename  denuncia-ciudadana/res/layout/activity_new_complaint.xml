@@ -7,7 +7,7 @@
     tools:context="${packageName}.${activityClass}" >
 
     <LinearLayout
-        android:id="@+id/fragment"
+        android:id="@+id/fragmentComplaintDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >

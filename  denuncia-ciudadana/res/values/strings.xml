@@ -14,5 +14,7 @@
     <string name="imagen">Imagen</string>
     <string name="categoria">Categoria</string>
     <string name="descripcion">Descripción</string>
+    <string name="nueva_denuncia">Nueva denuncia</string>
+    <string name="seleccione_categoria">Seleccione una categoría</string>
 
 </resources>
