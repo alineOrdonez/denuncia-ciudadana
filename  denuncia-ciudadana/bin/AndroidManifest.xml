@@ -41,10 +41,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.upiicsa.denuncia.controller.ComplaintActivity"
-            android:label="@string/title_activity_complaint" >
-        </activity>
-        <activity
             android:name="com.upiicsa.denuncia.controller.ComplaintListActivity"
             android:label="@string/title_activity_complaint_list" >
         </activity>
