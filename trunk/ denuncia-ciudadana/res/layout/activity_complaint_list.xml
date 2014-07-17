@@ -1,27 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/complaintListContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
     tools:context="${packageName}.${activityClass}" >
 
-    <ListView
-        android:id="@+id/complaintList"
-        android:layout_width="match_parent"
-        android:layout_height="311dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="39dp" >
-    </ListView>
-
-    <Button
-        android:id="@+id/nuevaDenunciaButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="22dp"
-        android:onClick="nuevaDenuncia"
-        android:text="Nueva denuncia" />
-
-</RelativeLayout>
+</FrameLayout>
