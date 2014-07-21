@@ -6,16 +6,6 @@
     tools:context="${packageName}.${activityClass}" >
 
     <Button
-        android:id="@+id/denuncia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="154dp"
-        android:onClick="showPrompt" 
-        android:text="Realizar denuncia"/>
-
-    <Button
         android:id="@+id/consulta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,5 +14,15 @@
         android:layout_marginTop="36dp"
         android:onClick="addListenerOnButton"
 		android:text="Consultar denuncia"/>
+
+    <Button
+        android:id="@+id/denuncia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="160dp"
+        android:onClick="showPrompt"
+        android:text="Realizar denuncia" />
 
 </RelativeLayout>

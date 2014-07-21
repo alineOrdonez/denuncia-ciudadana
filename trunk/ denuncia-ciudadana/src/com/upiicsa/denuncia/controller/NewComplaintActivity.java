@@ -1,20 +1,21 @@
 package com.upiicsa.denuncia.controller;
 
-import com.upiicsa.denuncia.R;
-
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 
-public class NewComplaintActivity extends Activity {
+import com.upiicsa.denuncia.R;
+
+public class NewComplaintActivity extends ActionBarActivity {
 	Context context;
 
 	@Override
@@ -22,69 +23,44 @@ public class NewComplaintActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_new_complaint);
 		context = this;
+
+		if (savedInstanceState == null) {
+			getSupportFragmentManager()
+					.beginTransaction()
+					.add(R.id.complaintDetailContainer,
+							new NewComplaintFragment()).commit();
+		}
 	}
 
-	public void addListenerOnButton(View view) {
-		// TODO:Envia peticion para obtener registros
-		final ProgressDialog ringProgressDialog = ProgressDialog.show(
-				NewComplaintActivity.this, "Por favor espere ...",
-				"La denuncia se está registrando ...", true);
-		ringProgressDialog.setCancelable(false);
-		ringProgressDialog.setIndeterminate(true);
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					// Here you should write your time consuming task...
-					// Let the progress ring for 10 seconds...
-					Thread.sleep(10000);
-				} catch (Exception e) {
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.new_complaint_menu, menu);
 
-				}
-				ringProgressDialog.dismiss();
-				NewComplaintActivity.this.runOnUiThread(new Runnable() {
-
-					public void run() {
-						AlertDialog.Builder builder = new AlertDialog.Builder(
-								context);
-						builder.setTitle("Operación exitosa");
-						builder.setMessage("La denuncia se ha registrado exitosamente.");
-						builder.setPositiveButton("Continuar",
-								new OnClickListener() {
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										dialog.cancel();
-										Intent i = new Intent(context,
-												MainMenuActivity.class);
-										startActivity(i);
-
-									}
-								});
-						builder.create();
-						builder.show();
-
-					}
-				});
-			}
-		}).start();
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	public void showMap(View view) {
-		checkGPS();
+		checkConnectivity();
 	}
 
-	private void checkGPS() {
+	private void checkConnectivity() {
 		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 		boolean isGPSEnabled = locationManager
 				.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		boolean isWiFiEnabled = connectivityManager.getNetworkInfo(
+				ConnectivityManager.TYPE_WIFI).isAvailable();
 
 		if (!isGPSEnabled) {
 			showGPSAlert();
 		} else {
-			Intent i = new Intent(context, SelectLocationActivity.class);
-			startActivity(i);
+			if (isWiFiEnabled) {
+				Intent i = new Intent(context, SelectLocationActivity.class);
+				startActivity(i);
+			} else {
+				showWiFiAlert();
+			}
 		}
 	}
 
@@ -92,7 +68,8 @@ public class NewComplaintActivity extends Activity {
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 
 		alertDialog.setTitle("Configuración del GPS");
-		alertDialog.setMessage("El GPS está deshabilitado.\n¿Desea activarlo?");
+		alertDialog.setMessage("Para obtener su localización es necesario"
+				+ "tener habilitado el GPS.\n¿Desea activarlo?");
 		alertDialog.setPositiveButton("Activar GPS",
 				new DialogInterface.OnClickListener() {
 
@@ -100,6 +77,35 @@ public class NewComplaintActivity extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						Intent i = new Intent(
 								Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+						startActivity(i);
+					}
+				});
+
+		alertDialog.setNegativeButton("Cancelar",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+
+					}
+				});
+
+		alertDialog.show();
+	}
+
+	private void showWiFiAlert() {
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+
+		alertDialog.setTitle("Configuración del Wi-Fi");
+		alertDialog.setMessage("La opción de localización funciona"
+				+ "mejor cuando el Wi-Fi está habilitado.\n¿Desea activarlo?");
+		alertDialog.setPositiveButton("Activar Wi-Fi",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent i = new Intent(Settings.ACTION_WIFI_SETTINGS);
 						startActivity(i);
 					}
 				});

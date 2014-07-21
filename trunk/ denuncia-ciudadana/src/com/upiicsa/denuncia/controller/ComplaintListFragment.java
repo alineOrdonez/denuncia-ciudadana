@@ -32,13 +32,12 @@ public class ComplaintListFragment extends Fragment {
 		final View view = inflater.inflate(R.layout.fragment_complaint_list,
 				container, false);
 		defineListView(view);
-		
+
 		return view;
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.complaint_list_menu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 

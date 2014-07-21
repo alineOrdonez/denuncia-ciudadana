@@ -11,6 +11,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -32,14 +33,15 @@ public class SelectLocationActivity extends Activity {
 
 	// Google Map
 	private GoogleMap googleMap;
-	
+	private static final String TAG = "SelectLocationActivity";
+
 	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
- 
-        return super.onCreateOptionsMenu(menu);
-    }
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+
+		return super.onCreateOptionsMenu(menu);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +57,6 @@ public class SelectLocationActivity extends Activity {
 
 			// Showing / hiding your current location
 			googleMap.setMyLocationEnabled(true);
-
-			// Enable / Disable zooming controls
-			googleMap.getUiSettings().setZoomControlsEnabled(false);
 
 			// Enable / Disable my location button
 			googleMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -122,10 +121,9 @@ public class SelectLocationActivity extends Activity {
 
 						if (myList.size() > 0) {
 							Address address = myList.get(0);
-							String line0 = address.getAddressLine(0);
+							String line0 = address.getThoroughfare();// address.getAddressLine(0);
 							String line1 = address.getAddressLine(1);
 							String line2 = address.getAddressLine(2);
-							String line3 = address.getAddressLine(3);
 
 							// Getting reference to the TextView to set latitude
 							TextView tvLat = (TextView) v
@@ -137,10 +135,10 @@ public class SelectLocationActivity extends Activity {
 							// Setting the latitude
 							tvLat.setText(line0 + ", " + line1);
 							// Setting the longitude
-							tvLng.setText(line2 + ", " + line3);
+							tvLng.setText(line2);
 						}
 					} catch (Exception ex) {
-						ex.printStackTrace();
+						Log.e(TAG, "Impossible to connect to Geocoder", ex);
 					}
 					// Returning the view containing InfoWindow contents
 					return v;
