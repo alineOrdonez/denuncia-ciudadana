@@ -17,5 +17,8 @@
     <string name="nueva_denuncia">Nueva denuncia</string>
     <string name="seleccione_categoria">Seleccione una categoría</string>
     <string name="periodo_de_busqueda">Periodo de búsqueda</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="enviar">Enviar</string>
+    <string name="guardar">Guardar</string>
 
 </resources>

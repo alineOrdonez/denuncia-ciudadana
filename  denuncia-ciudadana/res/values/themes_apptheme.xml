@@ -5,15 +5,11 @@
 
   <style name="AppTheme" parent="@style/_AppTheme"/>
 
-  <style name="_AppTheme" parent="Theme.AppCompat.Light">
+  <style name="_AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
 
     <item name="android:editTextStyle">@style/EditTextAppTheme</item>
 
-    <item name="android:textColorHighlight">#99cccccc</item>
-
-    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewAppTheme</item>
-
-    <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
+    <item name="android:textColorHighlight">#991783a7</item>
 
     <item name="android:buttonStyle">@style/ButtonAppTheme</item>
 
@@ -23,15 +19,7 @@
 
     <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemAppTheme</item>
 
-    <item name="android:progressBarStyleHorizontal">@style/ProgressBarAppTheme</item>
-
-    <item name="android:ratingBarStyle">@style/RatingBarAppTheme</item>
-
-    <item name="android:ratingBarStyleIndicator">@style/RatingBarBigAppTheme</item>
-
-    <item name="android:ratingBarStyleSmall">@style/RatingBarSmallAppTheme</item>
-
-    <item name="android:buttonStyleToggle">@style/ToggleAppTheme</item>
+    <item name="android:seekBarStyle">@style/SeekBarAppTheme</item>
 
     <item name="android:listViewStyle">@style/ListViewAppTheme</item>
 
