@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
-        android:targetSdkVersion="19" />
+        android:minSdkVersion="12"
+        android:targetSdkVersion="20" />
 
     <permission
         android:name="com.upiicsa.denuncia.permission.MAPS_RECEIVE"
@@ -42,7 +42,13 @@
         </activity>
         <activity
             android:name="com.upiicsa.denuncia.controller.ComplaintListActivity"
-            android:label="@string/title_activity_complaint_list" >
+            android:label="@string/title_activity_complaint_list"
+            android:parentActivityName="com.upiicsa.denuncia.controller.MainMenuActivity" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.upiicsa.denuncia.controller.MainMenuActivity" />
         </activity>
         <activity
             android:name="com.upiicsa.denuncia.controller.NewComplaintActivity"
@@ -58,7 +64,13 @@
         </activity>
         <activity
             android:name="com.upiicsa.denuncia.controller.ComplaintDetailActivity"
-            android:label="@string/title_activity_complaint_detail" >
+            android:label="@string/title_activity_complaint_detail"
+            android:parentActivityName="com.upiicsa.denuncia.controller.ComplaintListActivity" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.upiicsa.denuncia.controller.ComplaintListActivity" />
         </activity>
         <activity
             android:name="com.upiicsa.denuncia.controller.SelectLocationActivity"
