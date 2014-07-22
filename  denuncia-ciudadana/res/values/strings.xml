@@ -20,5 +20,6 @@
     <string name="aceptar">Aceptar</string>
     <string name="enviar">Enviar</string>
     <string name="guardar">Guardar</string>
+    <string name="periodo_de_busqueda_">Periodo de busqueda:</string>
 
 </resources>

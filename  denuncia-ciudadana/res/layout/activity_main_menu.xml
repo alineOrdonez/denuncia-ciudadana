@@ -12,8 +12,8 @@
         android:layout_below="@+id/denuncia"
         android:layout_centerInParent="true"
         android:layout_marginTop="36dp"
-        android:onClick="addListenerOnButton"
-		android:text="Consultar denuncia"/>
+        android:onClick="consultComplaint"
+        android:text="Consultar denuncia" />
 
     <Button
         android:id="@+id/denuncia"

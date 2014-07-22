@@ -27,7 +27,7 @@ public class NewComplaintActivity extends ActionBarActivity {
 		if (savedInstanceState == null) {
 			getSupportFragmentManager()
 					.beginTransaction()
-					.add(R.id.complaintDetailContainer,
+					.add(R.id.newComplaintContainer,
 							new NewComplaintFragment()).commit();
 		}
 	}
