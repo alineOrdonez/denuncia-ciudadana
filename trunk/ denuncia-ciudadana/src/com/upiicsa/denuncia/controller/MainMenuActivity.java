@@ -19,7 +19,7 @@ import com.upiicsa.denuncia.R;
 
 public class MainMenuActivity extends Activity {
 
-	private Spinner spinner;
+	private Spinner category, consultRange;
 	Context context;
 
 	@Override
@@ -29,30 +29,49 @@ public class MainMenuActivity extends Activity {
 		context = this;
 	}
 
-	public void addListenerOnButton(View view) {
-		Intent i = new Intent(context, ConsultActivity.class);
-		startActivity(i);
-	}
-
 	@Override
 	public void onBackPressed() {
 	}
 
 	// add items into spinner dynamically
 
-	public void addItemsOnSpinner(View view) {
-		spinner = (Spinner) view.findViewById(R.id.selectCategory);
+	public void addCategoriesOnSpinner(View view, int id) {
+		category = (Spinner) view.findViewById(id);
+		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
+				MainMenuActivity.this,
+				android.R.layout.simple_spinner_dropdown_item, categories());
+		dataAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		category.setAdapter(dataAdapter);
+
+	}
+
+	public void addRangeOnSpinner(View view) {
+		consultRange = (Spinner) view.findViewById(R.id.consultRange);
+
+		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
+				MainMenuActivity.this,
+				android.R.layout.simple_spinner_dropdown_item, range());
+
+		dataAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		consultRange.setAdapter(dataAdapter);
+	}
+
+	private List<String> categories() {
 		List<String> list = new ArrayList<String>();
 		list.add("Fuga de agua");
 		list.add("Incendio");
 		list.add("Robo");
-		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
-				MainMenuActivity.this,
-				android.R.layout.simple_spinner_dropdown_item, list);
+		return list;
+	}
 
-		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(dataAdapter);
+	private List<String> range() {
+		List<String> list = new ArrayList<String>();
+		list.add("Hace 2 hrs.");
+		list.add("Hace 4 hrs.");
+		list.add("Hace 12 hrs.");
+		return list;
 	}
 
 	public void showPrompt(View view) {
@@ -117,7 +136,74 @@ public class MainMenuActivity extends Activity {
 		AlertDialog alertDialog = alertDialogBuilder.create();
 		// show it
 		alertDialog.show();
+		addCategoriesOnSpinner(promptsView, R.id.selectCategory);
+	}
 
-		addItemsOnSpinner(promptsView);
+	public void consultComplaint(View view) {
+		// get prompts.xml view
+		LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View promptsView = li.inflate(R.layout.consult_complaint_prompt, null);
+
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+				context);
+
+		// set prompts.xml to alert dialog builder
+		alertDialogBuilder.setView(promptsView);
+		// set dialog message
+		alertDialogBuilder
+				.setCancelable(false)
+				.setPositiveButton("Buscar",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								final ProgressDialog ringProgressDialog = ProgressDialog
+										.show(context,
+												"Por favor espere ...",
+												"Buscando incidencias cercanas ...",
+												true);
+								ringProgressDialog.setCancelable(false);
+								ringProgressDialog.setIndeterminate(true);
+								new Thread(new Runnable() {
+									@Override
+									public void run() {
+										try {
+											// Here you should write
+											// your time consuming
+											// task...
+											// Let the progress ring for
+											// 10 seconds...
+											Thread.sleep(6000);
+										} catch (Exception e) {
+
+										}
+										ringProgressDialog.dismiss();
+										MainMenuActivity.this
+												.runOnUiThread(new Runnable() {
+
+													public void run() {
+														Intent i = new Intent(
+																context,
+																MapActivity.class);
+														startActivity(i);
+
+													}
+												});
+									}
+								}).start();
+
+							}
+						})
+				.setNegativeButton("Cancelar",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		// show it
+		alertDialog.show();
+		addCategoriesOnSpinner(promptsView, R.id.consultCategory);
+		addRangeOnSpinner(promptsView);
 	}
 }
