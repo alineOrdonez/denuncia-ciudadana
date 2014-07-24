@@ -1,10 +1,10 @@
 package com.upiicsa.denuncia.common;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.json.JSONObject;
 
 public interface DenunciaService {
 
-	public JSONObject setRequest(HashMap<String, Object> map);
+	public JSONObject setRequest(Map<String, Object> map);
 }

@@ -1,7 +1,7 @@
 package com.upiicsa.denuncia.common;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.json.JSONObject;
 
@@ -18,7 +18,7 @@ public class DenunciaServiceImpl implements DenunciaService {
 	private JSONObject jsonResult;
 
 	@Override
-	public JSONObject setRequest(HashMap<String, Object> map) {
+	public JSONObject setRequest(Map<String, Object> map) {
 		// 1. build jsonObject
 		final JSONObject jsonObject = Util.convertMapToJson(map);
 		new HttpHandler() {

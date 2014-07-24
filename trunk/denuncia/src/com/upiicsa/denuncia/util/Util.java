@@ -15,7 +15,7 @@ public class Util {
 		return map;
 	}
 
-	public static JSONObject convertMapToJson(HashMap<String, Object> map) {
+	public static JSONObject convertMapToJson(Map<String, Object> map) {
 		JSONObject jsonObject = JSONObject.fromObject(map);
 		return jsonObject;
 	}
