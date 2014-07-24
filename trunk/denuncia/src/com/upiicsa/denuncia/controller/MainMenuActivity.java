@@ -1,7 +1,14 @@
 package com.upiicsa.denuncia.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.json.JSONObject;
+
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,6 +23,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.upiicsa.denuncia.R;
+import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.HttpHandler;
+import com.upiicsa.denuncia.util.Util;
 
 public class MainMenuActivity extends Activity {
 
@@ -31,6 +41,41 @@ public class MainMenuActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
+	}
+
+	@Override
+	protected void onStart() {
+		new HttpHandler() {
+
+			@Override
+			public HttpUriRequest getHttpRequestMethod() {
+				// 1. make POST request to the given URL
+				HttpPost httpPost = new HttpPost(Constants.URL);
+				try {
+					// 2. build jsonObject
+					JSONObject jsonObject = new JSONObject();
+					jsonObject.accumulate("i", "01");
+					// 3. convert JSONObject to JSON to String
+					String json = jsonObject.toString();
+					// 4. set json to StringEntity
+					StringEntity stringEntity = new StringEntity(json);
+					// 5. set httpPost Entity
+					httpPost.setEntity(stringEntity);
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return httpPost;
+			}
+
+			@Override
+			public void onResponse(String result) {
+				JSONObject json = Util.convertStringtoJson(result);
+			}
+
+		}.execute();
+
+		super.onStart();
 	}
 
 	// add items into spinner dynamically

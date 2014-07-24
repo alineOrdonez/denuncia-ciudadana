@@ -1,4 +1,4 @@
-package com.upiicsa.denuncia.common;
+package com.upiicsa.denuncia.util;
 
 import java.util.HashMap;
 import java.util.Map;
