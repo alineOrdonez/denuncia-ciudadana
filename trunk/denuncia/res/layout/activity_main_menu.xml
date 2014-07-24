@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context="${packageName}.${activityClass}" >
+
+    <Button
+        android:id="@+id/consulta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/denuncia"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="36dp"
+        android:onClick="consultComplaint"
+        android:text="Consultar denuncia" />
+
+    <Button
+        android:id="@+id/denuncia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="160dp"
+        android:onClick="showPrompt"
+        android:text="Realizar denuncia" />
+
+</RelativeLayout>

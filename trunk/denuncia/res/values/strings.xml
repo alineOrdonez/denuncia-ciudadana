@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Denuncia</string>
+    <string name="title_activity_complaint">Denuncia</string>
+    <string name="title_activity_complaint_list">Lista de denuncias</string>
+    <string name="title_activity_new_complaint">Nueva denuncia</string>
+    <string name="title_activity_consult">Consultar denuncia</string>
+    <string name="title_denuncia_detail">Detalle de la denuncia</string>
+    <string name="title_activity_map">Mapa de denuncias</string>
+    <string name="title_activity_complaint_detail">Detalle denuncia</string>
+    <string name="title_activity_select_location">Selecciona la localidad</string>
+    <string name="direccion">Dirección:</string>
+    <string name="imagen">Imagen</string>
+    <string name="categoria">Categoria</string>
+    <string name="descripcion">Descripción</string>
+    <string name="nueva_denuncia">Nueva denuncia</string>
+    <string name="seleccione_categoria">Seleccione una categoría</string>
+    <string name="periodo_de_busqueda">Periodo de búsqueda</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="enviar">Enviar</string>
+    <string name="guardar">Guardar</string>
+    <string name="periodo_de_busqueda_">Periodo de busqueda:</string>
+
+</resources>
