@@ -31,7 +31,8 @@
             style="@style/EditTextAppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10" >
+            android:ems="10"
+            android:textAppearance="?android:attr/textAppearanceSmall" >
 
             <requestFocus />
         </EditText>
@@ -49,7 +50,8 @@
             style="@style/EditTextAppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10" />
+            android:ems="10"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/textView4"
@@ -64,7 +66,8 @@
             style="@style/EditTextAppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="10" />
+            android:ems="10"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/textView5"

@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +36,7 @@ public class SelectLocationActivity extends Activity {
 	// Google Map
 	private GoogleMap googleMap;
 	private static final String TAG = "SelectLocationActivity";
+	private String selectedAddress;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -41,6 +44,25 @@ public class SelectLocationActivity extends Activity {
 		inflater.inflate(R.menu.main, menu);
 
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+
+		if (id == R.id.action_aceptar) {
+			// TODO:Enviar direccion
+			Intent i = new Intent();
+			// put the message to return as result in Intent
+			i.putExtra("ADDRESS", selectedAddress);
+			// Set The Result in Intent
+			setResult(2, i);
+			// finish The activity
+			finish();
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override
@@ -124,6 +146,8 @@ public class SelectLocationActivity extends Activity {
 							String line0 = address.getThoroughfare();// address.getAddressLine(0);
 							String line1 = address.getAddressLine(1);
 							String line2 = address.getAddressLine(2);
+							selectedAddress = line0 + ", " + line1 + ", "
+									+ line2;
 
 							// Getting reference to the TextView to set latitude
 							TextView tvLat = (TextView) v
