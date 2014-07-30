@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ import com.upiicsa.denuncia.R;
 public class NewComplaintFragment extends Fragment {
 
 	private Spinner spinner;
+	private EditText address;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -133,9 +135,8 @@ public class NewComplaintFragment extends Fragment {
 	}
 
 	public void addListenerOnFocus(View view) {
-		final TextView textView = (TextView) view
-				.findViewById(R.id.addressEditText);
-		textView.setOnFocusChangeListener(new OnFocusChangeListener() {
+		address = (EditText) view.findViewById(R.id.addressEditText);
+		address.setOnFocusChangeListener(new OnFocusChangeListener() {
 
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -164,10 +165,24 @@ public class NewComplaintFragment extends Fragment {
 			if (isWiFiEnabled) {
 				Intent i = new Intent(getActivity(),
 						SelectLocationActivity.class);
-				startActivity(i);
+				startActivityForResult(i, 2);
 			} else {
 				showWiFiAlert();
 			}
+		}
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		// check if the request code is same as what is passed here it is 2
+		if (requestCode == 2) {
+			// fetch the message String
+			String message = data.getStringExtra("ADDRESS");
+			// Set the message string in textView
+			address.setText(message);
+
 		}
 	}
 

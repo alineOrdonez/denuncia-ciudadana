@@ -38,13 +38,13 @@ public class MainMenuActivity extends Activity {
 	public void onBackPressed() {
 	}
 
-	@Override
-	protected void onStart() {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("i", "01");
-		JSONObject jsonObject = service.setRequest(map);
-		
-	}
+	/*
+	 * @Override protected void onStart() { Map<String, Object> map = new
+	 * HashMap<String, Object>(); map.put("i", "01"); JSONObject jsonObject =
+	 * service.setRequest(map);
+	 * 
+	 * }
+	 */
 
 	// add items into spinner dynamically
 
