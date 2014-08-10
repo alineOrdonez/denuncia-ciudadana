@@ -28,8 +28,7 @@
 
         <EditText
             android:id="@+id/editText1"
-            style="@style/EditTextAppTheme"
-            android:layout_width="wrap_content"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:textAppearance="?android:attr/textAppearanceSmall" >
@@ -48,7 +47,7 @@
         <EditText
             android:id="@+id/addressEditText"
             style="@style/EditTextAppTheme"
-            android:layout_width="wrap_content"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -61,13 +60,11 @@
             android:text="Categoria:"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <EditText
-            android:id="@+id/editText3"
-            style="@style/EditTextAppTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+        <Spinner
+            android:id="@+id/spinner1"
+            style="@style/SpinnerAppTheme"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/textView5"
@@ -77,11 +74,13 @@
             android:text="Descripción"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <Spinner
-            android:id="@+id/spinner1"
-            style="@style/SpinnerAppTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/editText3"
+            style="@style/EditTextAppTheme"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:id="@+id/textView6"

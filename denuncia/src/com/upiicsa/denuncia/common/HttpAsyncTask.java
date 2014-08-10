@@ -4,13 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.upiicsa.denuncia.util.HttpHandler;
 
@@ -42,8 +42,10 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 			} else {
 				result = "Did not work!";
 			}
-		} catch (Exception e) {
-			Log.d("InputStream", e.getLocalizedMessage());
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		return result;
@@ -52,16 +54,16 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 	@Override
 	protected void onPostExecute(String result) {
 		httpHandler.onResponse(result);
-
 	}
 
+	/*
+	 * To convert the InputStream to String we use the BufferedReader.readLine()
+	 * method. We iterate until the BufferedReader return null which means
+	 * there's no more data to read. Each line will appended to a StringBuilder
+	 * and returned as String.
+	 */
 	private static String convertInputStreamToString(InputStream is) {
-		/*
-		 * To convert the InputStream to String we use the
-		 * BufferedReader.readLine() method. We iterate until the BufferedReader
-		 * return null which means there's no more data to read. Each line will
-		 * appended to a StringBuilder and returned as String.
-		 */
+
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		StringBuilder sb = new StringBuilder();
 

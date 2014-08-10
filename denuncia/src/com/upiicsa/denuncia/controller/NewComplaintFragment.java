@@ -1,7 +1,7 @@
 package com.upiicsa.denuncia.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -24,14 +25,18 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.upiicsa.denuncia.R;
+import com.upiicsa.denuncia.common.Service;
+import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.Util;
 
 public class NewComplaintFragment extends Fragment {
 
 	private Spinner spinner;
 	private EditText address;
+	private Service service;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,19 +77,11 @@ public class NewComplaintFragment extends Fragment {
 
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
 				getActivity(), android.R.layout.simple_spinner_dropdown_item,
-				categories());
+				Util.categories());
 
 		dataAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(dataAdapter);
-	}
-
-	private List<String> categories() {
-		List<String> list = new ArrayList<String>();
-		list.add("Fuga de agua");
-		list.add("Incendio");
-		list.add("Robo");
-		return list;
 	}
 
 	private void addListenerOnButton() {
@@ -165,7 +162,7 @@ public class NewComplaintFragment extends Fragment {
 			if (isWiFiEnabled) {
 				Intent i = new Intent(getActivity(),
 						SelectLocationActivity.class);
-				startActivityForResult(i, 2);
+				startActivityForResult(i, Constants.RETURN_FROM_MAP);
 			} else {
 				showWiFiAlert();
 			}
@@ -176,13 +173,16 @@ public class NewComplaintFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		// check if the request code is same as what is passed here it is 2
-		if (requestCode == 2) {
+		switch (requestCode) {
+		case 3:
 			// fetch the message String
 			String message = data.getStringExtra("ADDRESS");
 			// Set the message string in textView
 			address.setText(message);
+			break;
 
+		default:
+			break;
 		}
 	}
 
@@ -243,6 +243,44 @@ public class NewComplaintFragment extends Fragment {
 				});
 
 		alertDialog.show();
+	}
+
+	private void sendComplaintRequest() {
+		if (Util.isConnected(getActivity())) {
+			LocationManager lm = (LocationManager) getActivity()
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location location = lm
+					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			boolean isGPSEnabled = lm
+					.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			if (isGPSEnabled) {
+				double longitude = location.getLongitude();
+				double latitude = location.getLatitude();
+				Map<String, String> object = new HashMap<String, String>();
+				String lat = String.valueOf(latitude);
+				String lng = String.valueOf(longitude);
+				try {
+					// TODO: Verificar parametros
+					object.put("i", "03");
+					object.put("ic", "01");
+					object.put("dc", "02");
+					object.put("em", "02");
+					object.put("im", "02");
+					object.put("dd", "02");
+					object.put("la", lat);
+					object.put("lo", lng);
+					service.setRequest(object);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				showGPSAlert();
+			}
+
+		} else {
+			Toast.makeText(getActivity().getBaseContext(),
+					Constants.CONNECTION_ERROR, Toast.LENGTH_LONG).show();
+		}
 	}
 
 }
