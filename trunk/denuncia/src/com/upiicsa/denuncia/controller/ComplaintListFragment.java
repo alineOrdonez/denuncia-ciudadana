@@ -1,5 +1,7 @@
 package com.upiicsa.denuncia.controller;
 
+import org.json.JSONException;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,14 +12,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.upiicsa.denuncia.R;
+import com.upiicsa.denuncia.common.TaskCompleted;
+import com.upiicsa.denuncia.util.CustomList;
 
-public class ComplaintListFragment extends Fragment {
+public class ComplaintListFragment extends Fragment implements TaskCompleted {
 	ListView listView;
+	String[] values = new String[] { "Incendio en la casa del vecino.",
+			"El basurero de la esquina se quema.", "Fuego en el parque." };
+	Integer[] imageId = { R.drawable.flame, R.drawable.flame, R.drawable.flame };
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,33 +59,18 @@ public class ComplaintListFragment extends Fragment {
 	}
 
 	public void defineListView(View view) {
-		// Get ListView object from xml
+
+		CustomList adapter = new CustomList(getActivity(), values, imageId);
 		listView = (ListView) view.findViewById(R.id.complaintList);
-		// Defined Array values to show in ListView
-		String[] values = new String[] { "Incendio en la casa del vecino.",
-				"El basurero de la esquina está quemandose.",
-				"Fuego en el parque." };
-
-		// Define a new Adapter
-		// First parameter - Context
-		// Second parameter - Layout for the row
-		// Third parameter - ID of the TextView to which the data is written
-		// Forth - the Array of data
-
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_list_item_1, android.R.id.text1, values);
-
-		// Assign adapter to ListView
 		listView.setAdapter(adapter);
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-		// ListView Item Click Listener
-		listView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				Intent i = new Intent(getActivity(),
 						ComplaintDetailActivity.class);
+				String descripcion = values[position];
+				i.putExtra("DESCRIPTION", descripcion);
 				startActivity(i);
 			}
 
@@ -90,5 +80,11 @@ public class ComplaintListFragment extends Fragment {
 	public void nuevaDenuncia() {
 		Intent i = new Intent(getActivity(), NewComplaintActivity.class);
 		startActivity(i);
+	}
+
+	@Override
+	public void onTaskComplete(String result) throws JSONException {
+		// TODO Auto-generated method stub
+
 	}
 }

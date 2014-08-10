@@ -5,26 +5,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.upiicsa.denuncia.R;
-import com.upiicsa.denuncia.common.DenunciaService;
+import com.upiicsa.denuncia.common.Service;
+import com.upiicsa.denuncia.common.TaskCompleted;
+import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.Util;
 
-public class MainMenuActivity extends Activity {
+public class MainMenuActivity extends Activity implements TaskCompleted {
 
-	private DenunciaService service;
 	private Spinner category, consultRange;
+	private Button consulta, denuncia;
+	private List<String> consultList, rangeList;
+	private Service service;
 	Context context;
 
 	@Override
@@ -32,19 +44,14 @@ public class MainMenuActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
 		context = this;
+		consultList = new ArrayList<String>();
+		rangeList = new ArrayList<String>();
+		loadConfiguration();
 	}
 
 	@Override
 	public void onBackPressed() {
 	}
-
-	/*
-	 * @Override protected void onStart() { Map<String, Object> map = new
-	 * HashMap<String, Object>(); map.put("i", "01"); JSONObject jsonObject =
-	 * service.setRequest(map);
-	 * 
-	 * }
-	 */
 
 	// add items into spinner dynamically
 
@@ -52,7 +59,7 @@ public class MainMenuActivity extends Activity {
 		category = (Spinner) view.findViewById(id);
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
 				MainMenuActivity.this,
-				android.R.layout.simple_spinner_dropdown_item, categories());
+				android.R.layout.simple_spinner_dropdown_item, consultList);
 		dataAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		category.setAdapter(dataAdapter);
@@ -64,27 +71,11 @@ public class MainMenuActivity extends Activity {
 
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
 				MainMenuActivity.this,
-				android.R.layout.simple_spinner_dropdown_item, range());
+				android.R.layout.simple_spinner_dropdown_item, rangeList);
 
 		dataAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		consultRange.setAdapter(dataAdapter);
-	}
-
-	private List<String> categories() {
-		List<String> list = new ArrayList<String>();
-		list.add("Fuga de agua");
-		list.add("Incendio");
-		list.add("Robo");
-		return list;
-	}
-
-	private List<String> range() {
-		List<String> list = new ArrayList<String>();
-		list.add("Hace 2 hrs.");
-		list.add("Hace 4 hrs.");
-		list.add("Hace 12 hrs.");
-		return list;
 	}
 
 	public void showPrompt(View view) {
@@ -112,11 +103,7 @@ public class MainMenuActivity extends Activity {
 									@Override
 									public void run() {
 										try {
-											// Here you should write
-											// your time consuming
-											// task...
-											// Let the progress ring for
-											// 10 seconds...
+											// TODO:
 											Thread.sleep(6000);
 										} catch (Exception e) {
 
@@ -126,10 +113,14 @@ public class MainMenuActivity extends Activity {
 												.runOnUiThread(new Runnable() {
 
 													public void run() {
-														Intent i = new Intent(
-																context,
-																ComplaintListActivity.class);
-														startActivity(i);
+														/*
+														 * Intent i = new
+														 * Intent( context,
+														 * ComplaintListActivity
+														 * .class);
+														 * startActivity(i);
+														 */
+														findComplaints();
 
 													}
 												});
@@ -179,11 +170,6 @@ public class MainMenuActivity extends Activity {
 									@Override
 									public void run() {
 										try {
-											// Here you should write
-											// your time consuming
-											// task...
-											// Let the progress ring for
-											// 10 seconds...
 											Thread.sleep(6000);
 										} catch (Exception e) {
 
@@ -193,11 +179,7 @@ public class MainMenuActivity extends Activity {
 												.runOnUiThread(new Runnable() {
 
 													public void run() {
-														Intent i = new Intent(
-																context,
-																MapActivity.class);
-														startActivity(i);
-
+														findComplaints();
 													}
 												});
 									}
@@ -218,5 +200,104 @@ public class MainMenuActivity extends Activity {
 		alertDialog.show();
 		addCategoriesOnSpinner(promptsView, R.id.consultCategory);
 		addRangeOnSpinner(promptsView);
+	}
+
+	public void loadConfiguration() {
+		if (Util.isConnected(context)) {
+			Toast.makeText(getBaseContext(), "Cargando configuración.",
+					Toast.LENGTH_LONG).show();
+			try {
+				Map<String, String> configMap = new HashMap<String, String>();
+				configMap.put("i", "01");
+				service = new Service(context);
+				service.setRequest(configMap);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			Toast.makeText(getBaseContext(), Constants.CONNECTION_ERROR,
+					Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private void findComplaints() {
+		if (Util.isConnected(context)) {
+			LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			Location location = lm
+					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			boolean isGPSEnabled = lm
+					.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			if (isGPSEnabled) {
+				double longitude = location.getLongitude();
+				double latitude = location.getLatitude();
+				Map<String, String> object = new HashMap<String, String>();
+				String lat = String.valueOf(latitude);
+				String lng = String.valueOf(longitude);
+				try {
+					object.put("i", "02");
+					object.put("ic", "02");
+					object.put("dc", "02");
+					object.put("la", lat);
+					object.put("lo", lng);
+					service.setRequest(object);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				showGPSAlert();
+			}
+
+		} else {
+			Toast.makeText(getBaseContext(), Constants.CONNECTION_ERROR,
+					Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private void showGPSAlert() {
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+
+		alertDialog.setTitle("Configuración del GPS");
+		alertDialog.setMessage("Es necesaria su localización para"
+				+ " obtener la lista de denuncias cercanas."
+				+ "¿Desea activar el GPS?");
+		alertDialog.setPositiveButton("Activar GPS",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent i = new Intent(
+								Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+						startActivity(i);
+					}
+				});
+
+		alertDialog.setNegativeButton("Cancelar",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+
+					}
+				});
+
+		alertDialog.show();
+	}
+
+	@Override
+	public void onTaskComplete(String result) throws JSONException {
+		System.out.println("Result:" + result);
+		JSONObject obj = Util.convertStringtoJson(result);
+		consulta = (Button) findViewById(R.id.consulta);
+		denuncia = (Button) findViewById(R.id.denuncia);
+		consulta.setEnabled(true);
+		denuncia.setEnabled(true);
+		if (obj.get("lt") != null) {
+			String lt = obj.getString("lt");
+			rangeList = Util.convertStringToArray(lt);
+		}
+		String ld = obj.getString("ld");
+		consultList = Util.convertStringToArray(ld);
+
 	}
 }
