@@ -14,15 +14,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.upiicsa.denuncia.R;
 
 public class ComplaintDetailFragment extends Fragment {
 
+	String description;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		description = savedInstanceState.getString("DESCRIPTION");
 	}
 
 	@Override
@@ -31,6 +35,8 @@ public class ComplaintDetailFragment extends Fragment {
 
 		final View view = inflater.inflate(R.layout.fragment_complaint_detail,
 				container, false);
+		TextView textView = (TextView) view.findViewById(R.id.description);
+		textView.setText(description);
 		return view;
 	}
 

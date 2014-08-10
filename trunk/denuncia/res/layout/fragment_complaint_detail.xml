@@ -80,7 +80,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/editText3"
+            android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="La casa de mi vecino se incendia."
