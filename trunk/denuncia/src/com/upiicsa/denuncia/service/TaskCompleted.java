@@ -1,6 +1,7 @@
-package com.upiicsa.denuncia.common;
+package com.upiicsa.denuncia.service;
 
 import org.json.JSONException;
+
 
 public interface TaskCompleted {
 	// Define data you like to return from AysncTask

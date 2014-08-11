@@ -1,4 +1,4 @@
-package com.upiicsa.denuncia.common;
+package com.upiicsa.denuncia.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;

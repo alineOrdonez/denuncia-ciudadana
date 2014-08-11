@@ -11,8 +11,12 @@ public class ConfigurationResponse implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String is;
 	private String ds;
-	private List<String> ld;
-	private List<String> lt;
+	private List<CatDenuncia> ld;
+	private List<CatIntTiempo> lt;
+	
+	public ConfigurationResponse() {
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @param is
@@ -20,8 +24,8 @@ public class ConfigurationResponse implements Serializable {
 	 * @param ld
 	 * @param lt
 	 */
-	public ConfigurationResponse(String is, String ds, List<String> ld,
-			List<String> lt) {
+	public ConfigurationResponse(String is, String ds, List<CatDenuncia> ld,
+			List<CatIntTiempo> lt) {
 		super();
 		this.is = is;
 		this.ds = ds;
@@ -62,7 +66,7 @@ public class ConfigurationResponse implements Serializable {
 	/**
 	 * @return the ld
 	 */
-	public List<String> getLd() {
+	public List<CatDenuncia> getLd() {
 		return ld;
 	}
 
@@ -70,14 +74,14 @@ public class ConfigurationResponse implements Serializable {
 	 * @param ld
 	 *            the ld to set
 	 */
-	public void setLd(List<String> ld) {
+	public void setLd(List<CatDenuncia> ld) {
 		this.ld = ld;
 	}
 
 	/**
 	 * @return the lt
 	 */
-	public List<String> getLt() {
+	public List<CatIntTiempo> getLt() {
 		return lt;
 	}
 
@@ -85,7 +89,7 @@ public class ConfigurationResponse implements Serializable {
 	 * @param lt
 	 *            the lt to set
 	 */
-	public void setLt(List<String> lt) {
+	public void setLt(List<CatIntTiempo> lt) {
 		this.lt = lt;
 	}
 

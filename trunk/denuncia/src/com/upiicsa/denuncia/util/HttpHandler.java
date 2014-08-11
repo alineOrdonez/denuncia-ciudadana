@@ -2,7 +2,7 @@ package com.upiicsa.denuncia.util;
 
 import org.apache.http.client.methods.HttpUriRequest;
 
-import com.upiicsa.denuncia.common.HttpAsyncTask;
+import com.upiicsa.denuncia.service.HttpAsyncTask;
 
 public abstract class HttpHandler {
 

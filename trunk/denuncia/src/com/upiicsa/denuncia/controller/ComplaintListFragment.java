@@ -1,7 +1,5 @@
 package com.upiicsa.denuncia.controller;
 
-import org.json.JSONException;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,10 +13,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.upiicsa.denuncia.R;
-import com.upiicsa.denuncia.common.TaskCompleted;
 import com.upiicsa.denuncia.util.CustomList;
 
-public class ComplaintListFragment extends Fragment implements TaskCompleted {
+public class ComplaintListFragment extends Fragment {
 	ListView listView;
 	String[] values = new String[] { "Incendio en la casa del vecino.",
 			"El basurero de la esquina se quema.", "Fuego en el parque." };
@@ -82,9 +79,4 @@ public class ComplaintListFragment extends Fragment implements TaskCompleted {
 		startActivity(i);
 	}
 
-	@Override
-	public void onTaskComplete(String result) throws JSONException {
-		// TODO Auto-generated method stub
-
-	}
 }
