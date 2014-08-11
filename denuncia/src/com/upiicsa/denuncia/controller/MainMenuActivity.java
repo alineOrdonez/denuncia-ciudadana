@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,8 +25,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.upiicsa.denuncia.R;
-import com.upiicsa.denuncia.common.Service;
-import com.upiicsa.denuncia.common.TaskCompleted;
+import com.upiicsa.denuncia.common.Singleton;
+import com.upiicsa.denuncia.service.Service;
+import com.upiicsa.denuncia.service.TaskCompleted;
 import com.upiicsa.denuncia.util.Constants;
 import com.upiicsa.denuncia.util.Util;
 
@@ -36,8 +36,9 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	private Spinner category, consultRange;
 	private Button consulta, denuncia;
 	private List<String> consultList, rangeList;
-	private Service service;
+	private int operacion;
 	Context context;
+	private Service service;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -207,10 +208,9 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 			Toast.makeText(getBaseContext(), "Cargando configuración.",
 					Toast.LENGTH_LONG).show();
 			try {
-				Map<String, String> configMap = new HashMap<String, String>();
-				configMap.put("i", "01");
-				service = new Service(context);
-				service.setRequest(configMap);
+				operacion = 1;
+				service = new Service(this);
+				service.configService();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -228,6 +228,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 			boolean isGPSEnabled = lm
 					.isProviderEnabled(LocationManager.GPS_PROVIDER);
 			if (isGPSEnabled) {
+				operacion = 2;
 				double longitude = location.getLongitude();
 				double latitude = location.getLatitude();
 				Map<String, String> object = new HashMap<String, String>();
@@ -239,7 +240,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 					object.put("dc", "02");
 					object.put("la", lat);
 					object.put("lo", lng);
-					service.setRequest(object);
+					// service.setRequest(object);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -287,17 +288,22 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	@Override
 	public void onTaskComplete(String result) throws JSONException {
 		System.out.println("Result:" + result);
-		JSONObject obj = Util.convertStringtoJson(result);
-		consulta = (Button) findViewById(R.id.consulta);
-		denuncia = (Button) findViewById(R.id.denuncia);
-		consulta.setEnabled(true);
-		denuncia.setEnabled(true);
-		if (obj.get("lt") != null) {
-			String lt = obj.getString("lt");
-			rangeList = Util.convertStringToArray(lt);
+
+		switch (operacion) {
+		case 1:
+			consulta = (Button) findViewById(R.id.consulta);
+			denuncia = (Button) findViewById(R.id.denuncia);
+			consulta.setEnabled(true);
+			denuncia.setEnabled(true);
+			Singleton s = Singleton.getInstance();
+			break;
+		case 2:
+
+			break;
+
+		default:
+			break;
 		}
-		String ld = obj.getString("ld");
-		consultList = Util.convertStringToArray(ld);
 
 	}
 }

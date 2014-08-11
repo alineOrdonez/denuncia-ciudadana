@@ -1,4 +1,4 @@
-package com.upiicsa.denuncia.common;
+package com.upiicsa.denuncia.service;
 
 import android.util.Log;
 

@@ -28,7 +28,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.upiicsa.denuncia.R;
-import com.upiicsa.denuncia.common.Service;
+import com.upiicsa.denuncia.common.CatDenuncia;
+import com.upiicsa.denuncia.service.Service;
 import com.upiicsa.denuncia.util.Constants;
 import com.upiicsa.denuncia.util.Util;
 
@@ -72,16 +73,16 @@ public class NewComplaintFragment extends Fragment {
 		}
 	}
 
+	//TODO:
 	public void addItemsOnSpinner(View view) {
 		spinner = (Spinner) view.findViewById(R.id.spinner1);
-
-		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
+		/*ArrayAdapter<CatDenuncia> dataAdapter = new ArrayAdapter<CatDenuncia>(
 				getActivity(), android.R.layout.simple_spinner_dropdown_item,
 				Util.categories());
 
 		dataAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(dataAdapter);
+		spinner.setAdapter(dataAdapter);*/
 	}
 
 	private void addListenerOnButton() {
@@ -269,7 +270,7 @@ public class NewComplaintFragment extends Fragment {
 					object.put("dd", "02");
 					object.put("la", lat);
 					object.put("lo", lng);
-					service.setRequest(object);
+					// service.setRequest(object);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
