@@ -44,9 +44,8 @@ public class Util {
 		return obj;
 	}
 
-	public static List<String> convertStringToList(String string) {
-		int length = string.length();
-		String str = string.substring(1, length - 1);
+	public static List<String> convertStringToMap(String string) {
+		String str = string.replaceAll("[\\[{}\\]]", "");
 		List<String> list = new ArrayList<String>(Arrays.asList(str.split(",")));
 		return list;
 	}
@@ -58,7 +57,7 @@ public class Util {
 		for (int i = 1; i < 4; i++) {
 			Map<String, String> obj = new HashMap<String, String>();
 			String s = String.valueOf(i);
-			obj.put("id", s);
+			obj.put("id",s);
 			obj.put("descripcion", descripcion[i - 1]);
 			list.add(obj);
 		}

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +26,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.upiicsa.denuncia.R;
+import com.upiicsa.denuncia.common.CatDenuncia;
+import com.upiicsa.denuncia.common.CatIntTiempo;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Service;
 import com.upiicsa.denuncia.service.TaskCompleted;
@@ -39,11 +42,13 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	private int operacion;
 	Context context;
 	private Service service;
+	Singleton s;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
+		s = Singleton.getInstance();
 		context = this;
 		consultList = new ArrayList<String>();
 		rangeList = new ArrayList<String>();
@@ -58,6 +63,9 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 
 	public void addCategoriesOnSpinner(View view, int id) {
 		category = (Spinner) view.findViewById(id);
+		for (CatDenuncia cat : s.getDenuncias()) {
+			consultList.add(cat.getDescripcion());
+		}
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
 				MainMenuActivity.this,
 				android.R.layout.simple_spinner_dropdown_item, consultList);
@@ -69,7 +77,9 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 
 	public void addRangeOnSpinner(View view) {
 		consultRange = (Spinner) view.findViewById(R.id.consultRange);
-
+		for (CatIntTiempo cat : s.getIntervalos()) {
+			rangeList.add(cat.getDescripcion());
+		}
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
 				MainMenuActivity.this,
 				android.R.layout.simple_spinner_dropdown_item, rangeList);
@@ -288,14 +298,19 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	@Override
 	public void onTaskComplete(String result) throws JSONException {
 		System.out.println("Result:" + result);
-
+		JSONObject json = new JSONObject(result);
 		switch (operacion) {
 		case 1:
 			consulta = (Button) findViewById(R.id.consulta);
 			denuncia = (Button) findViewById(R.id.denuncia);
 			consulta.setEnabled(true);
 			denuncia.setEnabled(true);
-			Singleton s = Singleton.getInstance();
+			List<String> descripcion = new ArrayList<String>();
+			List<String> intervalo = new ArrayList<String>();
+			descripcion = Util.convertStringToMap(json.getString("ld"));
+			denuncias(descripcion);
+			intervalo = Util.convertStringToMap(json.getString("lt"));
+			intervalos(intervalo);
 			break;
 		case 2:
 
@@ -304,6 +319,45 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		default:
 			break;
 		}
+	}
 
+	private void denuncias(List<String> stringList) {
+		CatDenuncia denuncias = new CatDenuncia();
+		List<CatDenuncia> catalogo = new ArrayList<CatDenuncia>();
+		for (int i = 0; i < stringList.size(); i++) {
+			String pair = stringList.get(i);
+			String[] keyValue = pair.split("=");
+
+			if (keyValue[0].contains("descripcion")) {
+				denuncias.setDescripcion(keyValue[1]);
+			}
+			if (keyValue[0].contains("id")) {
+				int id = Integer.valueOf(keyValue[1]);
+				denuncias.setIdCatDenuncia(id);
+				catalogo.add(denuncias);
+				denuncias = new CatDenuncia();
+			}
+		}
+		s.setDenuncias(catalogo);
+	}
+
+	private void intervalos(List<String> stringList) {
+		CatIntTiempo catIntTiempo = new CatIntTiempo();
+		List<CatIntTiempo> catalogo = new ArrayList<CatIntTiempo>();
+		for (int i = 0; i < stringList.size(); i++) {
+			String pair = stringList.get(i);
+			String[] keyValue = pair.split("=");
+
+			if (keyValue[0].contains("descripcion")) {
+				catIntTiempo.setDescripcion(keyValue[1]);
+			}
+			if (keyValue[0].contains("id")) {
+				int id = Integer.valueOf(keyValue[1]);
+				catIntTiempo.setIdCatIntTiempo(id);
+				catalogo.add(catIntTiempo);
+				catIntTiempo = new CatIntTiempo();
+			}
+		}
+		s.setIntervalos(catalogo);
 	}
 }
