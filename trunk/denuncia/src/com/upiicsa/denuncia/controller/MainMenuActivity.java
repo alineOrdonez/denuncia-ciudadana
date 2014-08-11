@@ -1,9 +1,7 @@
 package com.upiicsa.denuncia.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +18,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.CatIntTiempo;
+import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Service;
 import com.upiicsa.denuncia.service.TaskCompleted;
@@ -38,6 +39,8 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 
 	private Spinner category, consultRange;
 	private Button consulta, denuncia;
+	private CatDenuncia catDen;
+	private CatIntTiempo catIntT;
 	private List<String> consultList, rangeList;
 	private int operacion;
 	Context context;
@@ -72,6 +75,32 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		dataAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		category.setAdapter(dataAdapter);
+		category.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				// do some work, update UI or reset qty and discount spinner or
+				// whatever
+				String strItem = category.getItemAtPosition(position)
+						.toString();
+				System.out.println(strItem);
+
+				for (CatDenuncia catDenuncia : s.getDenuncias()) {
+					if (catDenuncia.getDescripcion().equals(strItem)) {
+						catDen = new CatDenuncia();
+						catDen = catDenuncia;
+					}
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 
 	}
 
@@ -87,6 +116,32 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		dataAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		consultRange.setAdapter(dataAdapter);
+		consultRange.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				// do some work, update UI or reset qty and discount spinner or
+				// whatever
+				String strItem = category.getItemAtPosition(position)
+						.toString();
+				System.out.println(strItem);
+
+				for (CatIntTiempo catInt : s.getIntervalos()) {
+					if (catInt.getDescripcion().equals(strItem)) {
+						catIntT = new CatIntTiempo();
+						catIntT = catInt;
+					}
+				}
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 	public void showPrompt(View view) {
@@ -124,13 +179,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 												.runOnUiThread(new Runnable() {
 
 													public void run() {
-														/*
-														 * Intent i = new
-														 * Intent( context,
-														 * ComplaintListActivity
-														 * .class);
-														 * startActivity(i);
-														 */
 														findComplaints();
 
 													}
@@ -238,19 +286,16 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 			boolean isGPSEnabled = lm
 					.isProviderEnabled(LocationManager.GPS_PROVIDER);
 			if (isGPSEnabled) {
+				// TODO:
 				operacion = 2;
-				double longitude = location.getLongitude();
-				double latitude = location.getLatitude();
-				Map<String, String> object = new HashMap<String, String>();
-				String lat = String.valueOf(latitude);
-				String lng = String.valueOf(longitude);
+				double longitude = 19.4282476;// location.getLongitude();
+				double latitude = -99.1920397;// location.getLatitude();
+				int idCategoria = catDen.getIdCatDenuncia();
+				String descripcion = catDen.getDescripcion();
 				try {
-					object.put("i", "02");
-					object.put("ic", "02");
-					object.put("dc", "02");
-					object.put("la", lat);
-					object.put("lo", lng);
-					// service.setRequest(object);
+					Denuncia denuncia = new Denuncia(idCategoria, descripcion,
+							latitude, longitude);
+					service.findComplaintsService(denuncia);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -307,13 +352,19 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 			denuncia.setEnabled(true);
 			List<String> descripcion = new ArrayList<String>();
 			List<String> intervalo = new ArrayList<String>();
-			descripcion = Util.convertStringToMap(json.getString("ld"));
+			descripcion = Util.convertStringToList(json.getString("ld"));
 			denuncias(descripcion);
-			intervalo = Util.convertStringToMap(json.getString("lt"));
+			intervalo = Util.convertStringToList(json.getString("lt"));
 			intervalos(intervalo);
 			break;
 		case 2:
-
+			List<String> d = new ArrayList<String>();
+			d = Util.convertStringToList(json.getString("ld"));
+			List<Denuncia> lista = new ArrayList<Denuncia>();
+			Intent intent = new Intent(context, ComplaintListActivity.class);
+			// TODO:
+			// intent.putStringArrayListExtra("customer", lista);
+			startActivity(intent);
 			break;
 
 		default:
@@ -359,5 +410,29 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 			}
 		}
 		s.setIntervalos(catalogo);
+	}
+
+	private List<Denuncia> listaD(List<String> stringList) {
+		Denuncia denuncias = new Denuncia();
+		List<Denuncia> catalogo = new ArrayList<Denuncia>();
+		for (int i = 0; i < stringList.size(); i++) {
+			String pair = stringList.get(i);
+			String[] keyValue = pair.split("=");
+
+			if (keyValue[0].contains("descripcion")) {
+				denuncias.setDescripcion(keyValue[1]);
+			} else if (keyValue[0].contains("id")) {
+				int id = Integer.valueOf(keyValue[1]);
+				denuncias.setIdDenuncia(id);
+				catalogo.add(denuncias);
+				denuncias = new Denuncia();
+			} else if (keyValue[0].contains("email")) {
+				denuncias.setCorreo(keyValue[1]);
+			} else if (keyValue[0].contains("direccion")) {
+				denuncias.setDireccion(keyValue[1]);
+			}
+
+		}
+		return catalogo;
 	}
 }
