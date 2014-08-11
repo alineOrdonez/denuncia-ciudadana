@@ -107,13 +107,8 @@ public class Service {
 			@Override
 			public void onResponse(String result) {
 				try {
-					
-					JSONObject json = new JSONObject();
-					json.put("is", "01");
-					json.put("ds", "Exitoso");
-					json.put("ld", Util.categories());
-					json.put("lt", Util.range());
-					result = json.toString();
+					//Util.configResult();
+					Util.complaintResult();
 					taskCompleted.onTaskComplete(result);
 				} catch (JSONException e) {
 					e.printStackTrace();

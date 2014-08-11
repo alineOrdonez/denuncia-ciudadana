@@ -26,7 +26,11 @@ public class ComplaintDetailFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		description = savedInstanceState.getString("DESCRIPTION");
+
+		if (savedInstanceState == null) {
+			Bundle bundle = getActivity().getIntent().getExtras();
+			description = bundle.getString("DESCRIPTION");
+		}
 	}
 
 	@Override

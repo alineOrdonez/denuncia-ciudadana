@@ -44,7 +44,7 @@ public class Util {
 		return obj;
 	}
 
-	public static List<String> convertStringToMap(String string) {
+	public static List<String> convertStringToList(String string) {
 		String str = string.replaceAll("[\\[{}\\]]", "");
 		List<String> list = new ArrayList<String>(Arrays.asList(str.split(",")));
 		return list;
@@ -57,7 +57,7 @@ public class Util {
 		for (int i = 1; i < 4; i++) {
 			Map<String, String> obj = new HashMap<String, String>();
 			String s = String.valueOf(i);
-			obj.put("id",s);
+			obj.put("id", s);
 			obj.put("descripcion", descripcion[i - 1]);
 			list.add(obj);
 		}
@@ -75,5 +75,43 @@ public class Util {
 			list.add(obj);
 		}
 		return list;
+	}
+
+	public static List<Object> denuncias() throws JSONException {
+		List<Object> list = new ArrayList<Object>();
+		String[] descripcion = new String[] {
+				"Incendio en la casa del vecino.",
+				"El basurero de la esquina se quema.", "Fuego en el parque." };
+		String[] email = new String[] { "me@mail.com", "me@mail.com",
+				"me@mail.com" };
+		String[] direccion = new String[] { "fsdfsdfsd", "xfsdfsdf",
+				"sdfsdfsdfsd" };
+		for (int i = 1; i < 4; i++) {
+			Map<String, String> obj = new HashMap<String, String>();
+			String s = String.valueOf(i);
+			obj.put("id", s);
+			obj.put("descripcion", descripcion[i - 1]);
+			obj.put("email", email[i - 1]);
+			obj.put("direccion", direccion[i - 1]);
+			list.add(obj);
+		}
+		return list;
+	}
+
+	public static String configResult() throws JSONException {
+		JSONObject json = new JSONObject();
+		json.put("is", "01");
+		json.put("ds", "Exitoso");
+		json.put("ld", categories());
+		json.put("lt", range());
+		return json.toString();
+	}
+
+	public static String complaintResult() throws JSONException {
+		JSONObject json = new JSONObject();
+		json.put("is", "01");
+		json.put("ds", "Exitoso");
+		json.put("ld", denuncias());
+		return json.toString();
 	}
 }

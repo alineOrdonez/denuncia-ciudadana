@@ -19,6 +19,9 @@ public class Denuncia implements Serializable {
 	private double latitud;
 	private double longitud;
 
+	public Denuncia() {
+	}
+
 	/**
 	 * @param idOperacion
 	 * @param idCategoria
