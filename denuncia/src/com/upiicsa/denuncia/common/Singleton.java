@@ -26,7 +26,7 @@ public class Singleton {
 	/**
 	 * @return the denuncias
 	 */
-	public static List<CatDenuncia> getDenuncias() {
+	public List<CatDenuncia> getDenuncias() {
 		return denuncias;
 	}
 
@@ -34,14 +34,14 @@ public class Singleton {
 	 * @param denuncias
 	 *            the denuncias to set
 	 */
-	public static void setDenuncias(List<CatDenuncia> denuncias) {
+	public void setDenuncias(List<CatDenuncia> denuncias) {
 		Singleton.denuncias = denuncias;
 	}
 
 	/**
 	 * @return the intervalos
 	 */
-	public static List<CatIntTiempo> getIntervalos() {
+	public List<CatIntTiempo> getIntervalos() {
 		return intervalos;
 	}
 
@@ -49,7 +49,7 @@ public class Singleton {
 	 * @param intervalos
 	 *            the intervalos to set
 	 */
-	public static void setIntervalos(List<CatIntTiempo> intervalos) {
+	public void setIntervalos(List<CatIntTiempo> intervalos) {
 		Singleton.intervalos = intervalos;
 	}
 

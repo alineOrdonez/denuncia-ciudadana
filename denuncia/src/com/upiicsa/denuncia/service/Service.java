@@ -9,7 +9,6 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.upiicsa.denuncia.common.ConfigurationResponse;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.util.HttpHandler;
 import com.upiicsa.denuncia.util.Util;
