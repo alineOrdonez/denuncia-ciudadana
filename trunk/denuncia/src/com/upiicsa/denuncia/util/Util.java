@@ -2,7 +2,6 @@ package com.upiicsa.denuncia.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class Util {
 		return obj;
 	}
 
-	public static List<String> convertStringToList(String string) {
+	public static List<String> formatConfigList(String string) {
 		String str = string.replaceAll("[\\[{}\\]]", "");
 		List<String> list = new ArrayList<String>(Arrays.asList(str.split(",")));
 		return list;
@@ -55,10 +54,9 @@ public class Util {
 		String[] descripcion = new String[] { "Fuga de agua", "Incendio",
 				"Robo" };
 		for (int i = 1; i < 4; i++) {
-			Map<String, String> obj = new HashMap<String, String>();
-			String s = String.valueOf(i);
-			obj.put("id", s);
-			obj.put("descripcion", descripcion[i - 1]);
+			List<Object> obj = new ArrayList<Object>();
+			obj.add(i);
+			obj.add(descripcion[i - 1]);
 			list.add(obj);
 		}
 		return list;
@@ -68,10 +66,9 @@ public class Util {
 		List<Object> list = new ArrayList<Object>();
 		String[] descripcion = new String[] { "2 hrs.", "4 hrs.", "12 hrs." };
 		for (int i = 1; i < 4; i++) {
-			Map<String, String> obj = new HashMap<String, String>();
-			String s = String.valueOf(i);
-			obj.put("id", s);
-			obj.put("descripcion", descripcion[i - 1]);
+			List<Object> obj = new ArrayList<Object>();
+			obj.add(i);
+			obj.add(descripcion[i - 1]);
 			list.add(obj);
 		}
 		return list;
@@ -87,12 +84,11 @@ public class Util {
 		String[] direccion = new String[] { "fsdfsdfsd", "xfsdfsdf",
 				"sdfsdfsdfsd" };
 		for (int i = 1; i < 4; i++) {
-			Map<String, String> obj = new HashMap<String, String>();
-			String s = String.valueOf(i);
-			obj.put("id", s);
-			obj.put("descripcion", descripcion[i - 1]);
-			obj.put("email", email[i - 1]);
-			obj.put("direccion", direccion[i - 1]);
+			List<Object> obj = new ArrayList<Object>();
+			obj.add(i);
+			obj.add(descripcion[i - 1]);
+			obj.add(email[i - 1]);
+			obj.add(direccion[i - 1]);
 			list.add(obj);
 		}
 		return list;
