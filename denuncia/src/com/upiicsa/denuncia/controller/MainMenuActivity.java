@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -343,27 +344,30 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	@Override
 	public void onTaskComplete(String result) throws JSONException {
 		System.out.println("Result:" + result);
-		JSONObject json = new JSONObject(result);
+		JSONObject json;
 		switch (operacion) {
 		case 1:
+			result = Util.configResult();
+			json = new JSONObject(result);
 			consulta = (Button) findViewById(R.id.consulta);
 			denuncia = (Button) findViewById(R.id.denuncia);
 			consulta.setEnabled(true);
 			denuncia.setEnabled(true);
 			List<String> descripcion = new ArrayList<String>();
 			List<String> intervalo = new ArrayList<String>();
-			descripcion = Util.convertStringToList(json.getString("ld"));
+			descripcion = Util.formatConfigList(json.getString("ld"));
 			denuncias(descripcion);
-			intervalo = Util.convertStringToList(json.getString("lt"));
+			intervalo = Util.formatConfigList(json.getString("lt"));
 			intervalos(intervalo);
 			break;
 		case 2:
+			result = Util.complaintResult();
+			json = new JSONObject(result);
 			List<String> d = new ArrayList<String>();
-			d = Util.convertStringToList(json.getString("ld"));
-			List<Denuncia> lista = new ArrayList<Denuncia>();
+			d = Util.formatConfigList(json.getString("ld"));
+			List<Denuncia> lista = listaD(d);
 			Intent intent = new Intent(context, ComplaintListActivity.class);
-			// TODO:
-			// intent.putStringArrayListExtra("customer", lista);
+			intent.putExtra("COMPLAINT_LIST", (ArrayList<Denuncia>) lista);
 			startActivity(intent);
 			break;
 
@@ -373,65 +377,39 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	}
 
 	private void denuncias(List<String> stringList) {
-		CatDenuncia denuncias = new CatDenuncia();
 		List<CatDenuncia> catalogo = new ArrayList<CatDenuncia>();
 		for (int i = 0; i < stringList.size(); i++) {
-			String pair = stringList.get(i);
-			String[] keyValue = pair.split("=");
-
-			if (keyValue[0].contains("descripcion")) {
-				denuncias.setDescripcion(keyValue[1]);
-			}
-			if (keyValue[0].contains("id")) {
-				int id = Integer.valueOf(keyValue[1]);
-				denuncias.setIdCatDenuncia(id);
-				catalogo.add(denuncias);
-				denuncias = new CatDenuncia();
-			}
+			CatDenuncia denuncias = new CatDenuncia();
+			int id = Integer.valueOf(stringList.get(0));
+			denuncias.setIdCatDenuncia(id);
+			denuncias.setDescripcion(stringList.get(1));
+			catalogo.add(denuncias);
 		}
 		s.setDenuncias(catalogo);
 	}
 
 	private void intervalos(List<String> stringList) {
-		CatIntTiempo catIntTiempo = new CatIntTiempo();
 		List<CatIntTiempo> catalogo = new ArrayList<CatIntTiempo>();
 		for (int i = 0; i < stringList.size(); i++) {
-			String pair = stringList.get(i);
-			String[] keyValue = pair.split("=");
-
-			if (keyValue[0].contains("descripcion")) {
-				catIntTiempo.setDescripcion(keyValue[1]);
-			}
-			if (keyValue[0].contains("id")) {
-				int id = Integer.valueOf(keyValue[1]);
-				catIntTiempo.setIdCatIntTiempo(id);
-				catalogo.add(catIntTiempo);
-				catIntTiempo = new CatIntTiempo();
-			}
+			CatIntTiempo catIntTiempo = new CatIntTiempo();
+			int id = Integer.valueOf(stringList.get(0));
+			catIntTiempo.setIdCatIntTiempo(id);
+			catIntTiempo.setDescripcion(stringList.get(1));
+			catalogo.add(catIntTiempo);
 		}
 		s.setIntervalos(catalogo);
 	}
 
 	private List<Denuncia> listaD(List<String> stringList) {
-		Denuncia denuncias = new Denuncia();
 		List<Denuncia> catalogo = new ArrayList<Denuncia>();
 		for (int i = 0; i < stringList.size(); i++) {
-			String pair = stringList.get(i);
-			String[] keyValue = pair.split("=");
-
-			if (keyValue[0].contains("descripcion")) {
-				denuncias.setDescripcion(keyValue[1]);
-			} else if (keyValue[0].contains("id")) {
-				int id = Integer.valueOf(keyValue[1]);
-				denuncias.setIdDenuncia(id);
-				catalogo.add(denuncias);
-				denuncias = new Denuncia();
-			} else if (keyValue[0].contains("email")) {
-				denuncias.setCorreo(keyValue[1]);
-			} else if (keyValue[0].contains("direccion")) {
-				denuncias.setDireccion(keyValue[1]);
-			}
-
+			Denuncia denuncia = new Denuncia();
+			int id = Integer.valueOf(stringList.get(0));
+			denuncia.setIdDenuncia(id);
+			denuncia.setDescripcion(stringList.get(1));
+			denuncia.setCorreo(stringList.get(2));
+			denuncia.setDireccion(stringList.get(3));
+			catalogo.add(denuncia);
 		}
 		return catalogo;
 	}
