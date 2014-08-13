@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -35,16 +34,19 @@ public class ComplaintListFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-        Bundle extras = getActivity().getIntent().getExtras();
-        if (extras!= null) {
-            if (extras.containsKey("COMPLAINT_LIST")) {
-                try {
-                    denList = (ArrayList<Denuncia>) extras.get("COMPLAINT_LIST");  //Syntax Error here
-                } catch (ClassCastException e) {
-                    Log.e("B_", "Could not cast extra to expected type, the field is left to its default value", e);
-                }
-            }
-        }
+		Bundle extras = getActivity().getIntent().getExtras();
+		if (extras != null) {
+			if (extras.containsKey("COMPLAINT_LIST")) {
+				try {
+					denList = (ArrayList<Denuncia>) extras
+							.get("COMPLAINT_LIST"); // Syntax Error here
+				} catch (ClassCastException e) {
+					Log.e("B_",
+							"Could not cast extra to expected type, the field is left to its default value",
+							e);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -73,6 +75,13 @@ public class ComplaintListFragment extends Fragment {
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable("COMPLAINT_LIST",
+				(ArrayList<Denuncia>) denList);
 	}
 
 	public void defineListView(View view) {
