@@ -21,5 +21,8 @@
     <string name="enviar">Enviar</string>
     <string name="guardar">Guardar</string>
     <string name="periodo_de_busqueda_">Periodo de busqueda:</string>
+    <string name="Camara">Tomar Fotografía</string>
+    <string name="galery">Escoger de Galería</string>
+    <string name="Aceptar">Aceptar</string>
 
 </resources>
