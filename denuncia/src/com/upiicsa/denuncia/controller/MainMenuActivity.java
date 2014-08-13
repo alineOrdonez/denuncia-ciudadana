@@ -1,6 +1,7 @@
 package com.upiicsa.denuncia.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONException;
@@ -15,7 +16,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -355,16 +355,19 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 			denuncia.setEnabled(true);
 			List<String> descripcion = new ArrayList<String>();
 			List<String> intervalo = new ArrayList<String>();
-			descripcion = Util.formatConfigList(json.getString("ld"));
+			String ld = json.getString("ld");
+			descripcion = Util.stringToList(ld);
 			denuncias(descripcion);
-			intervalo = Util.formatConfigList(json.getString("lt"));
+			String lt = json.getString("lt");
+			intervalo = Util.stringToList(lt);
 			intervalos(intervalo);
 			break;
 		case 2:
 			result = Util.complaintResult();
 			json = new JSONObject(result);
 			List<String> d = new ArrayList<String>();
-			d = Util.formatConfigList(json.getString("ld"));
+			String list = json.getString("ld");
+			d = Util.stringToList(list);
 			List<Denuncia> lista = listaD(d);
 			Intent intent = new Intent(context, ComplaintListActivity.class);
 			intent.putExtra("COMPLAINT_LIST", (ArrayList<Denuncia>) lista);
@@ -379,10 +382,13 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	private void denuncias(List<String> stringList) {
 		List<CatDenuncia> catalogo = new ArrayList<CatDenuncia>();
 		for (int i = 0; i < stringList.size(); i++) {
+			String string = stringList.get(i).trim();
+			String[] split = string.split(", ");
+			List<String> list = Arrays.asList(split);
+			int id = Integer.valueOf(list.get(0));
 			CatDenuncia denuncias = new CatDenuncia();
-			int id = Integer.valueOf(stringList.get(0));
 			denuncias.setIdCatDenuncia(id);
-			denuncias.setDescripcion(stringList.get(1));
+			denuncias.setDescripcion(list.get(1));
 			catalogo.add(denuncias);
 		}
 		s.setDenuncias(catalogo);
@@ -391,11 +397,14 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	private void intervalos(List<String> stringList) {
 		List<CatIntTiempo> catalogo = new ArrayList<CatIntTiempo>();
 		for (int i = 0; i < stringList.size(); i++) {
-			CatIntTiempo catIntTiempo = new CatIntTiempo();
-			int id = Integer.valueOf(stringList.get(0));
-			catIntTiempo.setIdCatIntTiempo(id);
-			catIntTiempo.setDescripcion(stringList.get(1));
-			catalogo.add(catIntTiempo);
+			String string = stringList.get(i).trim();
+			String[] split = string.split(", ");
+			List<String> list = Arrays.asList(split);
+			int id = Integer.valueOf(list.get(0));
+			CatIntTiempo intervalos = new CatIntTiempo();
+			intervalos.setIdCatIntTiempo(id);
+			intervalos.setDescripcion(string);
+			catalogo.add(intervalos);
 		}
 		s.setIntervalos(catalogo);
 	}
@@ -403,12 +412,15 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	private List<Denuncia> listaD(List<String> stringList) {
 		List<Denuncia> catalogo = new ArrayList<Denuncia>();
 		for (int i = 0; i < stringList.size(); i++) {
+			String string = stringList.get(i).trim();
+			String[] split = string.split(", ");
+			List<String> list = Arrays.asList(split);
 			Denuncia denuncia = new Denuncia();
-			int id = Integer.valueOf(stringList.get(0));
+			int id = Integer.valueOf(list.get(0));
 			denuncia.setIdDenuncia(id);
-			denuncia.setDescripcion(stringList.get(1));
-			denuncia.setCorreo(stringList.get(2));
-			denuncia.setDireccion(stringList.get(3));
+			denuncia.setDescripcion(list.get(1));
+			denuncia.setCorreo(list.get(2));
+			denuncia.setDireccion(list.get(3));
 			catalogo.add(denuncia);
 		}
 		return catalogo;

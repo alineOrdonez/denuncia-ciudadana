@@ -43,10 +43,35 @@ public class Util {
 		return obj;
 	}
 
-	public static List<String> formatConfigList(String string) {
-		String str = string.replaceAll("[\\[{}\\]]", "");
-		List<String> list = new ArrayList<String>(Arrays.asList(str.split(",")));
+	public static List<String> stringToList(String string) {
+		String s = string.substring(2, string.length() - 2);
+		String[] split = s.split("\\], \\[");
+		List<String> list = Arrays.asList(split);
 		return list;
+	}
+
+	public static boolean isInteger(String str) {
+		if (str == null) {
+			return false;
+		}
+		int length = str.length();
+		if (length == 0) {
+			return false;
+		}
+		int i = 0;
+		if (str.charAt(0) == '-') {
+			if (length == 1) {
+				return false;
+			}
+			i = 1;
+		}
+		for (; i < length; i++) {
+			char c = str.charAt(i);
+			if (c <= '/' || c >= ':') {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static List<Object> categories() throws JSONException {
