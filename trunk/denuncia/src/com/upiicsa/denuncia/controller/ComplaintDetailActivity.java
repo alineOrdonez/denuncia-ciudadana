@@ -1,14 +1,14 @@
 package com.upiicsa.denuncia.controller;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.util.Constants;
 
-public class ComplaintDetailActivity extends FragmentActivity {
+public class ComplaintDetailActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

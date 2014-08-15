@@ -113,14 +113,20 @@ public class Util {
 				"El basurero de la esquina se quema.", "Fuego en el parque." };
 		String[] email = new String[] { "me@mail.com", "me@mail.com",
 				"me@mail.com" };
-		String[] direccion = new String[] { "fsdfsdfsd", "xfsdfsdf",
-				"sdfsdfsdfsd" };
+		String[] direccion = new String[] { "Hortaliza No. 49", "Wetter 16",
+				"Homero No 12" };
+		double[] latitude = new double[] { 19.4217617, 26.0733591, 26.089542 };
+		double[] longitude = new double[] { -99.1886779, -98.2853973,
+				-98.292741 };
 		for (int i = 1; i < 4; i++) {
 			List<Object> obj = new ArrayList<Object>();
 			obj.add(i);
 			obj.add(descripcion[i - 1]);
 			obj.add(email[i - 1]);
 			obj.add(direccion[i - 1]);
+			// Para consulta
+			obj.add(latitude[i - 1]);
+			obj.add(longitude[i - 1]);
 			list.add(obj);
 		}
 		return list;

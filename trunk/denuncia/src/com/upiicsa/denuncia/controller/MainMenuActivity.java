@@ -132,7 +132,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 					int position, long id) {
 				// do some work, update UI or reset qty and discount spinner or
 				// whatever
-				String strItem = category.getItemAtPosition(position)
+				String strItem = consultRange.getItemAtPosition(position)
 						.toString();
 				System.out.println(strItem);
 
@@ -142,7 +142,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 						catIntT = catInt;
 					}
 				}
-
 			}
 
 			@Override
@@ -193,7 +192,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 												});
 									}
 								}).start();
-
 							}
 						})
 				.setNegativeButton("Cancelar",
@@ -202,7 +200,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 								dialog.cancel();
 							}
 						});
-
 		// create alert dialog
 		AlertDialog alertDialog = alertDialogBuilder.create();
 		// show it
@@ -246,12 +243,11 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 												.runOnUiThread(new Runnable() {
 
 													public void run() {
-														findComplaints();
+														consultAccordingToCategoryAndTime();
 													}
 												});
 									}
 								}).start();
-
 							}
 						})
 				.setNegativeButton("Cancelar",
@@ -260,7 +256,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 								dialog.cancel();
 							}
 						});
-
 		// create alert dialog
 		AlertDialog alertDialog = alertDialogBuilder.create();
 		// show it
@@ -317,13 +312,45 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		}
 	}
 
+	private void consultAccordingToCategoryAndTime() {
+		if (Util.isConnected(context)) {
+			LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			Location location = lm
+					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			boolean isGPSEnabled = lm
+					.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			if (isGPSEnabled) {
+				// TODO:
+				operacion = 5;
+				double longitude = 19.4282476;// location.getLongitude();
+				double latitude = -99.1920397;// location.getLatitude();
+				int idCategoria = catDen.getIdCatDenuncia();
+				int idIntervalo = catIntT.getIdCatIntTiempo();
+				String descripcion = catDen.getDescripcion();
+				try {
+					Denuncia denuncia = new Denuncia(idCategoria, idIntervalo,
+							descripcion, latitude, longitude);
+					service.findComplaintsService(denuncia);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				showGPSAlert();
+			}
+
+		} else {
+			Toast.makeText(getBaseContext(), Constants.CONNECTION_ERROR,
+					Toast.LENGTH_LONG).show();
+		}
+	}
+
 	private void showGPSAlert() {
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 
-		alertDialog.setTitle("ConfiguraciÃ³n del GPS");
-		alertDialog.setMessage("Es necesaria su localizaciÃ³n para"
+		alertDialog.setTitle("Configuración del GPS");
+		alertDialog.setMessage("Es necesaria su localización para"
 				+ " obtener la lista de denuncias cercanas."
-				+ "Â¿Desea activar el GPS?");
+				+ "¿Desea activar el GPS?");
 		alertDialog.setPositiveButton("Activar GPS",
 				new DialogInterface.OnClickListener() {
 
@@ -352,6 +379,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	public void onTaskComplete(String result) throws JSONException {
 		System.out.println("Result:" + result);
 		JSONObject json;
+		String ld;
 		switch (operacion) {
 		case 1:
 			result = Util.configResult();
@@ -360,7 +388,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 			denuncia.setEnabled(true);
 			List<String> descripcion = new ArrayList<String>();
 			List<String> intervalo = new ArrayList<String>();
-			String ld = json.getString("ld");
+			ld = json.getString("ld");
 			descripcion = Util.stringToList(ld);
 			denuncias(descripcion);
 			String lt = json.getString("lt");
@@ -370,15 +398,25 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		case 2:
 			result = Util.complaintResult();
 			json = new JSONObject(result);
-			String list = json.getString("ld");
-			Intent intent = new Intent(context, ComplaintListActivity.class);
-			intent.putExtra("COMPLAINT_LIST", list);
-			startActivity(intent);
+			ld = json.getString("ld");
+			addExtraToIntent(ComplaintListActivity.class, ld);
+			break;
+		case 5:
+			result = Util.complaintResult();
+			json = new JSONObject(result);
+			ld = json.getString("ld");
+			addExtraToIntent(MapActivity.class, ld);
 			break;
 
 		default:
 			break;
 		}
+	}
+
+	private void addExtraToIntent(Class<?> clase, String list) {
+		Intent intent = new Intent(context, clase);
+		intent.putExtra("COMPLAINT_LIST", list);
+		startActivity(intent);
 	}
 
 	private void denuncias(List<String> stringList) {
