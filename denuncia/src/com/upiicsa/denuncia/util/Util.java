@@ -50,6 +50,13 @@ public class Util {
 		return list;
 	}
 
+	public static List<String> detailList(String row) {
+		String string = row.trim();
+		String[] split = string.split(", ");
+		List<String> list = Arrays.asList(split);
+		return list;
+	}
+
 	public static boolean isInteger(String str) {
 		if (str == null) {
 			return false;

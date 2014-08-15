@@ -17,36 +17,47 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.upiicsa.denuncia.R;
+import com.upiicsa.denuncia.common.Denuncia;
+import com.upiicsa.denuncia.common.DenunciaContent;
+import com.upiicsa.denuncia.util.Constants;
 
 public class ComplaintDetailFragment extends Fragment {
 
-	String description;
+	private Denuncia mItem;
+
+	public ComplaintDetailFragment() {
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 
-		if (savedInstanceState == null) {
-			Bundle bundle = getActivity().getIntent().getExtras();
-			description = bundle.getString("DESCRIPTION");
+		if (getArguments().containsKey(Constants.ARG_ITEM_ID)) {
+			String string = getArguments().getString(Constants.ARG_ITEM_ID);
+			int id = Integer.valueOf(string);
+			mItem = DenunciaContent.ITEM_MAP.get(id);
 		}
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-
-		final View view = inflater.inflate(R.layout.fragment_complaint_detail,
+		View rootView = inflater.inflate(R.layout.fragment_circle_detail,
 				container, false);
-		TextView textView = (TextView) view.findViewById(R.id.description);
-		textView.setText(description);
-		return view;
+
+		// Show the dummy content as text in a TextView.
+		if (mItem != null) {
+			((TextView) rootView.findViewById(R.id.circle_detail))
+					.setText(mItem.getDescripcion());
+			((TextView) rootView.findViewById(R.id.circle_address))
+					.setText(mItem.getDireccion());
+		}
+
+		return rootView;
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.complaint_detail_menu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -85,7 +96,7 @@ public class ComplaintDetailFragment extends Fragment {
 								final ProgressDialog ringProgressDialog = ProgressDialog
 										.show(getActivity(),
 												"Por favor espere ...",
-												"La denuncia se está actualizando ...",
+												"La denuncia se estï¿½ actualizando ...",
 												true);
 								ringProgressDialog.setCancelable(false);
 								ringProgressDialog.setIndeterminate(true);
@@ -109,7 +120,7 @@ public class ComplaintDetailFragment extends Fragment {
 													public void run() {
 														AlertDialog.Builder builder = new AlertDialog.Builder(
 																getActivity());
-														builder.setTitle("Operación exitosa");
+														builder.setTitle("Operaciï¿½n exitosa");
 														builder.setMessage("La denuncia se ha realizado exitosamente.");
 														builder.setPositiveButton(
 																"Continuar",

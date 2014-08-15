@@ -1,7 +1,6 @@
 package com.upiicsa.denuncia.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONException;
@@ -46,17 +45,24 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	private int operacion;
 	Context context;
 	private Service service;
-	Singleton s;
+	Singleton singleton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
-		s = Singleton.getInstance();
+		singleton = Singleton.getInstance();
 		context = this;
-		consultList = new ArrayList<String>();
-		rangeList = new ArrayList<String>();
-		loadConfiguration();
+		consulta = (Button) findViewById(R.id.consulta);
+		denuncia = (Button) findViewById(R.id.denuncia);
+		if (singleton.getDenuncias().isEmpty()
+				&& singleton.getIntervalos().isEmpty()) {
+			loadConfiguration();
+		} else {
+			consulta.setEnabled(true);
+			denuncia.setEnabled(true);
+		}
+
 	}
 
 	@Override
@@ -67,9 +73,11 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 
 	public void addCategoriesOnSpinner(View view, int id) {
 		category = (Spinner) view.findViewById(id);
-		for (CatDenuncia cat : s.getDenuncias()) {
+		consultList = new ArrayList<String>();
+		for (CatDenuncia cat : singleton.getDenuncias()) {
 			consultList.add(cat.getDescripcion());
 		}
+
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
 				MainMenuActivity.this,
 				android.R.layout.simple_spinner_dropdown_item, consultList);
@@ -88,7 +96,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 						.toString();
 				System.out.println(strItem);
 
-				for (CatDenuncia catDenuncia : s.getDenuncias()) {
+				for (CatDenuncia catDenuncia : singleton.getDenuncias()) {
 					if (catDenuncia.getDescripcion().equals(strItem)) {
 						catDen = new CatDenuncia();
 						catDen = catDenuncia;
@@ -98,7 +106,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
 
 			}
 		});
@@ -107,7 +114,8 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 
 	public void addRangeOnSpinner(View view) {
 		consultRange = (Spinner) view.findViewById(R.id.consultRange);
-		for (CatIntTiempo cat : s.getIntervalos()) {
+		rangeList = new ArrayList<String>();
+		for (CatIntTiempo cat : singleton.getIntervalos()) {
 			rangeList.add(cat.getDescripcion());
 		}
 		ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(
@@ -128,7 +136,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 						.toString();
 				System.out.println(strItem);
 
-				for (CatIntTiempo catInt : s.getIntervalos()) {
+				for (CatIntTiempo catInt : singleton.getIntervalos()) {
 					if (catInt.getDescripcion().equals(strItem)) {
 						catIntT = new CatIntTiempo();
 						catIntT = catInt;
@@ -139,7 +147,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
 
 			}
 		});
@@ -264,7 +271,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 
 	public void loadConfiguration() {
 		if (Util.isConnected(context)) {
-			Toast.makeText(getBaseContext(), "Cargando configuración.",
+			Toast.makeText(getBaseContext(), "Cargando configuraciÃ³n.",
 					Toast.LENGTH_LONG).show();
 			try {
 				operacion = 1;
@@ -313,10 +320,10 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	private void showGPSAlert() {
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 
-		alertDialog.setTitle("Configuración del GPS");
-		alertDialog.setMessage("Es necesaria su localización para"
+		alertDialog.setTitle("ConfiguraciÃ³n del GPS");
+		alertDialog.setMessage("Es necesaria su localizaciÃ³n para"
 				+ " obtener la lista de denuncias cercanas."
-				+ "¿Desea activar el GPS?");
+				+ "Â¿Desea activar el GPS?");
 		alertDialog.setPositiveButton("Activar GPS",
 				new DialogInterface.OnClickListener() {
 
@@ -349,8 +356,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		case 1:
 			result = Util.configResult();
 			json = new JSONObject(result);
-			consulta = (Button) findViewById(R.id.consulta);
-			denuncia = (Button) findViewById(R.id.denuncia);
 			consulta.setEnabled(true);
 			denuncia.setEnabled(true);
 			List<String> descripcion = new ArrayList<String>();
@@ -365,12 +370,9 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		case 2:
 			result = Util.complaintResult();
 			json = new JSONObject(result);
-			List<String> d = new ArrayList<String>();
 			String list = json.getString("ld");
-			d = Util.stringToList(list);
-			List<Denuncia> lista = listaD(d);
 			Intent intent = new Intent(context, ComplaintListActivity.class);
-			intent.putExtra("COMPLAINT_LIST", (ArrayList<Denuncia>) lista);
+			intent.putExtra("COMPLAINT_LIST", list);
 			startActivity(intent);
 			break;
 
@@ -382,47 +384,26 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	private void denuncias(List<String> stringList) {
 		List<CatDenuncia> catalogo = new ArrayList<CatDenuncia>();
 		for (int i = 0; i < stringList.size(); i++) {
-			String string = stringList.get(i).trim();
-			String[] split = string.split(", ");
-			List<String> list = Arrays.asList(split);
+			List<String> list = Util.detailList(stringList.get(i));
 			int id = Integer.valueOf(list.get(0));
 			CatDenuncia denuncias = new CatDenuncia();
 			denuncias.setIdCatDenuncia(id);
 			denuncias.setDescripcion(list.get(1));
 			catalogo.add(denuncias);
 		}
-		s.setDenuncias(catalogo);
+		singleton.setDenuncias(catalogo);
 	}
 
 	private void intervalos(List<String> stringList) {
 		List<CatIntTiempo> catalogo = new ArrayList<CatIntTiempo>();
 		for (int i = 0; i < stringList.size(); i++) {
-			String string = stringList.get(i).trim();
-			String[] split = string.split(", ");
-			List<String> list = Arrays.asList(split);
+			List<String> list = Util.detailList(stringList.get(i));
 			int id = Integer.valueOf(list.get(0));
 			CatIntTiempo intervalos = new CatIntTiempo();
 			intervalos.setIdCatIntTiempo(id);
-			intervalos.setDescripcion(string);
+			intervalos.setDescripcion(list.get(1));
 			catalogo.add(intervalos);
 		}
-		s.setIntervalos(catalogo);
-	}
-
-	private List<Denuncia> listaD(List<String> stringList) {
-		List<Denuncia> catalogo = new ArrayList<Denuncia>();
-		for (int i = 0; i < stringList.size(); i++) {
-			String string = stringList.get(i).trim();
-			String[] split = string.split(", ");
-			List<String> list = Arrays.asList(split);
-			Denuncia denuncia = new Denuncia();
-			int id = Integer.valueOf(list.get(0));
-			denuncia.setIdDenuncia(id);
-			denuncia.setDescripcion(list.get(1));
-			denuncia.setCorreo(list.get(2));
-			denuncia.setDireccion(list.get(3));
-			catalogo.add(denuncia);
-		}
-		return catalogo;
+		singleton.setIntervalos(catalogo);
 	}
 }

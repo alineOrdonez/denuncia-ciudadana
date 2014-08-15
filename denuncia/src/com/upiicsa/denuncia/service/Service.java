@@ -107,8 +107,8 @@ public class Service {
 			@Override
 			public void onResponse(String result) {
 				try {
-					//Util.configResult();
-					Util.complaintResult();
+					result = Util.configResult();
+					//Util.complaintResult();
 					taskCompleted.onTaskComplete(result);
 				} catch (JSONException e) {
 					e.printStackTrace();
