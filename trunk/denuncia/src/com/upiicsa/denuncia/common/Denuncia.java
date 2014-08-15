@@ -241,4 +241,8 @@ public class Denuncia implements Serializable {
 		this.longitud = longitud;
 	}
 
+	@Override
+	public String toString() {
+		return descripcion;
+	}
 }

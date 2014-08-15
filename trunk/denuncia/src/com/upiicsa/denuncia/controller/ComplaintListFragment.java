@@ -1,63 +1,105 @@
 package com.upiicsa.denuncia.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.support.v4.app.ListFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.Denuncia;
-import com.upiicsa.denuncia.util.CustomList;
+import com.upiicsa.denuncia.common.DenunciaContent;
+import com.upiicsa.denuncia.service.Callback;
+import com.upiicsa.denuncia.util.Constants;
 
-public class ComplaintListFragment extends Fragment {
-	ListView listView;
-	List<Denuncia> denList;
-	/*
-	 * String[] values = new String[] { "Incendio en la casa del vecino.",
-	 * "El basurero de la esquina se quema.", "Fuego en el parque." };
-	 */
-	String[] values;
-	Integer[] imageId;
+public class ComplaintListFragment extends ListFragment {
+
+	private int mActivatedPosition = ListView.INVALID_POSITION;
+	private Callback mCallbacks;
+
+	private static Callback sDummyCallbacks = new Callback() {
+		@Override
+		public void onItemSelected(int id) {
+		}
+	};
+
+	public ComplaintListFragment() {
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
-		Bundle extras = getActivity().getIntent().getExtras();
-		if (extras != null) {
-			if (extras.containsKey("COMPLAINT_LIST")) {
-				try {
-					denList = (ArrayList<Denuncia>) extras
-							.get("COMPLAINT_LIST"); // Syntax Error here
-				} catch (ClassCastException e) {
-					Log.e("B_",
-							"Could not cast extra to expected type, the field is left to its default value",
-							e);
-				}
-			}
+
+		// TODO: replace with a real list adapter.
+		setListAdapter(new ArrayAdapter<Denuncia>(getActivity(),
+				android.R.layout.simple_list_item_activated_1,
+				android.R.id.text1, DenunciaContent.ITEMS));
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		// Restore the previously serialized activated item position.
+		if (savedInstanceState != null
+				&& savedInstanceState
+						.containsKey(Constants.STATE_ACTIVATED_POSITION)) {
+			setActivatedPosition(savedInstanceState
+					.getInt(Constants.STATE_ACTIVATED_POSITION));
 		}
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
 
-		final View view = inflater.inflate(R.layout.fragment_complaint_list,
-				container, false);
-		defineListView(view);
+		// Activities containing this fragment must implement its callbacks.
+		if (!(activity instanceof Callback)) {
+			throw new IllegalStateException(
+					"Activity must implement fragment's callbacks.");
+		}
 
-		return view;
+		mCallbacks = (Callback) activity;
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+
+		// Reset the active callbacks interface to the dummy implementation.
+		mCallbacks = sDummyCallbacks;
+	}
+
+	@Override
+	public void onListItemClick(ListView listView, View view, int position,
+			long id) {
+		super.onListItemClick(listView, view, position, id);
+		mCallbacks.onItemSelected(DenunciaContent.ITEMS.get(position)
+				.getIdDenuncia());
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		if (mActivatedPosition != ListView.INVALID_POSITION) {
+			outState.putInt(Constants.STATE_ACTIVATED_POSITION,
+					mActivatedPosition);
+		}
+	}
+
+	/**
+	 * Turns on activate-on-click mode. When this mode is on, list items will be
+	 * given the 'activated' state when touched.
+	 */
+	public void setActivateOnItemClick(boolean activateOnItemClick) {
+		getListView().setChoiceMode(
+				activateOnItemClick ? ListView.CHOICE_MODE_SINGLE
+						: ListView.CHOICE_MODE_NONE);
 	}
 
 	@Override
@@ -77,44 +119,18 @@ public class ComplaintListFragment extends Fragment {
 		}
 	}
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putSerializable("COMPLAINT_LIST",
-				(ArrayList<Denuncia>) denList);
-	}
-
-	public void defineListView(View view) {
-		int size = denList.size();
-		values = new String[size];
-		imageId = new Integer[size];
-		for (int i = 0; i < values.length; i++) {
-			Denuncia d = denList.get(i);
-			String string = d.getDescripcion();
-			values[i] = string;
-			imageId[i] = R.drawable.flame;
-		}
-
-		CustomList adapter = new CustomList(getActivity(), values, imageId);
-		listView = (ListView) view.findViewById(R.id.complaintList);
-		listView.setAdapter(adapter);
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Intent i = new Intent(getActivity(),
-						ComplaintDetailActivity.class);
-				String descripcion = values[position];
-				i.putExtra("DESCRIPTION", descripcion);
-				startActivity(i);
-			}
-
-		});
-	}
-
 	public void nuevaDenuncia() {
 		Intent i = new Intent(getActivity(), NewComplaintActivity.class);
 		startActivity(i);
+	}
+
+	private void setActivatedPosition(int position) {
+		if (position == ListView.INVALID_POSITION) {
+			getListView().setItemChecked(mActivatedPosition, false);
+		} else {
+			getListView().setItemChecked(position, true);
+		}
+		mActivatedPosition = position;
 	}
 
 }
