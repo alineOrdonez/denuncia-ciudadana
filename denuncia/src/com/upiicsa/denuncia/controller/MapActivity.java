@@ -1,6 +1,10 @@
 package com.upiicsa.denuncia.controller;
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,6 +17,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.upiicsa.denuncia.R;
+import com.upiicsa.denuncia.common.Denuncia;
+import com.upiicsa.denuncia.common.DenunciaContent;
+import com.upiicsa.denuncia.util.Constants;
 
 public class MapActivity extends Activity {
 
@@ -23,16 +30,18 @@ public class MapActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
+		if (savedInstanceState == null) {
+			if (getIntent().getExtras() != null) {
+				String lista = getIntent().getStringExtra(Constants.EXTRA_LIST);
+				new DenunciaContent(lista);
+			}
+		}
 		try {
 			// Loading map
 			initilizeMap();
 
 			// Changing map type
 			googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-			// googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-			// googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-			// googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-			// googleMap.setMapType(GoogleMap.MAP_TYPE_NONE);
 
 			// Showing / hiding your current location
 			googleMap.setMyLocationEnabled(true);
@@ -52,63 +61,53 @@ public class MapActivity extends Activity {
 			// Enable / Disable zooming functionality
 			googleMap.getUiSettings().setZoomGesturesEnabled(true);
 
-			// latitude and longitude
-			double latitude = 19.4003389;
-			double longitude = -99.0916183;
-
 			// lets place some 10 random markers
-			for (int i = 0; i < 10; i++) {
-				// random latitude and logitude
-				double[] randomLocation = createRandLocation(latitude,
-						longitude);
+			int size = DenunciaContent.ITEMS.size();
+			for (int i = 0; i < size; i++) {
+				Denuncia denuncia = DenunciaContent.ITEMS.get(i);
+				double latitude = denuncia.getLatitud();
+				double longitude = denuncia.getLongitud();
 
 				// Adding a marker
 				MarkerOptions marker = new MarkerOptions().position(
-						new LatLng(randomLocation[0], randomLocation[1]))
-						.title("Chulada's House!!" + i);
+						new LatLng(latitude, longitude)).title(
+						denuncia.getDescripcion());
 
-				Log.e("Random", "> " + randomLocation[0] + ", "
-						+ randomLocation[1]);
+				Log.e("Random", "> " + latitude + ", " + longitude);
 
 				// changing marker color
-				if (i == 0)
+
+				switch (denuncia.getIdCategoria()) {
+				case 1:
 					marker.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-				if (i == 1)
+				case 2:
 					marker.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-				if (i == 2)
+				case 3:
 					marker.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-				if (i == 3)
+				case 4:
 					marker.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-				if (i == 4)
+				case 5:
 					marker.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-				if (i == 5)
-					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-				if (i == 6)
-					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-				if (i == 7)
-					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-				if (i == 8)
+					break;
+
+				default:
 					marker.icon(BitmapDescriptorFactory
 							.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
-				if (i == 9)
-					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+					break;
+				}
 
 				googleMap.addMarker(marker);
 
 				// Move the camera to last position with a zoom level
-				if (i == 9) {
+				if (i == size) {
 					CameraPosition cameraPosition = new CameraPosition.Builder()
-							.target(new LatLng(randomLocation[0],
-									randomLocation[1])).zoom(15).build();
+							.target(new LatLng(latitude, longitude)).zoom(15)
+							.build();
 
 					googleMap.animateCamera(CameraUpdateFactory
 							.newCameraPosition(cameraPosition));
@@ -125,6 +124,7 @@ public class MapActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		initilizeMap();
+		moveMapToMyCurrentLocation();
 	}
 
 	/**
@@ -144,13 +144,22 @@ public class MapActivity extends Activity {
 		}
 	}
 
-	/*
-	 * creating random postion around a location for testing purpose only
-	 */
-	private double[] createRandLocation(double latitude, double longitude) {
+	private void moveMapToMyCurrentLocation() {
 
-		return new double[] { latitude + ((Math.random() - 0.5) / 500),
-				longitude + ((Math.random() - 0.5) / 500),
-				150 + ((Math.random() - 0.5) * 10) };
+		LocationManager manager = (LocationManager) this
+				.getSystemService(Context.LOCATION_SERVICE);
+
+		Criteria criteria = new Criteria();
+
+		Location location = manager.getLastKnownLocation(manager
+				.getBestProvider(criteria, false));
+
+		CameraPosition cameraPosition = new CameraPosition.Builder()
+				.target(new LatLng(location.getLatitude(), location
+						.getLongitude())).zoom(15).build();
+
+		googleMap.animateCamera(CameraUpdateFactory
+				.newCameraPosition(cameraPosition));
+
 	}
 }
