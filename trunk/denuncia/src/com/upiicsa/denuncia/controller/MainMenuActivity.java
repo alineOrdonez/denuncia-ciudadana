@@ -274,7 +274,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	}
 
 	public void loadConfiguration() {
-		Toast.makeText(getBaseContext(), "Cargando configuración.",
+		Toast.makeText(getBaseContext(), "Cargando configuraciÃ³n.",
 				Toast.LENGTH_LONG).show();
 		try {
 			operacion = 1;
@@ -291,8 +291,8 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		Location location = lm.getLastKnownLocation(lm.getBestProvider(
 				criteria, false));
 		operacion = 2;
-		double longitude = 19.4282476;// location.getLongitude();
-		double latitude = -99.1920397;// location.getLatitude();
+		double longitude = 19.3952204;// location.getLongitude();
+		double latitude = -99.0907235;// location.getLatitude();
 		int idCategoria = catDen.getIdCatDenuncia();
 		String descripcion = catDen.getDescripcion();
 		try {
@@ -310,8 +310,8 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		Location location = lm.getLastKnownLocation(lm.getBestProvider(
 				criteria, false));
 		operacion = 5;
-		double longitude = 19.4282476;// location.getLongitude();
-		double latitude = -99.1920397;// location.getLatitude();
+		double longitude = 19.3952204;// location.getLongitude();
+		double latitude = -99.0907235;// location.getLatitude();
 		int idCategoria = catDen.getIdCatDenuncia();
 		int idIntervalo = catIntT.getIdCatIntTiempo();
 		String descripcion = catDen.getDescripcion();
@@ -325,10 +325,10 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	}
 
 	private void showGPSAlert() {
-		String title = "Configuración del GPS";
-		String message = "Es necesaria su localización para"
+		String title = "ConfiguraciÃ³n del GPS";
+		String message = "Es necesaria su localizaciÃ³n para"
 				+ " obtener la lista de denuncias cercanas."
-				+ "¿Desea activar el GPS?";
+				+ "Â¿Desea activar el GPS?";
 		String btnTitle = "Activar GPS";
 		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,
 				new DialogInterface.OnClickListener() {

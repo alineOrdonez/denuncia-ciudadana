@@ -7,6 +7,7 @@ public class Singleton {
 
 	private static List<CatDenuncia> denuncias;
 	private static List<CatIntTiempo> intervalos;
+	private static String image;
 
 	private static Singleton instance = null;
 
@@ -19,6 +20,7 @@ public class Singleton {
 			instance = new Singleton();
 			denuncias = new ArrayList<CatDenuncia>();
 			intervalos = new ArrayList<CatIntTiempo>();
+			image = new String();
 		}
 		return instance;
 	}
@@ -51,6 +53,21 @@ public class Singleton {
 	 */
 	public void setIntervalos(List<CatIntTiempo> intervalos) {
 		Singleton.intervalos = intervalos;
+	}
+
+	/**
+	 * @return the image
+	 */
+	public String getImage() {
+		return image;
+	}
+
+	/**
+	 * @param image
+	 *            the image to set
+	 */
+	public void setImage(String image) {
+		Singleton.image = image;
 	}
 
 }

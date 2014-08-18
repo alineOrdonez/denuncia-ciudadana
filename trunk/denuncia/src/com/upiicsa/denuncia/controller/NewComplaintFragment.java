@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -21,7 +23,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -44,24 +45,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Service;
+import com.upiicsa.denuncia.service.TaskCompleted;
 import com.upiicsa.denuncia.util.Constants;
-import com.upiicsa.denuncia.util.Util;
 
-public class NewComplaintFragment extends Fragment {
+public class NewComplaintFragment extends Fragment implements TaskCompleted {
 	private static final String LOG_TAG = "NewComplaintFragment";
 	private Spinner spinner;
 	private EditText address;
 	private EditText email;
 	private Service service;
-	private String image;
 	private String direccion;
+	private String lat;
+	private String lng;
 	private CatDenuncia catDen;
 	private Singleton singleton;
 	private List<String> list;
@@ -80,7 +81,7 @@ public class NewComplaintFragment extends Fragment {
 			Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_new_complaint,
 				container, false);
-		email = (EditText) view.findViewById(R.id.emailEditText);
+		email = (EditText) view.findViewById(R.id.newComplaintEmailEditText);
 		name = Environment.getExternalStorageDirectory() + "/DenunciaImg.jpg";
 		addItemsOnSpinner(view);
 		addListenerOnFocus(view);
@@ -214,7 +215,7 @@ public class NewComplaintFragment extends Fragment {
 					public void run() {
 						AlertDialog.Builder builder = new AlertDialog.Builder(
 								getActivity());
-						builder.setTitle("Operación exitosa");
+						builder.setTitle("OperaciÃ³n exitosa");
 						builder.setMessage("La denuncia se ha registrado exitosamente.");
 						builder.setPositiveButton("Continuar",
 								new OnClickListener() {
@@ -243,7 +244,9 @@ public class NewComplaintFragment extends Fragment {
 
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
-				showMap();
+				if (hasFocus) {
+					showMap();
+				}
 			}
 		});
 	}
@@ -253,38 +256,16 @@ public class NewComplaintFragment extends Fragment {
 		startActivityForResult(i, Constants.RETURN_FROM_MAP);
 	}
 
-	private void checkConnectivity() {
-		LocationManager locationManager = (LocationManager) getActivity()
-				.getSystemService(Context.LOCATION_SERVICE);
-		ConnectivityManager connectivityManager = (ConnectivityManager) getActivity()
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
-		boolean isGPSEnabled = locationManager
-				.isProviderEnabled(LocationManager.GPS_PROVIDER);
-		boolean isWiFiEnabled = connectivityManager.getNetworkInfo(
-				ConnectivityManager.TYPE_WIFI).isAvailable();
-
-		if (!isGPSEnabled) {
-			showGPSAlert();
-		} else {
-			if (isWiFiEnabled) {
-				Intent i = new Intent(getActivity(),
-						SelectLocationActivity.class);
-				startActivityForResult(i, Constants.RETURN_FROM_MAP);
-			} else {
-				showWiFiAlert();
-			}
-		}
-	}
-
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		Bitmap bitMap = null;
+		byte[] bytes;
 		switch (requestCode) {
 		case 1:
 			bitMap = BitmapFactory.decodeFile(name);
-			imgString = Base64.encodeToString(getBytesFromBitmap(bitMap),
-					Base64.NO_WRAP);
+			bytes = getBytesFromBitmap(bitMap);
+			imgString = Base64.encodeToString(bytes, Base64.NO_WRAP);
 			new MediaScannerConnectionClient() {
 				private MediaScannerConnection msc = null;
 				{
@@ -310,8 +291,9 @@ public class NewComplaintFragment extends Fragment {
 						selectedImage);
 				BufferedInputStream bis = new BufferedInputStream(is);
 				bitMap = BitmapFactory.decodeStream(bis);
-				imgString = Base64.encodeToString(getBytesFromBitmap(bitMap),
-						Base64.NO_WRAP);
+				bytes = getBytesFromBitmap(bitMap);
+				imgString = Base64.encodeToString(bytes, Base64.NO_WRAP);
+				singleton.setImage(imgString);
 				Log.d(LOG_TAG, "***[" + imgString + "]***");
 
 			} catch (FileNotFoundException e) {
@@ -319,12 +301,11 @@ public class NewComplaintFragment extends Fragment {
 			break;
 		case 3:
 			// fetch the message String
-			direccion = data.getStringExtra("ADDRESS");
+			String[] array = data.getStringArrayExtra("ADDRESS");
+			direccion = array[0];
 			address.setText(direccion);
-			break;
-		case 4:
-			image = data.getStringExtra("IMAGEN");
-			System.out.println("***[" + image + "]***");
+			lat = array[1];
+			lng = array[2];
 			break;
 
 		default:
@@ -335,9 +316,9 @@ public class NewComplaintFragment extends Fragment {
 	private void showGPSAlert() {
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
 
-		alertDialog.setTitle("Configuración del GPS");
-		alertDialog.setMessage("Para obtener su localización es necesario"
-				+ "tener habilitado el GPS.\n¿Desea activarlo?");
+		alertDialog.setTitle("ConfiguraciÃ³n del GPS");
+		alertDialog.setMessage("Para obtener su localizaciÃ³n es necesario"
+				+ "tener habilitado el GPS.\nÂ¿Desea activarlo?");
 		alertDialog.setPositiveButton("Activar GPS",
 				new DialogInterface.OnClickListener() {
 
@@ -365,9 +346,9 @@ public class NewComplaintFragment extends Fragment {
 	private void showWiFiAlert() {
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
 
-		alertDialog.setTitle("Configuración del Wi-Fi");
-		alertDialog.setMessage("La opción de localización funciona"
-				+ "mejor cuando el Wi-Fi está habilitado.\n¿Desea activarlo?");
+		alertDialog.setTitle("ConfiguraciÃ³n del Wi-Fi");
+		alertDialog.setMessage("La opciÃ³n de localizaciÃ³n funciona"
+				+ "mejor cuando el Wi-Fi estÃ¡ habilitado.\nÂ¿Desea activarlo?");
 		alertDialog.setPositiveButton("Activar Wi-Fi",
 				new DialogInterface.OnClickListener() {
 
@@ -392,33 +373,28 @@ public class NewComplaintFragment extends Fragment {
 	}
 
 	private void sendComplaintRequest() {
-		if (Util.isConnected(getActivity())) {
-			LocationManager lm = (LocationManager) getActivity()
-					.getSystemService(Context.LOCATION_SERVICE);
-			Location location = lm
-					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			boolean isGPSEnabled = lm
-					.isProviderEnabled(LocationManager.GPS_PROVIDER);
-			if (isGPSEnabled) {
-				double longitude = location.getLongitude();
-				double latitude = location.getLatitude();
-				int idCategoria = catDen.getIdCatDenuncia();
-				String descripcion = catDen.getDescripcion();
-				String correo = email.getText().toString();
-				try {
-					Denuncia denuncia = new Denuncia(idCategoria, descripcion,
-							correo, imgString, direccion, latitude, longitude);
-					service.newComplaintService(denuncia);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				showGPSAlert();
+		LocationManager lm = (LocationManager) getActivity().getSystemService(
+				Context.LOCATION_SERVICE);
+		Location location = lm
+				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		boolean isGPSEnabled = lm
+				.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		if (isGPSEnabled) {
+			double longitude = Double.valueOf(lng);
+			double latitude = Double.valueOf(lat);
+			int idCategoria = catDen.getIdCatDenuncia();
+			String descripcion = catDen.getDescripcion();
+			String correo = email.getText().toString();
+			try {
+				Denuncia denuncia = new Denuncia(idCategoria, descripcion,
+						correo, imgString, direccion, latitude, longitude);
+				service = new Service(this);
+				service.newComplaintService(denuncia);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-
 		} else {
-			Toast.makeText(getActivity().getBaseContext(),
-					Constants.CONNECTION_ERROR, Toast.LENGTH_LONG).show();
+			showGPSAlert();
 		}
 	}
 
@@ -426,5 +402,11 @@ public class NewComplaintFragment extends Fragment {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		bitmap.compress(CompressFormat.JPEG, 70, stream);
 		return stream.toByteArray();
+	}
+
+	@Override
+	public void onTaskComplete(String result) throws JSONException {
+		System.out.println(result);
+
 	}
 }

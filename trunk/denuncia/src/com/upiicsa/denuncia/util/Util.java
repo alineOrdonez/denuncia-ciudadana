@@ -127,6 +127,7 @@ public class Util {
 			// Para consulta
 			obj.add(latitude[i - 1]);
 			obj.add(longitude[i - 1]);
+			//obj.add()
 			list.add(obj);
 		}
 		return list;
@@ -142,6 +143,14 @@ public class Util {
 	}
 
 	public static String complaintResult() throws JSONException {
+		JSONObject json = new JSONObject();
+		json.put("is", "01");
+		json.put("ds", "Exitoso");
+		json.put("ld", denuncias());
+		return json.toString();
+	}
+
+	public static String sendComplaintAgain() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("is", "01");
 		json.put("ds", "Exitoso");

@@ -154,9 +154,11 @@ public class MapActivity extends Activity {
 		Location location = manager.getLastKnownLocation(manager
 				.getBestProvider(criteria, false));
 
+		double longitude = 19.3952204;// location.getLongitude();
+		double latitude = -99.0907235;// location.getLatitude();
+
 		CameraPosition cameraPosition = new CameraPosition.Builder()
-				.target(new LatLng(location.getLatitude(), location
-						.getLongitude())).zoom(15).build();
+				.target(new LatLng(latitude, longitude)).zoom(15).build();
 
 		googleMap.animateCamera(CameraUpdateFactory
 				.newCameraPosition(cameraPosition));
