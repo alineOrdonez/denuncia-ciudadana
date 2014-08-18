@@ -16,16 +16,14 @@ public class DenunciaContent {
 	/**
 	 * An array of sample (dummy) items.
 	 */
-	public static List<Denuncia> ITEMS;
+	public static List<Denuncia> ITEMS = new ArrayList<Denuncia>();
 
 	/**
 	 * A map of sample (dummy) items, by ID.
 	 */
-	public static Map<Integer, Denuncia> ITEM_MAP;
+	public static Map<Integer, Denuncia> ITEM_MAP = new HashMap<Integer, Denuncia>();
 
 	private void listaDeDenuncias(String string) {
-		ITEMS = new ArrayList<Denuncia>();
-		ITEM_MAP = new HashMap<Integer, Denuncia>();
 		List<String> stringList = Util.stringToList(string);
 		for (int i = 0; i < stringList.size(); i++) {
 			List<String> list = Util.detailList(stringList.get(i));

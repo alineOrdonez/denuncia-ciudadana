@@ -9,7 +9,11 @@ public final class Constants {
 	public static final String CONNECTION_ERROR = "El dispositivo no tiene acceso a Internet.";
 	public static final String GPS_ERROR = "El GPS no está activado.";
 	public static final String IO_ERROR = "";
+	public static final int TYPE_WIFI = 1;
+	public static final int TYPE_MOBILE = 2;
+	public static final int TYPE_NO_CONNECCTION = 0;
 	public static int TAKE_PICTURE = 1;
 	public static int SELECT_PICTURE = 2;
 	public static int RETURN_FROM_MAP = 3;
+	public static int RETURN_FROM_CAMERA = 4;
 }

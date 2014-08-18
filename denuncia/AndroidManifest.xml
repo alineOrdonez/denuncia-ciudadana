@@ -72,14 +72,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.upiicsa.denuncia.controller.ComplaintListActivity" />
         </activity>
-        <activity
-            android:name="com.upiicsa.denuncia.controller.SelectImage"
-            android:label="@string/title_activity_select_location" >
-        </activity>
-        <activity
-            android:name="com.upiicsa.denuncia.controller.SelectLocationActivity"
-            android:label="@string/title_activity_select_location" >
-        </activity>
         <!-- Goolge Maps API Key -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

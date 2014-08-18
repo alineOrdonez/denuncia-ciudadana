@@ -96,7 +96,7 @@ public class ComplaintDetailFragment extends Fragment {
 								final ProgressDialog ringProgressDialog = ProgressDialog
 										.show(getActivity(),
 												"Por favor espere ...",
-												"La denuncia se estï¿½ actualizando ...",
+												"La denuncia se está actualizando ...",
 												true);
 								ringProgressDialog.setCancelable(false);
 								ringProgressDialog.setIndeterminate(true);
@@ -104,11 +104,6 @@ public class ComplaintDetailFragment extends Fragment {
 									@Override
 									public void run() {
 										try {
-											// Here you should write
-											// your time consuming
-											// task...
-											// Let the progress ring for
-											// 10 seconds...
 											Thread.sleep(10000);
 										} catch (Exception e) {
 
@@ -120,7 +115,7 @@ public class ComplaintDetailFragment extends Fragment {
 													public void run() {
 														AlertDialog.Builder builder = new AlertDialog.Builder(
 																getActivity());
-														builder.setTitle("Operaciï¿½n exitosa");
+														builder.setTitle("Operación exitosa");
 														builder.setMessage("La denuncia se ha realizado exitosamente.");
 														builder.setPositiveButton(
 																"Continuar",

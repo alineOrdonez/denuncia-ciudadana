@@ -87,6 +87,7 @@ public class Service {
 	}
 
 	private void setRequest(final String json) throws JSONException {
+		System.out.println("REQUEST:" + json);
 		httpHandler = new HttpHandler() {
 			@Override
 			public HttpUriRequest getHttpRequestMethod() {
@@ -108,7 +109,7 @@ public class Service {
 			public void onResponse(String result) {
 				try {
 					result = Util.configResult();
-					//Util.complaintResult();
+					// Util.complaintResult();
 					taskCompleted.onTaskComplete(result);
 				} catch (JSONException e) {
 					e.printStackTrace();
