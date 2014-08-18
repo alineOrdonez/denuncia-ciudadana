@@ -37,6 +37,8 @@ public class SelectLocationActivity extends Activity {
 	private GoogleMap googleMap;
 	private static final String TAG = "SelectLocationActivity";
 	private String selectedAddress;
+	private double latitude = 0;
+	private double longitude = 0;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -53,8 +55,10 @@ public class SelectLocationActivity extends Activity {
 		if (id == R.id.action_aceptar) {
 			// TODO:Enviar direccion
 			Intent i = new Intent();
-			// put the message to return as result in Intent
-			i.putExtra("ADDRESS", selectedAddress);
+			String lat = String.valueOf(latitude);
+			String lng = String.valueOf(longitude);
+			String[] address = new String[] { selectedAddress, lat, lng };
+			i.putExtra("ADDRESS", address);
 			// Set The Result in Intent
 			setResult(2, i);
 			// finish The activity
@@ -133,8 +137,8 @@ public class SelectLocationActivity extends Activity {
 					// Getting the position from the marker
 					LatLng latLng = marker.getPosition();
 
-					double latitude = latLng.latitude;
-					double longitude = latLng.longitude;
+					latitude = latLng.latitude;
+					longitude = latLng.longitude;
 					try {
 						Geocoder myLocation = new Geocoder(
 								getApplicationContext(), Locale.getDefault());
@@ -209,9 +213,11 @@ public class SelectLocationActivity extends Activity {
 		Location location = manager.getLastKnownLocation(manager
 				.getBestProvider(criteria, false));
 
+		double longitude = 19.3952204;// location.getLongitude();
+		double latitude = -99.0907235;// location.getLatitude();
+
 		CameraPosition cameraPosition = new CameraPosition.Builder()
-				.target(new LatLng(location.getLatitude(), location
-						.getLongitude())).zoom(15).build();
+				.target(new LatLng(latitude, longitude)).zoom(15).build();
 
 		googleMap.animateCamera(CameraUpdateFactory
 				.newCameraPosition(cameraPosition));

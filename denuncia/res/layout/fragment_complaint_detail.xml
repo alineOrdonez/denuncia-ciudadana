@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background" >
@@ -9,34 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-
-        <!--
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Detalle de la denuncia."
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="26dp"
-            android:layout_marginTop="29dp"
-            android:text="Correo electrónico:"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/emailTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="alareog@mail.com"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-        -->
 
         <TextView
             android:id="@+id/textView3"
@@ -48,11 +21,13 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/addressTextView"
+            android:id="@+id/complaint_address"
+            style="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Gabriel Mancera #1337 Col. del Valle"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:hint="@string/direccion"
+            android:padding="16dp"
+            tools:context=".ComplaintDetailFragment" />
 
         <TextView
             android:id="@+id/category"
@@ -64,11 +39,13 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/complaint_category"
+            style="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Incendio"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:hint="@string/categoria"
+            android:padding="16dp"
+            tools:context=".ComplaintDetailFragment" />
 
         <TextView
             android:id="@+id/textView5"
@@ -80,14 +57,16 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/complaint_description"
+            style="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="La casa de mi vecino se incendia."
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:hint="@string/descripcion"
+            android:padding="16dp"
+            tools:context=".ComplaintDetailFragment" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/imagen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
@@ -96,7 +75,7 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/imageView1"
+            android:id="@+id/complaint_image_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>

@@ -27,7 +27,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <EditText
-            android:id="@+id/editText1"
+            android:id="@+id/newComplaintEmailEditText"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:ems="10"
