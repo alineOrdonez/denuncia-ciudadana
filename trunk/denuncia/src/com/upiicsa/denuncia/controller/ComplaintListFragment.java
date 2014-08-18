@@ -1,7 +1,6 @@
 package com.upiicsa.denuncia.controller;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.Menu;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.DenunciaContent;
 import com.upiicsa.denuncia.service.Callback;
@@ -109,19 +107,7 @@ public class ComplaintListFragment extends ListFragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-
-		if (id == R.id.nuevaDenuncia) {
-			nuevaDenuncia();
-			return true;
-		} else {
-			return super.onOptionsItemSelected(item);
-		}
-	}
-
-	public void nuevaDenuncia() {
-		Intent i = new Intent(getActivity(), NewComplaintActivity.class);
-		startActivity(i);
+		return super.onOptionsItemSelected(item);
 	}
 
 	private void setActivatedPosition(int position) {

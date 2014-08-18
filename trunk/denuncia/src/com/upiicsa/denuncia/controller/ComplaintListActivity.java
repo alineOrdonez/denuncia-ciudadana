@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.DenunciaContent;
@@ -45,6 +46,18 @@ public class ComplaintListActivity extends ActionBarActivity implements
 	}
 
 	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+
+		if (id == R.id.nuevaDenuncia) {
+			nuevaDenuncia();
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
 	public void onItemSelected(int id) {
 		String idStr = String.valueOf(id);
 		if (mTwoPane) {
@@ -61,5 +74,10 @@ public class ComplaintListActivity extends ActionBarActivity implements
 			detailIntent.putExtra(Constants.ARG_ITEM_ID, idStr);
 			startActivity(detailIntent);
 		}
+	}
+
+	public void nuevaDenuncia() {
+		Intent i = new Intent(this, NewComplaintActivity.class);
+		startActivity(i);
 	}
 }
