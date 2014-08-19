@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -42,7 +41,9 @@ import com.upiicsa.denuncia.service.Service;
 import com.upiicsa.denuncia.service.TaskCompleted;
 import com.upiicsa.denuncia.util.Constants;
 import com.upiicsa.denuncia.util.CustomAlertDialog;
+import com.upiicsa.denuncia.util.GeneralHttpTask;
 import com.upiicsa.denuncia.util.NetworkUtil;
+import com.upiicsa.denuncia.util.OnResponseListener;
 import com.upiicsa.denuncia.util.Util;
 
 public class MainMenuActivity extends Activity implements TaskCompleted,
@@ -202,24 +203,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									final ProgressDialog ringProgressDialog = ProgressDialog
-											.show(context,
-													"Por favor espere ...",
-													"Buscando registros ...",
-													true);
-									ringProgressDialog.setCancelable(false);
-									ringProgressDialog.setIndeterminate(true);
-									new Thread(new Runnable() {
-										@Override
-										public void run() {
-											try {
-												findComplaints();
-											} catch (Exception e) {
-
-											}
-											ringProgressDialog.dismiss();
-										}
-									}).start();
+									findComplaints();
 								}
 							})
 					.setNegativeButton("Cancelar",
@@ -257,24 +241,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									final ProgressDialog ringProgressDialog = ProgressDialog
-											.show(context,
-													"Por favor espere ...",
-													"Buscando incidencias cercanas ...",
-													true);
-									ringProgressDialog.setCancelable(false);
-									ringProgressDialog.setIndeterminate(true);
-									new Thread(new Runnable() {
-										@Override
-										public void run() {
-											try {
-												consultAccordingToCategoryAndTime();
-											} catch (Exception e) {
-
-											}
-											ringProgressDialog.dismiss();
-										}
-									}).start();
+									consultAccordingToCategoryAndTime();
 								}
 							})
 					.setNegativeButton("Cancelar",
@@ -316,7 +283,11 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 		try {
 			Denuncia denuncia = new Denuncia(idCategoria, descripcion,
 					latitude, longitude);
-			service.findComplaintsService(denuncia);
+			String json = service.findComplaintsService(denuncia);
+			GeneralHttpTask recoveryTask = new GeneralHttpTask(
+					MainMenuActivity.this, "Buscarndo registros...",
+					onResponseListener);
+			recoveryTask.execute(json);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -334,7 +305,11 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 		try {
 			Denuncia denuncia = new Denuncia(idCategoria, idIntervalo,
 					descripcion, latitude, longitude);
-			service.consultComplaintService(denuncia);
+			String json = service.findComplaintsService(denuncia);
+			GeneralHttpTask recoveryTask = new GeneralHttpTask(
+					MainMenuActivity.this, "Buscarndo registros...",
+					onResponseListener);
+			recoveryTask.execute(json);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -448,19 +423,49 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {
 		Log.d(LOG_TAG, "onConnectionFailed");
-
 	}
 
 	@Override
 	public void onConnected(Bundle arg0) {
 		Log.d(LOG_TAG, "onConnected");
-
 	}
 
 	@Override
 	public void onDisconnected() {
 		Log.d(LOG_TAG, "onDisconnected");
-
 	}
+
+	protected OnResponseListener onResponseListener = new OnResponseListener() {
+
+		@Override
+		public void onSuccess() {
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					MainMenuActivity.this);
+			builder.setPositiveButton("Okay",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
+			builder.setMessage("Success");
+			builder.show();
+
+		}
+
+		@Override
+		public void onFailure(String message) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					MainMenuActivity.this);
+			builder.setPositiveButton("Okay",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
+			builder.setMessage("Failure. Message: " + message);
+			builder.show();
+
+		}
+	};
 
 }
