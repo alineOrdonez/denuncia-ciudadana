@@ -26,7 +26,7 @@ public class Service {
 
 	public void configService() throws JSONException {
 		Map<String, Object> configMap = new HashMap<String, Object>();
-		configMap.put("i", "01");
+		configMap.put("i", "1");
 		JSONObject jsonObject = Util.convertMapToJson(configMap);
 		String json = jsonObject.toString();
 		setRequest(json);
@@ -59,7 +59,7 @@ public class Service {
 		object.put("lo", lng);
 		object.put("im", nueva.getImagen());
 		String json = object.toString();
-		setRequest(json);
+		setRequestTest(json);
 	}
 
 	public void selectComplaintService(Denuncia denuncia) throws JSONException {
@@ -89,7 +89,6 @@ public class Service {
 	}
 
 	private void setRequest(final String json) throws JSONException {
-		// System.out.println("REQUEST:" + json);
 		Log.d(LOG_TAG, "REQUEST:" + json);
 		httpHandler = new HttpHandler() {
 			@Override
@@ -112,6 +111,40 @@ public class Service {
 			public void onResponse(String result) {
 				try {
 					result = Util.configResult();
+					// Util.complaintResult();
+					taskCompleted.onTaskComplete(result);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		httpHandler.execute();
+	}
+
+	private void setRequestTest(final String json) throws JSONException {
+		// System.out.println("REQUEST:" + json);
+		Log.d(LOG_TAG, "REQUEST-IMAGE:" + json);
+		httpHandler = new HttpHandler() {
+			@Override
+			public HttpUriRequest getHttpRequestMethod() {
+				// 1. make POST request to the given URL
+				HttpPost httpPost = new HttpPost(
+						"http://hmkcode.com/examples/index.php");
+				try {
+					// 2. set json to StringEntity
+					StringEntity stringEntity = new StringEntity(json);
+					// 3. set httpPost Entity
+					httpPost.setEntity(stringEntity);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return httpPost;
+			}
+
+			@Override
+			public void onResponse(String result) {
+				try {
+					result = json;
 					// Util.complaintResult();
 					taskCompleted.onTaskComplete(result);
 				} catch (JSONException e) {

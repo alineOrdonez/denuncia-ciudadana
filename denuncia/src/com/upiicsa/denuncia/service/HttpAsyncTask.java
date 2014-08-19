@@ -24,6 +24,12 @@ public class HttpAsyncTask extends AsyncTask<String, Void, String> {
 	public HttpAsyncTask(HttpHandler httpHandler) {
 		this.httpHandler = httpHandler;
 	}
+	
+	@Override
+	protected void onPreExecute() {
+		// TODO Auto-generated method stub
+		super.onPreExecute();
+	}
 
 	@Override
 	protected String doInBackground(String... params) {

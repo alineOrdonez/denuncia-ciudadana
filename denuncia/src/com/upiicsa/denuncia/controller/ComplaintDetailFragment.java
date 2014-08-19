@@ -11,6 +11,9 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -25,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -86,8 +90,9 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 							.setText(cat.getDescripcion());
 				}
 			}
-			if (singleton.getImage() != null) {
+			if (!singleton.getImage().isEmpty()) {
 				setImage(singleton.getImage(), rootView);
+				scaleImage(rootView);
 			}
 		}
 
@@ -132,7 +137,8 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 	public void addListenerOnButton() {
 		// get prompts.xml view
 		LayoutInflater li = LayoutInflater.from(getActivity());
-		View promptsView = li.inflate(R.layout.prompts, null);
+		View promptsView = li.inflate(R.layout.prompts, new LinearLayout(
+				getActivity()), false);
 
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 				getActivity());
@@ -153,7 +159,7 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 								final ProgressDialog ringProgressDialog = ProgressDialog
 										.show(getActivity(),
 												"Por favor espere ...",
-												"La denuncia se está actualizando ...",
+												"La denuncia se esta actualizando ...",
 												true);
 								ringProgressDialog.setCancelable(false);
 								ringProgressDialog.setIndeterminate(true);
@@ -205,9 +211,9 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 	}
 
 	private void showGPSAlert() {
-		String title = "Configuración del GPS";
-		String message = "La aplicación requere su localicazión."
-				+ "¿Desea activar el GPS?";
+		String title = "Configuracion del GPS";
+		String message = "La aplicacion requiere tener acceso a su ubicacion."
+				+ "Â¿Desea activar el GPS?";
 		String btnTitle = "Activar GPS";
 		CustomAlertDialog.decisionAlert(getActivity(), title, message,
 				btnTitle, new DialogInterface.OnClickListener() {
@@ -236,7 +242,7 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 		String identificador = json.getString("is");
 		if (identificador.equals("01")) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle("Operación exitosa");
+			builder.setTitle("Operacion exitosa");
 			builder.setMessage("La denuncia se ha realizado exitosamente.");
 			builder.setPositiveButton("Continuar", new OnClickListener() {
 
@@ -245,7 +251,6 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 					dialog.cancel();
 					Intent i = new Intent(getActivity(), MainMenuActivity.class);
 					startActivity(i);
-
 				}
 			});
 			builder.create();
@@ -257,19 +262,77 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {
 		Log.d(LOG_TAG, "onConnectionFailed");
-
 	}
 
 	@Override
 	public void onConnected(Bundle arg0) {
 		Log.d(LOG_TAG, "onConnected");
-
 	}
 
 	@Override
 	public void onDisconnected() {
 		Log.d(LOG_TAG, "onDisconnected");
+	}
 
+	private void scaleImage(View view) {
+		// Get the ImageView and its bitmap
+		ImageView imageView = (ImageView) view
+				.findViewById(R.id.complaint_image_view);
+		Drawable drawing = imageView.getDrawable();
+		if (drawing == null) {
+			return; // Checking for null & return, as suggested in comments
+		}
+		Bitmap bitmap = ((BitmapDrawable) drawing).getBitmap();
+
+		// Get current dimensions AND the desired bounding box
+		int width = bitmap.getWidth();
+		int height = bitmap.getHeight();
+		int bounding = dpToPx(250);
+		Log.i("Test", "original width = " + Integer.toString(width));
+		Log.i("Test", "original height = " + Integer.toString(height));
+		Log.i("Test", "bounding = " + Integer.toString(bounding));
+
+		// Determine how much to scale: the dimension requiring less scaling is
+		// closer to the its side. This way the image always stays inside your
+		// bounding box AND either x/y axis touches it.
+		float xScale = ((float) bounding) / width;
+		float yScale = ((float) bounding) / height;
+		float scale = (xScale <= yScale) ? xScale : yScale;
+		Log.i("Test", "xScale = " + Float.toString(xScale));
+		Log.i("Test", "yScale = " + Float.toString(yScale));
+		Log.i("Test", "scale = " + Float.toString(scale));
+
+		// Create a matrix for the scaling and add the scaling data
+		Matrix matrix = new Matrix();
+		matrix.postScale(scale, scale);
+
+		// Create a new bitmap and convert it to a format understood by the
+		// ImageView
+		Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height,
+				matrix, true);
+		width = scaledBitmap.getWidth(); // re-use
+		height = scaledBitmap.getHeight(); // re-use
+		BitmapDrawable result = new BitmapDrawable(
+				getActivity().getResources(), scaledBitmap);
+		Log.i("Test", "scaled width = " + Integer.toString(width));
+		Log.i("Test", "scaled height = " + Integer.toString(height));
+
+		// Apply the scaled bitmap
+		imageView.setImageDrawable(result);
+
+		// Now change ImageView's dimensions to match the scaled image
+		LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) imageView
+				.getLayoutParams();
+		params.width = width;
+		params.height = height;
+		imageView.setLayoutParams(params);
+
+		Log.i("Test", "done");
+	}
+
+	private int dpToPx(int dp) {
+		float density = getActivity().getResources().getDisplayMetrics().density;
+		return Math.round((float) dp * density);
 	}
 
 }

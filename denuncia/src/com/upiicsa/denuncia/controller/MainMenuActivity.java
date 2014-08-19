@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -49,7 +50,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 	private static final String LOG_TAG = "MainMenuActivity";
 	private IntentFilter mNetworkStateChangedFilter;
 	private BroadcastReceiver mNetworkStateIntentReceiver;
-	private LocationManager mLocationState;
 	private LocationClient mLocationClient;
 	private Spinner category, consultRange;
 	private CatDenuncia catDen;
@@ -71,8 +71,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 		mNetworkStateChangedFilter
 				.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 		networkState();
-		mLocationState = (LocationManager) context
-				.getSystemService(Context.LOCATION_SERVICE);
 		mLocationClient = new LocationClient(this, this, this);
 	}
 
@@ -193,7 +191,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 		if (isGPSEnabled) {
 			LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View promptsView = li.inflate(R.layout.select_complaint_prompt,
-					null);
+					new LinearLayout(context), false);
 
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 					context);
@@ -242,12 +240,11 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 
 	public void consultComplaint(View view) {
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		isGPSEnabled = mLocationState
-				.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		isGPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		if (isGPSEnabled) {
 			LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View promptsView = li.inflate(R.layout.consult_complaint_prompt,
-					null);
+					new LinearLayout(context), false);
 
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 					context);
@@ -344,9 +341,9 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 	}
 
 	private void showGPSAlert() {
-		String title = "Configuración del GPS";
-		String message = "La aplicación requere su localicazión."
-				+ "¿Desea activar el GPS?";
+		String title = "Configuracion del GPS";
+		String message = "La aplicacion requere su localicazion."
+				+ "Â¿Desea activar el GPS?";
 		String btnTitle = "Activar GPS";
 		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,
 				new DialogInterface.OnClickListener() {
