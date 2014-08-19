@@ -1,27 +1,25 @@
 package com.upiicsa.denuncia.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
-public class GeneralHttpTask extends AsyncTask<String, Integer, Boolean> {
+public class GeneralHttpTask extends AsyncTask<String, Integer, String> {
 	private android.app.ProgressDialog progressDialog;
 	private OnResponseListener responder;
 	private int responseCode;
 
-	/**
-	 * execute params:
-	 * <ul>
-	 * <li>Param1: Http Post request url</li>
-	 * <li>Param2: Desired response code. Default: 200</li>
-	 * <li>Param3: Attempts count. Default: 1</li>
-	 * </ul>
-	 */
 	public GeneralHttpTask(android.app.ProgressDialog progressDialog,
 			OnResponseListener responder) {
 		this.progressDialog = progressDialog;
@@ -40,10 +38,11 @@ public class GeneralHttpTask extends AsyncTask<String, Integer, Boolean> {
 	}
 
 	@Override
-	protected Boolean doInBackground(String... params) {
+	protected String doInBackground(String... params) {
 		int desiredCode = 200;
 		int attemptsCount;
 		responseCode = 0;
+		String result = null;
 		try {
 			if (params.length >= 2)
 				desiredCode = Integer.parseInt(params[1]);
@@ -53,33 +52,44 @@ public class GeneralHttpTask extends AsyncTask<String, Integer, Boolean> {
 				attemptsCount = 1;
 
 			HttpClient client = new DefaultHttpClient();
-			HttpPost httppost = new HttpPost(params[0]);
+			HttpPost httpPost = new HttpPost(
+					"http://hmkcode.com/examples/index.php");
+			StringEntity stringEntity = new StringEntity(params[0]);
+			httpPost.setEntity(stringEntity);
 
 			int executeCount = 0;
-			HttpResponse response;
+			HttpResponse httpResponse;
 			do {
 				publishProgress(executeCount + 1, attemptsCount);
 				// Execute HTTP Post Request
 				executeCount++;
-				response = client.execute(httppost);
-				responseCode = response.getStatusLine().getStatusCode();
+				httpResponse = client.execute(httpPost);
+				responseCode = httpResponse.getStatusLine().getStatusCode();
+				InputStream inputStream = httpResponse.getEntity().getContent();
+				// 4. convert inputstream to string
+				if (inputStream != null) {
+					result = convertInputStreamToString(inputStream);
+				} else {
+					result = "Did not work!";
+				}
 			} while (executeCount < attemptsCount && responseCode == 408);
-			;
+
 		} catch (HttpHostConnectException e) {
 			responseCode = 408;
 		} catch (Exception e) {
 			responseCode = 400;
 			e.printStackTrace();
 		}
-		return responseCode == desiredCode;
+		// return responseCode == desiredCode;
+		return result;
 	}
 
 	@Override
-	protected void onPostExecute(Boolean result) {
+	protected void onPostExecute(String result) {
 		if (this.progressDialog.isShowing()) {
 			this.progressDialog.dismiss();
 		}
-		if (result)
+		if (result != null)
 			responder.onSuccess();
 		else {
 			responder.onFailure(Integer.toString(responseCode));
@@ -93,5 +103,27 @@ public class GeneralHttpTask extends AsyncTask<String, Integer, Boolean> {
 			setMessage(progressMessage);
 		}
 
+	}
+
+	private static String convertInputStreamToString(InputStream is) {
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		StringBuilder sb = new StringBuilder();
+
+		String line = null;
+		try {
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return sb.toString();
 	}
 }

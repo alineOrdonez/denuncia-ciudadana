@@ -32,7 +32,7 @@ public class Service {
 		setRequest(json);
 	}
 
-	public void findComplaintsService(Denuncia denuncia) throws JSONException {
+	public String findComplaintsService(Denuncia denuncia) throws JSONException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		String lat = String.valueOf(denuncia.getLatitud());
 		String lng = String.valueOf(denuncia.getLongitud());
@@ -43,7 +43,8 @@ public class Service {
 		map.put("lo", lng);
 		JSONObject jsonObject = Util.convertMapToJson(map);
 		String json = jsonObject.toString();
-		setRequest(json);
+		// setRequest(json);
+		return json;
 	}
 
 	public void newComplaintService(Denuncia nueva) throws JSONException {
