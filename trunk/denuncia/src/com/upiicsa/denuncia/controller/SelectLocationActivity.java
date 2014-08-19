@@ -204,24 +204,25 @@ public class SelectLocationActivity extends Activity {
 	}
 
 	private void moveMapToMyCurrentLocation() {
-
 		LocationManager manager = (LocationManager) this
 				.getSystemService(Context.LOCATION_SERVICE);
-
 		Criteria criteria = new Criteria();
-
 		Location location = manager.getLastKnownLocation(manager
 				.getBestProvider(criteria, false));
+		double longitude = 0;
+		double latitude = 0;
 
-		double longitude = 19.3952204;// location.getLongitude();
-		double latitude = -99.0907235;// location.getLatitude();
-
+		if (location == null) {
+			latitude = 19.3952204;
+			longitude = -99.0907235;
+		} else {
+			longitude = location.getLongitude();
+			latitude = location.getLatitude();
+		}
 		CameraPosition cameraPosition = new CameraPosition.Builder()
 				.target(new LatLng(latitude, longitude)).zoom(15).build();
 
 		googleMap.animateCamera(CameraUpdateFactory
 				.newCameraPosition(cameraPosition));
-
 	}
-
 }
