@@ -10,7 +10,7 @@
     <string name="title_activity_map">Mapa de denuncias</string>
     <string name="title_activity_complaint_detail">Detalle denuncia</string>
     <string name="title_activity_select_location">Selecciona la localidad</string>
-    <string name="direccion">Dirección:</string>
+    <string name="direccion">Dirección</string>
     <string name="imagen">Imagen</string>
     <string name="categoria">Categoria</string>
     <string name="descripcion">Descripción</string>
@@ -24,5 +24,7 @@
     <string name="Camara">Tomar Fotografía</string>
     <string name="galery">Escoger de Galería</string>
     <string name="Aceptar">Aceptar</string>
+    <string name="consultar_denuncias">Consultar denuncias</string>
+    <string name="publicar_denuncia">Publicar denuncia</string>
 
 </resources>

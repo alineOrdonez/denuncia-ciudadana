@@ -8,7 +8,6 @@
         android:id="@+id/nuevaDenuncia"
         android:icon="@drawable/ic_action_new"
         android:title="@string/nueva_denuncia"
-        app:showAsAction="always">
-    </item>
+        app:showAsAction="always"/>
 
 </menu>

@@ -13,7 +13,7 @@
         android:layout_centerInParent="true"
         android:layout_marginTop="36dp"
         android:onClick="consultComplaint"
-        android:text="Consultar denuncias" />
+        android:text="@string/consultar_denuncias" />
 
     <Button
         android:id="@+id/denuncia"
@@ -23,6 +23,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="160dp"
         android:onClick="showPrompt"
-        android:text="Publicar denuncia" />
+        android:text="@string/publicar_denuncia" />
 
 </RelativeLayout>

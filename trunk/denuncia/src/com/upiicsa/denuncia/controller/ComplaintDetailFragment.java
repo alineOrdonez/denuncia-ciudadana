@@ -1,17 +1,22 @@
 package com.upiicsa.denuncia.controller;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +27,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationClient;
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
@@ -30,9 +39,12 @@ import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Service;
 import com.upiicsa.denuncia.service.TaskCompleted;
 import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.CustomAlertDialog;
 
-public class ComplaintDetailFragment extends Fragment implements TaskCompleted {
-
+public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
+		ConnectionCallbacks, OnConnectionFailedListener {
+	private final String LOG_TAG = "ComplaintDetailFragment";
+	private LocationClient mLocationClient;
 	private Denuncia mItem;
 	private Singleton singleton;
 	private int idDenuncia;
@@ -46,12 +58,13 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		setHasOptionsMenu(true);
 		if (getArguments().containsKey(Constants.ARG_ITEM_ID)) {
 			String string = getArguments().getString(Constants.ARG_ITEM_ID);
 			idDenuncia = Integer.valueOf(string);
 			mItem = DenunciaContent.ITEM_MAP.get(idDenuncia);
 			singleton = Singleton.getInstance();
+			mLocationClient = new LocationClient(getActivity(), this, this);
 		}
 	}
 
@@ -83,6 +96,7 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.complaint_detail_menu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -98,6 +112,23 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted {
 		}
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+		// Connect the client.
+		mLocationClient.connect();
+	}
+
+	/*
+	 * Called when the Activity is no longer visible.
+	 */
+	@Override
+	public void onStop() {
+		// Disconnecting the client invalidates it.
+		mLocationClient.disconnect();
+		super.onStop();
+	}
+
 	public void addListenerOnButton() {
 		// get prompts.xml view
 		LayoutInflater li = LayoutInflater.from(getActivity());
@@ -111,7 +142,6 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted {
 
 		final EditText userInput = (EditText) promptsView
 				.findViewById(R.id.emailEditText);
-		email = userInput.getText().toString();
 
 		// set dialog message
 		alertDialogBuilder
@@ -119,10 +149,11 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted {
 				.setPositiveButton("Enviar",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
+								email = userInput.getText().toString();
 								final ProgressDialog ringProgressDialog = ProgressDialog
 										.show(getActivity(),
 												"Por favor espere ...",
-												"La denuncia se estÃ¡ actualizando ...",
+												"La denuncia se está actualizando ...",
 												true);
 								ringProgressDialog.setCancelable(false);
 								ringProgressDialog.setIndeterminate(true);
@@ -130,41 +161,12 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted {
 									@Override
 									public void run() {
 										try {
-
-											Thread.sleep(10000);
+											sendComplaint();
+											Thread.sleep(6000);
 										} catch (Exception e) {
 
 										}
 										ringProgressDialog.dismiss();
-										getActivity().runOnUiThread(
-												new Runnable() {
-
-													public void run() {
-														AlertDialog.Builder builder = new AlertDialog.Builder(
-																getActivity());
-														builder.setTitle("OperaciÃ³n exitosa");
-														builder.setMessage("La denuncia se ha realizado exitosamente.");
-														builder.setPositiveButton(
-																"Continuar",
-																new OnClickListener() {
-
-																	@Override
-																	public void onClick(
-																			DialogInterface dialog,
-																			int which) {
-																		dialog.cancel();
-																		Intent i = new Intent(
-																				getActivity(),
-																				MainMenuActivity.class);
-																		startActivity(i);
-
-																	}
-																});
-														builder.create();
-														builder.show();
-
-													}
-												});
 									}
 								}).start();
 
@@ -185,13 +187,37 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted {
 	}
 
 	public void sendComplaint() {
-		try {
-			Denuncia denuncia = new Denuncia(idDenuncia, idCategoria, email);
-			service = new Service(this);
-			service.selectComplaintService(denuncia);
-		} catch (JSONException e) {
-			e.printStackTrace();
+		LocationManager lm = (LocationManager) getActivity().getSystemService(
+				Context.LOCATION_SERVICE);
+		boolean isGPSEnabled = lm
+				.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		if (isGPSEnabled) {
+			try {
+				Denuncia denuncia = new Denuncia(idDenuncia, idCategoria, email);
+				service = new Service(this);
+				service.selectComplaintService(denuncia);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		} else {
+			showGPSAlert();
 		}
+	}
+
+	private void showGPSAlert() {
+		String title = "Configuración del GPS";
+		String message = "La aplicación requere su localicazión."
+				+ "¿Desea activar el GPS?";
+		String btnTitle = "Activar GPS";
+		CustomAlertDialog.decisionAlert(getActivity(), title, message,
+				btnTitle, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						Intent intent = new Intent(
+								Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+						startActivity(intent);
+					}
+				});
 	}
 
 	private void setImage(String myImageData, View view) {
@@ -206,6 +232,43 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted {
 	@Override
 	public void onTaskComplete(String result) throws JSONException {
 		System.out.println(result);
+		JSONObject json = new JSONObject(result);
+		String identificador = json.getString("is");
+		if (identificador.equals("01")) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setTitle("Operación exitosa");
+			builder.setMessage("La denuncia se ha realizado exitosamente.");
+			builder.setPositiveButton("Continuar", new OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+					Intent i = new Intent(getActivity(), MainMenuActivity.class);
+					startActivity(i);
+
+				}
+			});
+			builder.create();
+			builder.show();
+		}
+
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		Log.d(LOG_TAG, "onConnectionFailed");
+
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		Log.d(LOG_TAG, "onConnected");
+
+	}
+
+	@Override
+	public void onDisconnected() {
+		Log.d(LOG_TAG, "onDisconnected");
 
 	}
 

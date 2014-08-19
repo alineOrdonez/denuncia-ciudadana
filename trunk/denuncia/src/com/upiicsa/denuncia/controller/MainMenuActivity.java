@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -29,6 +28,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationClient;
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.CatIntTiempo;
@@ -41,11 +44,13 @@ import com.upiicsa.denuncia.util.CustomAlertDialog;
 import com.upiicsa.denuncia.util.NetworkUtil;
 import com.upiicsa.denuncia.util.Util;
 
-public class MainMenuActivity extends Activity implements TaskCompleted {
+public class MainMenuActivity extends Activity implements TaskCompleted,
+		ConnectionCallbacks, OnConnectionFailedListener {
 	private static final String LOG_TAG = "MainMenuActivity";
 	private IntentFilter mNetworkStateChangedFilter;
 	private BroadcastReceiver mNetworkStateIntentReceiver;
 	private LocationManager mLocationState;
+	private LocationClient mLocationClient;
 	private Spinner category, consultRange;
 	private CatDenuncia catDen;
 	private CatIntTiempo catIntT;
@@ -68,6 +73,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		networkState();
 		mLocationState = (LocationManager) context
 				.getSystemService(Context.LOCATION_SERVICE);
+		mLocationClient = new LocationClient(this, this, this);
 	}
 
 	@Override
@@ -87,6 +93,23 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 		Log.d(LOG_TAG, "onPause");
 		super.onPause();
 		unregisterReceiver(mNetworkStateIntentReceiver);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		// Connect the client.
+		mLocationClient.connect();
+	}
+
+	/*
+	 * Called when the Activity is no longer visible.
+	 */
+	@Override
+	protected void onStop() {
+		// Disconnecting the client invalidates it.
+		mLocationClient.disconnect();
+		super.onStop();
 	}
 
 	public void addCategoriesOnSpinner(View view, int id) {
@@ -274,7 +297,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	}
 
 	public void loadConfiguration() {
-		Toast.makeText(getBaseContext(), "Cargando configuraciÃ³n.",
+		Toast.makeText(getBaseContext(), "Cargando configuracion.",
 				Toast.LENGTH_LONG).show();
 		try {
 			operacion = 1;
@@ -286,13 +309,11 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	}
 
 	private void findComplaints() {
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		Criteria criteria = new Criteria();
-		Location location = lm.getLastKnownLocation(lm.getBestProvider(
-				criteria, false));
+		Location mCurrentLocation;
+		mCurrentLocation = mLocationClient.getLastLocation();
 		operacion = 2;
-		double longitude = 19.3952204;// location.getLongitude();
-		double latitude = -99.0907235;// location.getLatitude();
+		double longitude = mCurrentLocation.getLongitude();
+		double latitude = mCurrentLocation.getLatitude();
 		int idCategoria = catDen.getIdCatDenuncia();
 		String descripcion = catDen.getDescripcion();
 		try {
@@ -305,13 +326,11 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	}
 
 	private void consultAccordingToCategoryAndTime() {
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		Criteria criteria = new Criteria();
-		Location location = lm.getLastKnownLocation(lm.getBestProvider(
-				criteria, false));
+		Location mCurrentLocation;
+		mCurrentLocation = mLocationClient.getLastLocation();
 		operacion = 5;
-		double longitude = 19.3952204;// location.getLongitude();
-		double latitude = -99.0907235;// location.getLatitude();
+		double longitude = mCurrentLocation.getLongitude();
+		double latitude = mCurrentLocation.getLatitude();
 		int idCategoria = catDen.getIdCatDenuncia();
 		int idIntervalo = catIntT.getIdCatIntTiempo();
 		String descripcion = catDen.getDescripcion();
@@ -325,10 +344,9 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 	}
 
 	private void showGPSAlert() {
-		String title = "ConfiguraciÃ³n del GPS";
-		String message = "Es necesaria su localizaciÃ³n para"
-				+ " obtener la lista de denuncias cercanas."
-				+ "Â¿Desea activar el GPS?";
+		String title = "Configuración del GPS";
+		String message = "La aplicación requere su localicazión."
+				+ "¿Desea activar el GPS?";
 		String btnTitle = "Activar GPS";
 		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,
 				new DialogInterface.OnClickListener() {
@@ -428,6 +446,24 @@ public class MainMenuActivity extends Activity implements TaskCompleted {
 				}
 			}
 		};
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		Log.d(LOG_TAG, "onConnectionFailed");
+
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		Log.d(LOG_TAG, "onConnected");
+
+	}
+
+	@Override
+	public void onDisconnected() {
+		Log.d(LOG_TAG, "onDisconnected");
+
 	}
 
 }

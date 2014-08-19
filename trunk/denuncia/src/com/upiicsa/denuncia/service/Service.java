@@ -9,11 +9,14 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.util.HttpHandler;
 import com.upiicsa.denuncia.util.Util;
 
 public class Service {
+	private static final String LOG_TAG = "Service";
 	private TaskCompleted taskCompleted;
 	private HttpHandler httpHandler;
 
@@ -44,19 +47,18 @@ public class Service {
 	}
 
 	public void newComplaintService(Denuncia nueva) throws JSONException {
-		Map<String, Object> map = new HashMap<String, Object>();
+		JSONObject object = new JSONObject();
 		String lat = String.valueOf(nueva.getLatitud());
 		String lng = String.valueOf(nueva.getLongitud());
-		map.put("i", nueva.getIdOperacion());
-		map.put("ic", nueva.getIdCategoria());
-		map.put("dc", nueva.getDescripcion());
-		map.put("em", nueva.getCorreo());
-		map.put("im", nueva.getImagen());
-		map.put("dd", nueva.getDireccion());
-		map.put("la", lat);
-		map.put("lo", lng);
-		JSONObject jsonObject = Util.convertMapToJson(map);
-		String json = jsonObject.toString();
+		object.put("i", nueva.getIdOperacion());
+		object.put("ic", nueva.getIdCategoria());
+		object.put("dc", nueva.getDescripcion());
+		object.put("em", nueva.getCorreo());
+		object.put("dd", nueva.getDireccion());
+		object.put("la", lat);
+		object.put("lo", lng);
+		object.put("im", nueva.getImagen());
+		String json = object.toString();
 		setRequest(json);
 	}
 
@@ -87,7 +89,8 @@ public class Service {
 	}
 
 	private void setRequest(final String json) throws JSONException {
-		System.out.println("REQUEST:" + json);
+		// System.out.println("REQUEST:" + json);
+		Log.d(LOG_TAG, "REQUEST:" + json);
 		httpHandler = new HttpHandler() {
 			@Override
 			public HttpUriRequest getHttpRequestMethod() {

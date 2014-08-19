@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -46,6 +47,10 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationClient;
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
@@ -54,8 +59,10 @@ import com.upiicsa.denuncia.service.Service;
 import com.upiicsa.denuncia.service.TaskCompleted;
 import com.upiicsa.denuncia.util.Constants;
 
-public class NewComplaintFragment extends Fragment implements TaskCompleted {
+public class NewComplaintFragment extends Fragment implements TaskCompleted,
+		ConnectionCallbacks, OnConnectionFailedListener {
 	private static final String LOG_TAG = "NewComplaintFragment";
+	private LocationClient mLocationClient;
 	private Spinner spinner;
 	private EditText address;
 	private EditText email;
@@ -74,6 +81,7 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		singleton = Singleton.getInstance();
+		mLocationClient = new LocationClient(getActivity(), this, this);
 	}
 
 	@Override
@@ -99,6 +107,7 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.new_complaint_menu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -112,6 +121,23 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted {
 		} else {
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		// Connect the client.
+		mLocationClient.connect();
+	}
+
+	/*
+	 * Called when the Activity is no longer visible.
+	 */
+	@Override
+	public void onStop() {
+		// Disconnecting the client invalidates it.
+		mLocationClient.disconnect();
+		super.onStop();
 	}
 
 	public void addItemsOnSpinner(View view) {
@@ -346,9 +372,9 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted {
 	private void showWiFiAlert() {
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
 
-		alertDialog.setTitle("ConfiguraciÃ³n del Wi-Fi");
-		alertDialog.setMessage("La opciÃ³n de localizaciÃ³n funciona"
-				+ "mejor cuando el Wi-Fi estÃ¡ habilitado.\nÂ¿Desea activarlo?");
+		alertDialog.setTitle("Configuración del Wi-Fi");
+		alertDialog.setMessage("La opción de localización funciona"
+				+ "mejor cuando el Wi-Fi está habilitado.\n¿Desea activarlo?");
 		alertDialog.setPositiveButton("Activar Wi-Fi",
 				new DialogInterface.OnClickListener() {
 
@@ -407,6 +433,43 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted {
 	@Override
 	public void onTaskComplete(String result) throws JSONException {
 		System.out.println(result);
+		JSONObject json = new JSONObject(result);
+		String identificador = json.getString("is");
+		if (identificador.equals("01")) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setTitle("Operación exitosa");
+			builder.setMessage("La denuncia se ha realizado exitosamente.");
+			builder.setPositiveButton("Continuar", new OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+					Intent i = new Intent(getActivity(), MainMenuActivity.class);
+					startActivity(i);
+
+				}
+			});
+			builder.create();
+			builder.show();
+		}
+
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		Log.d(LOG_TAG, "onConnectionFailed");
+
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		Log.d(LOG_TAG, "onConnected");
+
+	}
+
+	@Override
+	public void onDisconnected() {
+		Log.d(LOG_TAG, "onDisconnected");
 
 	}
 }
