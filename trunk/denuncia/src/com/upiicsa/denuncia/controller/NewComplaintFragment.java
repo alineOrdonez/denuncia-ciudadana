@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaScannerConnection;
 import android.media.MediaScannerConnection.MediaScannerConnectionClient;
@@ -44,6 +43,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
@@ -178,7 +178,8 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted,
 
 	public void addListenerOnButtonForCamera() {
 		LayoutInflater li = LayoutInflater.from(getActivity());
-		View promptsView = li.inflate(R.layout.select_image, null);
+		View promptsView = li.inflate(R.layout.select_image, new LinearLayout(
+				getActivity()), false);
 
 		final RadioButton rbtnFull = (RadioButton) promptsView
 				.findViewById(R.id.radbtnFull);
@@ -319,7 +320,6 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted,
 				bitMap = BitmapFactory.decodeStream(bis);
 				bytes = getBytesFromBitmap(bitMap);
 				imgString = Base64.encodeToString(bytes, Base64.NO_WRAP);
-				singleton.setImage(imgString);
 				Log.d(LOG_TAG, "***[" + imgString + "]***");
 
 			} catch (FileNotFoundException e) {
@@ -369,40 +369,9 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted,
 		alertDialog.show();
 	}
 
-	private void showWiFiAlert() {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-
-		alertDialog.setTitle("Configuración del Wi-Fi");
-		alertDialog.setMessage("La opción de localización funciona"
-				+ "mejor cuando el Wi-Fi está habilitado.\n¿Desea activarlo?");
-		alertDialog.setPositiveButton("Activar Wi-Fi",
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent i = new Intent(Settings.ACTION_WIFI_SETTINGS);
-						startActivity(i);
-					}
-				});
-
-		alertDialog.setNegativeButton("Cancelar",
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-
-					}
-				});
-
-		alertDialog.show();
-	}
-
 	private void sendComplaintRequest() {
 		LocationManager lm = (LocationManager) getActivity().getSystemService(
 				Context.LOCATION_SERVICE);
-		Location location = lm
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		boolean isGPSEnabled = lm
 				.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		if (isGPSEnabled) {
@@ -434,24 +403,25 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted,
 	public void onTaskComplete(String result) throws JSONException {
 		System.out.println(result);
 		JSONObject json = new JSONObject(result);
-		String identificador = json.getString("is");
-		if (identificador.equals("01")) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle("Operación exitosa");
-			builder.setMessage("La denuncia se ha realizado exitosamente.");
-			builder.setPositiveButton("Continuar", new OnClickListener() {
+		// String identificador = json.getString("is");
+		// if (identificador.equals("01")) {
+		singleton.setImage(json.getString("im"));
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("Operacion exitosa");
+		builder.setMessage("La denuncia se ha realizado exitosamente.");
+		builder.setPositiveButton("Continuar", new OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-					Intent i = new Intent(getActivity(), MainMenuActivity.class);
-					startActivity(i);
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+				Intent i = new Intent(getActivity(), MainMenuActivity.class);
+				startActivity(i);
 
-				}
-			});
-			builder.create();
-			builder.show();
-		}
+			}
+		});
+		builder.create();
+		builder.show();
+		// }
 
 	}
 

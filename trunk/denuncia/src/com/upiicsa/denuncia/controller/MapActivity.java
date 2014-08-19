@@ -124,6 +124,7 @@ public class MapActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		initilizeMap();
+		moveMapToMyCurrentLocation();
 	}
 
 	/**
