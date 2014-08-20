@@ -1,7 +1,6 @@
 package com.upiicsa.denuncia.controller;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -41,11 +40,11 @@ import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.DenunciaContent;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Service;
-import com.upiicsa.denuncia.service.TaskCompleted;
 import com.upiicsa.denuncia.util.Constants;
 import com.upiicsa.denuncia.util.CustomAlertDialog;
+import com.upiicsa.denuncia.util.OnResponseListener;
 
-public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
+public class ComplaintDetailFragment extends Fragment implements
 		ConnectionCallbacks, OnConnectionFailedListener {
 	private final String LOG_TAG = "ComplaintDetailFragment";
 	private LocationClient mLocationClient;
@@ -200,8 +199,9 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 		if (isGPSEnabled) {
 			try {
 				Denuncia denuncia = new Denuncia(idDenuncia, idCategoria, email);
-				service = new Service(this);
-				service.selectComplaintService(denuncia);
+				service = new Service(onResponseListener, getActivity());
+				service.selectComplaintService(denuncia,
+						"Reenviando denuncia...");
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -233,30 +233,6 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 		Bitmap decodedByte = BitmapFactory.decodeByteArray(imageAsBytes, 0,
 				imageAsBytes.length);
 		image.setImageBitmap(decodedByte);
-	}
-
-	@Override
-	public void onTaskComplete(String result) throws JSONException {
-		System.out.println(result);
-		JSONObject json = new JSONObject(result);
-		String identificador = json.getString("is");
-		if (identificador.equals("01")) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle("Operacion exitosa");
-			builder.setMessage("La denuncia se ha realizado exitosamente.");
-			builder.setPositiveButton("Continuar", new OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-					Intent i = new Intent(getActivity(), MainMenuActivity.class);
-					startActivity(i);
-				}
-			});
-			builder.create();
-			builder.show();
-		}
-
 	}
 
 	@Override
@@ -334,5 +310,29 @@ public class ComplaintDetailFragment extends Fragment implements TaskCompleted,
 		float density = getActivity().getResources().getDisplayMetrics().density;
 		return Math.round((float) dp * density);
 	}
+
+	protected OnResponseListener onResponseListener = new OnResponseListener() {
+		public void onSuccess(String result) {
+			System.out.println(result);
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setTitle("Operacion exitosa");
+			builder.setMessage("La denuncia se ha reenviado...");
+			builder.setPositiveButton("Continuar", new OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+					Intent i = new Intent(getActivity(), MainMenuActivity.class);
+					startActivity(i);
+				}
+			});
+			builder.create();
+			builder.show();
+
+		};
+
+		public void onFailure(String message) {
+		};
+	};
 
 }

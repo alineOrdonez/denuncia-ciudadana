@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background" >
+    android:background="@drawable/bckgrnd_logo" >
 
     <LinearLayout
         android:id="@+id/fragmentNewComplaint"
@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Categoria:"
+            android:text="@string/categoria"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <Spinner
@@ -93,7 +93,8 @@
             android:id="@+id/btnImg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Seleccionar" />
+            android:layout_weight="0.18"
+            android:background="@drawable/btn_img" />
     </LinearLayout>
 
 </ScrollView>
