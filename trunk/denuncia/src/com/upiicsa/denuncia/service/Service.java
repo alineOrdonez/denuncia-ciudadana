@@ -1,35 +1,37 @@
 package com.upiicsa.denuncia.service;
 
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.upiicsa.denuncia.common.Denuncia;
+import com.upiicsa.denuncia.util.Util;
 
 public class Service {
 	private static final String LOG_TAG = "Service";
+	private HttpHandler httpHandler;
 	private OnResponseListener responder;
-	private Context context;
 
 	/**
 	 * @param responder
 	 * @param context
 	 */
-	public Service(OnResponseListener responder, Context context) {
+	public Service(OnResponseListener responder) {
 		this.responder = responder;
-		this.context = context;
 	}
 
 	public void configService(String message) throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("i", "1");
 		String json = jsonObject.toString();
-		httpTaskRequest(json, message);
+		httpTaskRequest(json);
 	}
 
-	public void findComplaintsService(Denuncia denuncia, String message)
+	public void findComplaintsService(Denuncia denuncia)
 			throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		String lat = String.valueOf(denuncia.getLatitud());
@@ -40,7 +42,7 @@ public class Service {
 		jsonObject.put("la", lat);
 		jsonObject.put("lo", lng);
 		String json = jsonObject.toString();
-		httpTaskRequest(json, message);
+		httpTaskRequest(json);
 	}
 
 	public void newComplaintService(Denuncia nueva, String message)
@@ -57,10 +59,10 @@ public class Service {
 		object.put("lo", lng);
 		object.put("im", nueva.getImagen());
 		String json = object.toString();
-		httpTaskRequest(json, message);
+		httpTaskRequest(json);
 	}
 
-	public void selectComplaintService(Denuncia denuncia, String message)
+	public void selectComplaintService(Denuncia denuncia)
 			throws JSONException {
 		JSONObject object = new JSONObject();
 		object.put("i", denuncia.getIdOperacion());
@@ -68,10 +70,10 @@ public class Service {
 		object.put("em", denuncia.getCorreo());
 		object.put("ic", denuncia.getIdDenuncia());
 		String json = object.toString();
-		httpTaskRequest(json, message);
+		httpTaskRequest(json);
 	}
 
-	public void consultComplaintService(Denuncia denuncia, String message)
+	public void consultComplaintService(Denuncia denuncia)
 			throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		String lat = String.valueOf(denuncia.getLatitud());
@@ -83,13 +85,48 @@ public class Service {
 		jsonObject.put("la", lat);
 		jsonObject.put("lo", lng);
 		String json = jsonObject.toString();
-		httpTaskRequest(json, message);
+		httpTaskRequest(json);
 	}
 
-	public void httpTaskRequest(String json, String progressMessage) {
-		GeneralHttpTask recoveryTask = new GeneralHttpTask(context,
-				progressMessage, responder);
+	public void httpTaskRequest(final String json) {
 		Log.d(LOG_TAG, "*****httpTaskRequest:" + json);
-		recoveryTask.execute(json);
+
+		httpHandler = new HttpHandler() {
+			@Override
+			public HttpUriRequest getHttpRequestMethod() {
+
+				HttpPost httpPost = new HttpPost(
+						"http://hmkcode.com/examples/index.php");
+				try {
+					StringEntity stringEntity = new StringEntity(json);
+					httpPost.setEntity(stringEntity);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return httpPost;
+			}
+
+			@Override
+			public void onResponse(String message) {
+				try {
+					message = Util.configResult();
+					JSONObject jsonObject = new JSONObject(message);
+					String code = jsonObject.getString("is");
+
+					if (message != null && code.equals("01")) {
+						jsonObject.remove("is");
+						String result = jsonObject.toString();
+						responder.onSuccess(result);
+					} else {
+						String description = jsonObject.getString("ds");
+						responder.onFailure(description);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		httpHandler.execute();
 	}
+
 }

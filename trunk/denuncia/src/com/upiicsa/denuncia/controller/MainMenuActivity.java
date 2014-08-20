@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -45,7 +46,9 @@ import com.upiicsa.denuncia.util.Util;
 
 public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		OnConnectionFailedListener, OnResponseListener {
+
 	private static final String LOG_TAG = "MainMenuActivity";
+	private android.app.ProgressDialog progressDialog;
 	private IntentFilter mNetworkStateChangedFilter;
 	private BroadcastReceiver mNetworkStateIntentReceiver;
 	private LocationClient mLocationClient;
@@ -65,15 +68,12 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		setContentView(R.layout.activity_main_menu);
 		context = this;
 		singleton = Singleton.getInstance();
+		service = new Service(this);
 		mNetworkStateChangedFilter = new IntentFilter();
 		mNetworkStateChangedFilter
 				.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 		networkState();
 		mLocationClient = new LocationClient(this, this, this);
-	}
-
-	@Override
-	public void onBackPressed() {
 	}
 
 	@Override
@@ -94,7 +94,6 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onStart() {
 		super.onStart();
-		// Connect the client.
 		mLocationClient.connect();
 	}
 
@@ -103,7 +102,6 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 	 */
 	@Override
 	protected void onStop() {
-		// Disconnecting the client invalidates it.
 		mLocationClient.disconnect();
 		super.onStop();
 	}
@@ -119,7 +117,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 				MainMenuActivity.this,
 				android.R.layout.simple_spinner_dropdown_item, consultList);
 		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				.setDropDownViewResource(android.R.layout.simple_spinner_item);
 		category.setAdapter(dataAdapter);
 		category.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -157,7 +155,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 				android.R.layout.simple_spinner_dropdown_item, rangeList);
 
 		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				.setDropDownViewResource(android.R.layout.simple_spinner_item);
 		consultRange.setAdapter(dataAdapter);
 		consultRange.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -191,13 +189,25 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 			View promptsView = li.inflate(R.layout.select_complaint_prompt,
 					new LinearLayout(context), false);
 
+			String title = getString(R.string.seleccione_categoria);
 			String btnTitle = "Buscar";
-			CustomAlertDialog.promptAlert(context, null, promptsView, btnTitle,
-					new DialogInterface.OnClickListener() {
+			CustomAlertDialog.promptAlert(context, title, promptsView,
+					btnTitle, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialogInterface,
 								int i) {
-							findComplaints();
+							progressDialog = new ProgressDialog(context, 1);
+							progressDialog.show();
+							new Thread(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										findComplaints();
+									} catch (Exception e) {
+
+									}
+								}
+							}).start();
 						}
 					});
 			addCategoriesOnSpinner(promptsView, R.id.selectCategory);
@@ -215,13 +225,25 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 			View promptsView = li.inflate(R.layout.consult_complaint_prompt,
 					new LinearLayout(context), false);
 
+			String title = getString(R.string.select_category_and_period);
 			String btnTitle = "Buscar";
-			CustomAlertDialog.promptAlert(context, null, promptsView, btnTitle,
-					new DialogInterface.OnClickListener() {
+			CustomAlertDialog.promptAlert(context, title, promptsView,
+					btnTitle, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialogInterface,
 								int i) {
-							consultAccordingToCategoryAndTime();
+							progressDialog = new ProgressDialog(context, 1);
+							progressDialog.show();
+							new Thread(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										consultAccordingToCategoryAndTime();
+									} catch (Exception e) {
+
+									}
+								}
+							}).start();
 						}
 					});
 			addCategoriesOnSpinner(promptsView, R.id.consultCategory);
@@ -233,9 +255,19 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 
 	public void loadConfiguration() {
 		try {
-			operacion = 1;
-			service = new Service(this, context);
-			service.configService("Cargando configuracion");
+			progressDialog = new ProgressDialog(context, 1);
+			progressDialog.show();
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						operacion = 1;
+						service.configService("Cargando configuracion");
+					} catch (Exception e) {
+
+					}
+				}
+			}).start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -252,7 +284,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		try {
 			Denuncia denuncia = new Denuncia(idCategoria, descripcion,
 					latitude, longitude);
-			service.findComplaintsService(denuncia, "Buscando denuncias...");
+			service.findComplaintsService(denuncia);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -270,17 +302,16 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		try {
 			Denuncia denuncia = new Denuncia(idCategoria, idIntervalo,
 					descripcion, latitude, longitude);
-			service.consultComplaintService(denuncia, "Buscando registros...");
+			service.consultComplaintService(denuncia);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void showGPSAlert() {
-		String title = "Configuracion del GPS";
-		String message = "La aplicacion requere su localicazion."
-				+ "¿Desea activar el GPS?";
-		String btnTitle = "Activar GPS";
+		String title = getString(R.string.gps_title);
+		String message = getString(R.string.gps_message);
+		String btnTitle = getString(R.string.gps_btn_title);
 		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,
 				new DialogInterface.OnClickListener() {
 					@Override
@@ -366,6 +397,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 
 	@Override
 	public void onSuccess(String result) throws JSONException {
+		progressDialog.hide();
 		System.out.println("Result:" + result);
 		JSONObject json;
 		String ld;
@@ -402,6 +434,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 
 	@Override
 	public void onFailure(String message) {
+		progressDialog.hide();
 		String title = "Error";
 		String btnTitle = "Aceptar";
 		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,

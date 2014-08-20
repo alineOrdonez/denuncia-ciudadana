@@ -3,7 +3,6 @@ package com.upiicsa.denuncia.controller;
 import org.json.JSONException;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -37,7 +36,6 @@ import com.google.android.gms.location.LocationClient;
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
-import com.upiicsa.denuncia.common.DenunciaContent;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.OnResponseListener;
 import com.upiicsa.denuncia.service.Service;
@@ -64,9 +62,10 @@ public class ComplaintDetailFragment extends Fragment implements
 		setHasOptionsMenu(true);
 		if (getArguments().containsKey(Constants.ARG_ITEM_ID)) {
 			String string = getArguments().getString(Constants.ARG_ITEM_ID);
-			idDenuncia = Integer.valueOf(string);
-			mItem = DenunciaContent.ITEM_MAP.get(idDenuncia);
 			singleton = Singleton.getInstance();
+			service = new Service(this);
+			idDenuncia = Integer.valueOf(string);
+			mItem = singleton.getITEM_MAP().get(idDenuncia);
 			mLocationClient = new LocationClient(getActivity(), this, this);
 		}
 	}
@@ -147,30 +146,14 @@ public class ComplaintDetailFragment extends Fragment implements
 
 		final EditText userInput = (EditText) promptsView
 				.findViewById(R.id.emailEditText);
-
+		String title = getString(R.string.insert_email);
 		String btnTitle = "Enviar";
-		CustomAlertDialog.promptAlert(getActivity(), null, promptsView,
+		CustomAlertDialog.promptAlert(getActivity(), title, promptsView,
 				btnTitle, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
 						email = userInput.getText().toString();
-						final ProgressDialog ringProgressDialog = ProgressDialog
-								.show(getActivity(), "Por favor espere ...",
-										"La denuncia se esta actualizando ...",
-										true);
-						ringProgressDialog.setCancelable(false);
-						ringProgressDialog.setIndeterminate(true);
-						new Thread(new Runnable() {
-							@Override
-							public void run() {
-								try {
-									sendComplaint();
-								} catch (Exception e) {
-
-								}
-								ringProgressDialog.dismiss();
-							}
-						}).start();
+						sendComplaint();
 					}
 				});
 	}
@@ -183,9 +166,7 @@ public class ComplaintDetailFragment extends Fragment implements
 		if (isGPSEnabled) {
 			try {
 				Denuncia denuncia = new Denuncia(idDenuncia, idCategoria, email);
-				service = new Service(this, getActivity());
-				service.selectComplaintService(denuncia,
-						"Reenviando denuncia...");
+				service.selectComplaintService(denuncia);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -197,7 +178,7 @@ public class ComplaintDetailFragment extends Fragment implements
 	private void showGPSAlert() {
 		String title = "Configuracion del GPS";
 		String message = "La aplicacion requiere tener acceso a su ubicacion."
-				+ "¿Desea activar el GPS?";
+				+ "Â¿Desea activar el GPS?";
 		String btnTitle = "Activar GPS";
 		CustomAlertDialog.decisionAlert(getActivity(), title, message,
 				btnTitle, new DialogInterface.OnClickListener() {
@@ -308,6 +289,7 @@ public class ComplaintDetailFragment extends Fragment implements
 				dialog.cancel();
 				Intent i = new Intent(getActivity(), MainMenuActivity.class);
 				startActivity(i);
+				getActivity().finish();
 			}
 		});
 		builder.create();

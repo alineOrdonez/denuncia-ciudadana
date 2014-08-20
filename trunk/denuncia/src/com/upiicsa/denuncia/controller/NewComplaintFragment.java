@@ -322,7 +322,7 @@ public class NewComplaintFragment extends Fragment implements
 	private void showGPSAlert() {
 		String title = "Configuracion del GPS";
 		String message = "La aplicacion requere su localicazion."
-				+ "¿Desea activar el GPS?";
+				+ "ï¿½Desea activar el GPS?";
 		String btnTitle = "Activar GPS";
 		CustomAlertDialog.decisionAlert(getActivity(), title, message,
 				btnTitle, new DialogInterface.OnClickListener() {
@@ -349,7 +349,7 @@ public class NewComplaintFragment extends Fragment implements
 			try {
 				Denuncia denuncia = new Denuncia(idCategoria, descripcion,
 						correo, imgString, direccion, latitude, longitude);
-				service = new Service(this, getActivity());
+				service = new Service(this);
 				service.newComplaintService(denuncia, "Enviando denuncia...");
 			} catch (Exception e) {
 				e.printStackTrace();

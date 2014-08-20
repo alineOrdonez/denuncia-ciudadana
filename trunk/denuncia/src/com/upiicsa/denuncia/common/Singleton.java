@@ -3,16 +3,21 @@ package com.upiicsa.denuncia.common;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.SparseArray;
+
+import com.upiicsa.denuncia.util.Util;
+
 public class Singleton {
 
 	private static List<CatDenuncia> denuncias;
 	private static List<CatIntTiempo> intervalos;
+	private static List<Denuncia> ITEMS;
+	private static SparseArray<Denuncia> ITEM_MAP;
 	private static String image;
 
 	private static Singleton instance = null;
 
 	protected Singleton() {
-		// Exists only to defeat instantiation.
 	}
 
 	public static Singleton getInstance() {
@@ -21,8 +26,29 @@ public class Singleton {
 			denuncias = new ArrayList<CatDenuncia>();
 			intervalos = new ArrayList<CatIntTiempo>();
 			image = new String();
+			ITEMS = new ArrayList<Denuncia>();
+			ITEM_MAP = new SparseArray<Denuncia>();
 		}
 		return instance;
+	}
+
+	public void listaDeDenuncias(String string) {
+		List<String> stringList = Util.stringToList(string);
+		for (int i = 0; i < stringList.size(); i++) {
+			List<String> list = Util.detailList(stringList.get(i));
+			Denuncia item = new Denuncia();
+			int id = Integer.valueOf(list.get(0));
+			item.setIdDenuncia(id);
+			item.setDescripcion(list.get(1));
+			item.setCorreo(list.get(2));
+			item.setDireccion(list.get(3));
+			double latitud = Double.valueOf(list.get(4));
+			item.setLatitud(latitud);
+			double longitud = Double.valueOf(list.get(5));
+			item.setLongitud(longitud);
+			ITEMS.add(item);
+			ITEM_MAP.put(id, item);
+		}
 	}
 
 	/**
@@ -53,6 +79,36 @@ public class Singleton {
 	 */
 	public void setIntervalos(List<CatIntTiempo> intervalos) {
 		Singleton.intervalos = intervalos;
+	}
+
+	/**
+	 * @return the iTEMS
+	 */
+	public List<Denuncia> getITEMS() {
+		return ITEMS;
+	}
+
+	/**
+	 * @param iTEMS
+	 *            the iTEMS to set
+	 */
+	public void setITEMS(List<Denuncia> iTEMS) {
+		ITEMS = iTEMS;
+	}
+
+	/**
+	 * @return the iTEM_MAP
+	 */
+	public SparseArray<Denuncia> getITEM_MAP() {
+		return ITEM_MAP;
+	}
+
+	/**
+	 * @param iTEM_MAP
+	 *            the iTEM_MAP to set
+	 */
+	public void setITEM_MAP(SparseArray<Denuncia> iTEM_MAP) {
+		ITEM_MAP = iTEM_MAP;
 	}
 
 	/**
