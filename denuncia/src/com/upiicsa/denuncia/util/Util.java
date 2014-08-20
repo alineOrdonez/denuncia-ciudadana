@@ -2,46 +2,12 @@ package com.upiicsa.denuncia.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-
 public class Util {
-
-	public static boolean isConnected(Context context) {
-		ConnectivityManager connMgr = (ConnectivityManager) context
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-		return (networkInfo != null && networkInfo.isConnected());
-	}
-
-	public static JSONObject convertStringtoJson(String json)
-			throws JSONException {
-		JSONObject jsonObject = new JSONObject(json);
-		return jsonObject;
-	}
-
-	public static JSONObject convertMapToJson(Map<String, Object> map)
-			throws JSONException {
-		JSONObject obj = new JSONObject();
-		Set<String> set = map.keySet();
-		Iterator<String> iter = set.iterator();
-
-		while (iter.hasNext()) {
-			String key = (String) iter.next();
-			obj.accumulate(key, map.get(key));
-		}
-
-		return obj;
-	}
 
 	public static List<String> stringToList(String string) {
 		String s = string.substring(2, string.length() - 2);
@@ -127,7 +93,7 @@ public class Util {
 			// Para consulta
 			obj.add(latitude[i - 1]);
 			obj.add(longitude[i - 1]);
-			//obj.add()
+			// obj.add()
 			list.add(obj);
 		}
 		return list;

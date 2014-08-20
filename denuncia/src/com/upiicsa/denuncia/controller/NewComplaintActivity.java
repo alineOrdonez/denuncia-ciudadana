@@ -1,14 +1,11 @@
 package com.upiicsa.denuncia.controller;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -73,39 +70,9 @@ public class NewComplaintActivity extends ActionBarActivity {
 						status = "El dispositivo no tiene accesso a Internet.";
 						Toast.makeText(context, status, Toast.LENGTH_LONG)
 								.show();
-						showWiFiAlert();
 					}
 				}
 			}
 		};
-	}
-
-	private void showWiFiAlert() {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-
-		alertDialog.setTitle("Configuracion del Wi-Fi");
-		alertDialog.setMessage("La opcion de localizacion funciona"
-				+ "mejor cuando el Wi-Fi esta habilitado.\n¿Desea activarlo?");
-		alertDialog.setPositiveButton("Activar Wi-Fi",
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent i = new Intent(Settings.ACTION_WIFI_SETTINGS);
-						startActivity(i);
-					}
-				});
-
-		alertDialog.setNegativeButton("Cancelar",
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-
-					}
-				});
-
-		alertDialog.show();
 	}
 }

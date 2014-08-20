@@ -1,4 +1,4 @@
-package com.upiicsa.denuncia.util;
+package com.upiicsa.denuncia.service;
 
 import org.json.JSONException;
 
