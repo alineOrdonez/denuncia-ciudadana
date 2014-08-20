@@ -1,4 +1,4 @@
-package com.upiicsa.denuncia.util;
+package com.upiicsa.denuncia.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.upiicsa.denuncia.util.OnResponseListener;
+import com.upiicsa.denuncia.util.Util;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -39,17 +44,11 @@ public class GeneralHttpTask extends AsyncTask<String, Integer, String> {
 
 	@Override
 	protected String doInBackground(String... params) {
-		int desiredCode = 200;
 		int attemptsCount;
 		responseCode = 0;
 		String result = null;
 		try {
-			if (params.length >= 2)
-				desiredCode = Integer.parseInt(params[1]);
-			if (params.length >= 3)
-				attemptsCount = Integer.parseInt(params[2]);
-			else
-				attemptsCount = 1;
+			attemptsCount = 1;
 
 			HttpClient client = new DefaultHttpClient();
 			HttpPost httpPost = new HttpPost(
@@ -85,14 +84,25 @@ public class GeneralHttpTask extends AsyncTask<String, Integer, String> {
 	}
 
 	@Override
-	protected void onPostExecute(String result) {
+	protected void onPostExecute(String message) {
 		if (this.progressDialog.isShowing()) {
 			this.progressDialog.dismiss();
 		}
-		if (result != null)
-			responder.onSuccess();
-		else {
-			responder.onFailure(Integer.toString(responseCode));
+		try {
+			message = Util.configResult();
+			JSONObject jsonObject = new JSONObject(message);
+			String code = jsonObject.getString("is");
+
+			if (message != null && code.equals("01")) {
+				jsonObject.remove("is");
+				String result = jsonObject.toString();
+				responder.onSuccess(result);
+			} else {
+				String description = jsonObject.getString("ds");
+				responder.onFailure(description);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -8,9 +8,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -56,10 +53,10 @@ import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Service;
-import com.upiicsa.denuncia.service.TaskCompleted;
 import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.OnResponseListener;
 
-public class NewComplaintFragment extends Fragment implements TaskCompleted,
+public class NewComplaintFragment extends Fragment implements
 		ConnectionCallbacks, OnConnectionFailedListener {
 	private static final String LOG_TAG = "NewComplaintFragment";
 	private LocationClient mLocationClient;
@@ -383,8 +380,8 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted,
 			try {
 				Denuncia denuncia = new Denuncia(idCategoria, descripcion,
 						correo, imgString, direccion, latitude, longitude);
-				service = new Service(this);
-				service.newComplaintService(denuncia);
+				service = new Service(onResponseListener, getActivity());
+				service.newComplaintService(denuncia, "Enviando denuncia...");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -397,32 +394,6 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted,
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		bitmap.compress(CompressFormat.JPEG, 70, stream);
 		return stream.toByteArray();
-	}
-
-	@Override
-	public void onTaskComplete(String result) throws JSONException {
-		System.out.println(result);
-		JSONObject json = new JSONObject(result);
-		// String identificador = json.getString("is");
-		// if (identificador.equals("01")) {
-		singleton.setImage(json.getString("im"));
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle("Operacion exitosa");
-		builder.setMessage("La denuncia se ha realizado exitosamente.");
-		builder.setPositiveButton("Continuar", new OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-				Intent i = new Intent(getActivity(), MainMenuActivity.class);
-				startActivity(i);
-
-			}
-		});
-		builder.create();
-		builder.show();
-		// }
-
 	}
 
 	@Override
@@ -442,4 +413,29 @@ public class NewComplaintFragment extends Fragment implements TaskCompleted,
 		Log.d(LOG_TAG, "onDisconnected");
 
 	}
+
+	protected OnResponseListener onResponseListener = new OnResponseListener() {
+		public void onSuccess(String result) {
+			System.out.println(result);
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setTitle("Operacion exitosa");
+			builder.setMessage("La denuncia se ha enviado exitosamente.");
+			builder.setPositiveButton("Continuar", new OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+					Intent i = new Intent(getActivity(), MainMenuActivity.class);
+					startActivity(i);
+
+				}
+			});
+			builder.create();
+			builder.show();
+		};
+
+		public void onFailure(String message) {
+		};
+	};
+
 }

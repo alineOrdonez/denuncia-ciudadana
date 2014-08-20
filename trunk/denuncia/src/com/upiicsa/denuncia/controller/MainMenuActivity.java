@@ -38,16 +38,14 @@ import com.upiicsa.denuncia.common.CatIntTiempo;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Service;
-import com.upiicsa.denuncia.service.TaskCompleted;
 import com.upiicsa.denuncia.util.Constants;
 import com.upiicsa.denuncia.util.CustomAlertDialog;
-import com.upiicsa.denuncia.util.GeneralHttpTask;
 import com.upiicsa.denuncia.util.NetworkUtil;
 import com.upiicsa.denuncia.util.OnResponseListener;
 import com.upiicsa.denuncia.util.Util;
 
-public class MainMenuActivity extends Activity implements TaskCompleted,
-		ConnectionCallbacks, OnConnectionFailedListener {
+public class MainMenuActivity extends Activity implements ConnectionCallbacks,
+		OnConnectionFailedListener {
 	private static final String LOG_TAG = "MainMenuActivity";
 	private IntentFilter mNetworkStateChangedFilter;
 	private BroadcastReceiver mNetworkStateIntentReceiver;
@@ -261,12 +259,10 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 	}
 
 	public void loadConfiguration() {
-		Toast.makeText(getBaseContext(), "Cargando configuracion.",
-				Toast.LENGTH_LONG).show();
 		try {
 			operacion = 1;
-			service = new Service(this);
-			service.configService();
+			service = new Service(onResponseListener, context);
+			service.configService("Cargando configuracion");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -283,11 +279,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 		try {
 			Denuncia denuncia = new Denuncia(idCategoria, descripcion,
 					latitude, longitude);
-			String json = service.findComplaintsService(denuncia);
-			GeneralHttpTask recoveryTask = new GeneralHttpTask(
-					MainMenuActivity.this, "Buscarndo registros...",
-					onResponseListener);
-			recoveryTask.execute(json);
+			service.findComplaintsService(denuncia, "Buscando denuncias...");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -305,11 +297,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 		try {
 			Denuncia denuncia = new Denuncia(idCategoria, idIntervalo,
 					descripcion, latitude, longitude);
-			String json = service.findComplaintsService(denuncia);
-			GeneralHttpTask recoveryTask = new GeneralHttpTask(
-					MainMenuActivity.this, "Buscarndo registros...",
-					onResponseListener);
-			recoveryTask.execute(json);
+			service.consultComplaintService(denuncia, "Buscando registros...");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -318,7 +306,7 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 	private void showGPSAlert() {
 		String title = "Configuracion del GPS";
 		String message = "La aplicacion requere su localicazion."
-				+ "Â¿Desea activar el GPS?";
+				+ "¿Desea activar el GPS?";
 		String btnTitle = "Activar GPS";
 		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,
 				new DialogInterface.OnClickListener() {
@@ -329,42 +317,6 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 						startActivity(intent);
 					}
 				});
-	}
-
-	@Override
-	public void onTaskComplete(String result) throws JSONException {
-		System.out.println("Result:" + result);
-		JSONObject json;
-		String ld;
-		switch (operacion) {
-		case 1:
-			result = Util.configResult();
-			json = new JSONObject(result);
-			List<String> descripcion = new ArrayList<String>();
-			List<String> intervalo = new ArrayList<String>();
-			ld = json.getString("ld");
-			descripcion = Util.stringToList(ld);
-			denuncias(descripcion);
-			String lt = json.getString("lt");
-			intervalo = Util.stringToList(lt);
-			intervalos(intervalo);
-			break;
-		case 2:
-			result = Util.complaintResult();
-			json = new JSONObject(result);
-			ld = json.getString("ld");
-			addExtraToIntent(ComplaintListActivity.class, ld);
-			break;
-		case 5:
-			result = Util.complaintResult();
-			json = new JSONObject(result);
-			ld = json.getString("ld");
-			addExtraToIntent(MapActivity.class, ld);
-			break;
-
-		default:
-			break;
-		}
 	}
 
 	private void addExtraToIntent(Class<?> clase, String list) {
@@ -413,7 +365,10 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 						Toast.makeText(context, status, Toast.LENGTH_LONG)
 								.show();
 					} else {
-						loadConfiguration();
+						if (singleton.getDenuncias().isEmpty()
+								&& singleton.getImage().isEmpty()) {
+							loadConfiguration();
+						}
 					}
 				}
 			}
@@ -433,36 +388,59 @@ public class MainMenuActivity extends Activity implements TaskCompleted,
 	@Override
 	public void onDisconnected() {
 		Log.d(LOG_TAG, "onDisconnected");
+
 	}
 
 	protected OnResponseListener onResponseListener = new OnResponseListener() {
 
 		@Override
-		public void onSuccess() {
-			AlertDialog.Builder builder = new AlertDialog.Builder(
-					MainMenuActivity.this);
-			builder.setPositiveButton("Okay",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
-						}
-					});
-			builder.setMessage("Success");
-			builder.show();
+		public void onSuccess(String result) throws JSONException {
+			System.out.println("Result:" + result);
+			JSONObject json;
+			String ld;
+			switch (operacion) {
+			case 1:
+				result = Util.configResult();
+				json = new JSONObject(result);
+				List<String> descripcion = new ArrayList<String>();
+				List<String> intervalo = new ArrayList<String>();
+				ld = json.getString("ld");
+				descripcion = Util.stringToList(ld);
+				denuncias(descripcion);
+				String lt = json.getString("lt");
+				intervalo = Util.stringToList(lt);
+				intervalos(intervalo);
+				break;
+			case 2:
+				result = Util.complaintResult();
+				json = new JSONObject(result);
+				ld = json.getString("ld");
+				addExtraToIntent(ComplaintListActivity.class, ld);
+				break;
+			case 5:
+				result = Util.complaintResult();
+				json = new JSONObject(result);
+				ld = json.getString("ld");
+				addExtraToIntent(MapActivity.class, ld);
+				break;
 
+			default:
+				break;
+			}
 		}
 
 		@Override
 		public void onFailure(String message) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(
 					MainMenuActivity.this);
-			builder.setPositiveButton("Okay",
+			builder.setPositiveButton("Continuar",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.cancel();
 						}
 					});
-			builder.setMessage("Failure. Message: " + message);
+			builder.setMessage(message);
+			builder.setTitle("Error");
 			builder.show();
 
 		}
