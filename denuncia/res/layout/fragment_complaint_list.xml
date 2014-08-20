@@ -4,11 +4,12 @@
     android:layout_height="match_parent"
     android:background="@drawable/bckgrnd_logo" >
 
-    <ListView
-        android:id="@+id/complaintList"
-        style="@style/ListViewAppTheme"
+    <fragment
+        android:id="@+id/circle_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        class="com.upiicsa.denuncia.controller.ComplaintListFragment" />
 
 </LinearLayout>

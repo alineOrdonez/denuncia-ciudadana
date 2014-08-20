@@ -18,22 +18,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.Denuncia;
-import com.upiicsa.denuncia.common.DenunciaContent;
+import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.util.Constants;
 
 public class MapActivity extends Activity {
 
 	// Google Map
 	private GoogleMap googleMap;
+	private Singleton singleton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
 		if (savedInstanceState == null) {
+			singleton = Singleton.getInstance();
 			if (getIntent().getExtras() != null) {
 				String lista = getIntent().getStringExtra(Constants.EXTRA_LIST);
-				new DenunciaContent(lista);
+				singleton.listaDeDenuncias(lista);
 			}
 		}
 		try {
@@ -62,9 +64,9 @@ public class MapActivity extends Activity {
 			googleMap.getUiSettings().setZoomGesturesEnabled(true);
 
 			// lets place some 10 random markers
-			int size = DenunciaContent.ITEMS.size();
+			int size = singleton.getITEMS().size();
 			for (int i = 0; i < size; i++) {
-				Denuncia denuncia = DenunciaContent.ITEMS.get(i);
+				Denuncia denuncia = singleton.getITEMS().get(i);
 				double latitude = denuncia.getLatitud();
 				double longitude = denuncia.getLongitud();
 

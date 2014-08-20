@@ -11,7 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.upiicsa.denuncia.common.Denuncia;
-import com.upiicsa.denuncia.common.DenunciaContent;
+import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Callback;
 import com.upiicsa.denuncia.util.Constants;
 
@@ -19,6 +19,7 @@ public class ComplaintListFragment extends ListFragment {
 
 	private int mActivatedPosition = ListView.INVALID_POSITION;
 	private Callback mCallbacks;
+	private Singleton singleton;
 
 	private static Callback sDummyCallbacks = new Callback() {
 		@Override
@@ -32,10 +33,10 @@ public class ComplaintListFragment extends ListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		singleton = Singleton.getInstance();
 		setListAdapter(new ArrayAdapter<Denuncia>(getActivity(),
 				android.R.layout.simple_list_item_activated_1,
-				android.R.id.text1, DenunciaContent.ITEMS));
+				android.R.id.text1, singleton.getITEMS()));
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public class ComplaintListFragment extends ListFragment {
 	public void onListItemClick(ListView listView, View view, int position,
 			long id) {
 		super.onListItemClick(listView, view, position, id);
-		mCallbacks.onItemSelected(DenunciaContent.ITEMS.get(position)
+		mCallbacks.onItemSelected(singleton.getITEMS().get(position)
 				.getIdDenuncia());
 	}
 

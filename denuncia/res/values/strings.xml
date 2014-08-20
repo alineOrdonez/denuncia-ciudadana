@@ -17,6 +17,7 @@
     <string name="nueva_denuncia">Nueva denuncia</string>
     <string name="seleccione_categoria">Seleccione una categoría</string>
     <string name="periodo_de_busqueda">Periodo de búsqueda</string>
+    <string name="select_category_and_period">Seleccione categoría y periodo de búsqueda</string>
     <string name="aceptar">Aceptar</string>
     <string name="enviar">Enviar</string>
     <string name="guardar">Guardar</string>
@@ -26,5 +27,9 @@
     <string name="Aceptar">Aceptar</string>
     <string name="consultar_denuncias">Consultar denuncias</string>
     <string name="publicar_denuncia">Publicar denuncia</string>
+    <string name="gps_title">Configuración del GPS</string>
+    <string name="gps_message">La aplicación requiere su localicazión.\n¿Desea activar el GPS?"</string>
+    <string name="gps_btn_title">Activar GPS</string>
+    <string name="insert_email">Ingrese su correo electronico</string>
 
 </resources>

@@ -8,13 +8,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.upiicsa.denuncia.R;
-import com.upiicsa.denuncia.common.DenunciaContent;
+import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Callback;
 import com.upiicsa.denuncia.util.Constants;
 
-public class ComplaintListActivity extends ActionBarActivity implements
-		Callback {
+public class ComplaintListActivity extends ActionBarActivity implements Callback {
 	private boolean mTwoPane;
+	private Singleton singleton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +24,8 @@ public class ComplaintListActivity extends ActionBarActivity implements
 		if (savedInstanceState == null) {
 			if (getIntent().getExtras() != null) {
 				String lista = getIntent().getStringExtra(Constants.EXTRA_LIST);
-				new DenunciaContent(lista);
+				singleton = Singleton.getInstance();
+				singleton.listaDeDenuncias(lista);
 			}
 		}
 

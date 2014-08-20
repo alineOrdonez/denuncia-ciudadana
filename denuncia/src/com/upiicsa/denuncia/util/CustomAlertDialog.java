@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
 
-import com.upiicsa.denuncia.R;
-
 public class CustomAlertDialog {
 
 	public static void decisionAlert(Context context, String title,
@@ -24,11 +22,11 @@ public class CustomAlertDialog {
 	public static void showAlertDialog(Context ctx, String title,
 			String message, View view, String positiveButton,
 			DialogInterface.OnClickListener posCallback) {
-		if (title == null)
-			title = ctx.getResources().getString(R.string.app_name);
 
 		final AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-		builder.setTitle(title);
+		if (title != null) {
+			builder.setTitle(title);
+		}
 		if (message != null) {
 			builder.setMessage(message);
 			builder.setIcon(android.R.drawable.ic_dialog_info);

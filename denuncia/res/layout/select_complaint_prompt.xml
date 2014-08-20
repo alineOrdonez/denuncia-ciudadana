@@ -6,12 +6,14 @@
     android:orientation="vertical"
     android:padding="10dp" >
 
-    <TextView
+    <!--
+        <TextView
         android:id="@+id/selectCategoryTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/seleccione_categoria"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+    -->
 
     <Spinner
         android:id="@+id/selectCategory"
