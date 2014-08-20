@@ -1,16 +1,12 @@
 package com.upiicsa.denuncia.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.upiicsa.denuncia.common.Denuncia;
-import com.upiicsa.denuncia.util.OnResponseListener;
-import com.upiicsa.denuncia.util.Util;
 
 public class Service {
 	private static final String LOG_TAG = "Service";
@@ -66,13 +62,12 @@ public class Service {
 
 	public void selectComplaintService(Denuncia denuncia, String message)
 			throws JSONException {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("i", denuncia.getIdOperacion());
-		map.put("ic", denuncia.getIdCategoria());
-		map.put("em", denuncia.getCorreo());
-		map.put("ic", denuncia.getIdDenuncia());
-		JSONObject jsonObject = Util.convertMapToJson(map);
-		String json = jsonObject.toString();
+		JSONObject object = new JSONObject();
+		object.put("i", denuncia.getIdOperacion());
+		object.put("ic", denuncia.getIdCategoria());
+		object.put("em", denuncia.getCorreo());
+		object.put("ic", denuncia.getIdDenuncia());
+		String json = object.toString();
 		httpTaskRequest(json, message);
 	}
 
@@ -94,6 +89,7 @@ public class Service {
 	public void httpTaskRequest(String json, String progressMessage) {
 		GeneralHttpTask recoveryTask = new GeneralHttpTask(context,
 				progressMessage, responder);
+		Log.d(LOG_TAG, "*****httpTaskRequest:" + json);
 		recoveryTask.execute(json);
 	}
 }

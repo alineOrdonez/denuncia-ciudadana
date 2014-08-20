@@ -14,7 +14,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.upiicsa.denuncia.util.OnResponseListener;
 import com.upiicsa.denuncia.util.Util;
 
 import android.content.Context;

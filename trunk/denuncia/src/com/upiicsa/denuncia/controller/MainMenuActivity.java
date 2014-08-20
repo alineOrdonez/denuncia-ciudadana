@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,15 +36,15 @@ import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.CatIntTiempo;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
+import com.upiicsa.denuncia.service.OnResponseListener;
 import com.upiicsa.denuncia.service.Service;
 import com.upiicsa.denuncia.util.Constants;
 import com.upiicsa.denuncia.util.CustomAlertDialog;
 import com.upiicsa.denuncia.util.NetworkUtil;
-import com.upiicsa.denuncia.util.OnResponseListener;
 import com.upiicsa.denuncia.util.Util;
 
 public class MainMenuActivity extends Activity implements ConnectionCallbacks,
-		OnConnectionFailedListener {
+		OnConnectionFailedListener, OnResponseListener {
 	private static final String LOG_TAG = "MainMenuActivity";
 	private IntentFilter mNetworkStateChangedFilter;
 	private BroadcastReceiver mNetworkStateIntentReceiver;
@@ -192,27 +191,15 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 			View promptsView = li.inflate(R.layout.select_complaint_prompt,
 					new LinearLayout(context), false);
 
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-					context);
-			alertDialogBuilder.setView(promptsView);
-			alertDialogBuilder
-					.setCancelable(false)
-					.setPositiveButton("Buscar",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									findComplaints();
-								}
-							})
-					.setNegativeButton("Cancelar",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-			AlertDialog alertDialog = alertDialogBuilder.create();
-			alertDialog.show();
+			String btnTitle = "Buscar";
+			CustomAlertDialog.promptAlert(context, null, promptsView, btnTitle,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface,
+								int i) {
+							findComplaints();
+						}
+					});
 			addCategoriesOnSpinner(promptsView, R.id.selectCategory);
 		} else {
 			showGPSAlert();
@@ -228,29 +215,15 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 			View promptsView = li.inflate(R.layout.consult_complaint_prompt,
 					new LinearLayout(context), false);
 
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-					context);
-
-			alertDialogBuilder.setView(promptsView);
-
-			alertDialogBuilder
-					.setCancelable(false)
-					.setPositiveButton("Buscar",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									consultAccordingToCategoryAndTime();
-								}
-							})
-					.setNegativeButton("Cancelar",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-			AlertDialog alertDialog = alertDialogBuilder.create();
-			alertDialog.show();
+			String btnTitle = "Buscar";
+			CustomAlertDialog.promptAlert(context, null, promptsView, btnTitle,
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface,
+								int i) {
+							consultAccordingToCategoryAndTime();
+						}
+					});
 			addCategoriesOnSpinner(promptsView, R.id.consultCategory);
 			addRangeOnSpinner(promptsView);
 		} else {
@@ -261,7 +234,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 	public void loadConfiguration() {
 		try {
 			operacion = 1;
-			service = new Service(onResponseListener, context);
+			service = new Service(this, context);
 			service.configService("Cargando configuracion");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -391,59 +364,54 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 
 	}
 
-	protected OnResponseListener onResponseListener = new OnResponseListener() {
+	@Override
+	public void onSuccess(String result) throws JSONException {
+		System.out.println("Result:" + result);
+		JSONObject json;
+		String ld;
+		switch (operacion) {
+		case 1:
+			result = Util.configResult();
+			json = new JSONObject(result);
+			List<String> descripcion = new ArrayList<String>();
+			List<String> intervalo = new ArrayList<String>();
+			ld = json.getString("ld");
+			descripcion = Util.stringToList(ld);
+			denuncias(descripcion);
+			String lt = json.getString("lt");
+			intervalo = Util.stringToList(lt);
+			intervalos(intervalo);
+			break;
+		case 2:
+			result = Util.complaintResult();
+			json = new JSONObject(result);
+			ld = json.getString("ld");
+			addExtraToIntent(ComplaintListActivity.class, ld);
+			break;
+		case 5:
+			result = Util.complaintResult();
+			json = new JSONObject(result);
+			ld = json.getString("ld");
+			addExtraToIntent(MapActivity.class, ld);
+			break;
 
-		@Override
-		public void onSuccess(String result) throws JSONException {
-			System.out.println("Result:" + result);
-			JSONObject json;
-			String ld;
-			switch (operacion) {
-			case 1:
-				result = Util.configResult();
-				json = new JSONObject(result);
-				List<String> descripcion = new ArrayList<String>();
-				List<String> intervalo = new ArrayList<String>();
-				ld = json.getString("ld");
-				descripcion = Util.stringToList(ld);
-				denuncias(descripcion);
-				String lt = json.getString("lt");
-				intervalo = Util.stringToList(lt);
-				intervalos(intervalo);
-				break;
-			case 2:
-				result = Util.complaintResult();
-				json = new JSONObject(result);
-				ld = json.getString("ld");
-				addExtraToIntent(ComplaintListActivity.class, ld);
-				break;
-			case 5:
-				result = Util.complaintResult();
-				json = new JSONObject(result);
-				ld = json.getString("ld");
-				addExtraToIntent(MapActivity.class, ld);
-				break;
-
-			default:
-				break;
-			}
+		default:
+			break;
 		}
+	}
 
-		@Override
-		public void onFailure(String message) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(
-					MainMenuActivity.this);
-			builder.setPositiveButton("Continuar",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
-						}
-					});
-			builder.setMessage(message);
-			builder.setTitle("Error");
-			builder.show();
+	@Override
+	public void onFailure(String message) {
+		String title = "Error";
+		String btnTitle = "Aceptar";
+		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						dialogInterface.dismiss();
+					}
+				});
 
-		}
-	};
+	}
 
 }

@@ -52,12 +52,13 @@ import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
+import com.upiicsa.denuncia.service.OnResponseListener;
 import com.upiicsa.denuncia.service.Service;
 import com.upiicsa.denuncia.util.Constants;
-import com.upiicsa.denuncia.util.OnResponseListener;
+import com.upiicsa.denuncia.util.CustomAlertDialog;
 
 public class NewComplaintFragment extends Fragment implements
-		ConnectionCallbacks, OnConnectionFailedListener {
+		OnResponseListener, ConnectionCallbacks, OnConnectionFailedListener {
 	private static final String LOG_TAG = "NewComplaintFragment";
 	private LocationClient mLocationClient;
 	private Spinner spinner;
@@ -182,41 +183,27 @@ public class NewComplaintFragment extends Fragment implements
 				.findViewById(R.id.radbtnFull);
 		final RadioButton rbtnGallery = (RadioButton) promptsView
 				.findViewById(R.id.radbtnGall);
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-				getActivity());
-		alertDialogBuilder.setView(promptsView);
 
-		alertDialogBuilder
-				.setCancelable(false)
-				.setPositiveButton("Aceptar",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								Intent intent = new Intent(
-										MediaStore.ACTION_IMAGE_CAPTURE);
-								int code = Constants.TAKE_PICTURE;
-								if (rbtnFull.isChecked()) {
-									Uri output = Uri.fromFile(new File(name));
-									intent.putExtra(MediaStore.EXTRA_OUTPUT,
-											output);
-								} else if (rbtnGallery.isChecked()) {
-									intent = new Intent(
-											Intent.ACTION_PICK,
-											android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-									code = Constants.SELECT_PICTURE;
-								}
-								startActivityForResult(intent, code);
-							}
-						})
-				.setNegativeButton("Cancelar",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								dialog.cancel();
-							}
-						});
-
-		AlertDialog alertDialog = alertDialogBuilder.create();
-		// show it
-		alertDialog.show();
+		String btnTitle = "Aceptar";
+		CustomAlertDialog.promptAlert(getActivity(), null, promptsView,
+				btnTitle, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						Intent intent = new Intent(
+								MediaStore.ACTION_IMAGE_CAPTURE);
+						int code = Constants.TAKE_PICTURE;
+						if (rbtnFull.isChecked()) {
+							Uri output = Uri.fromFile(new File(name));
+							intent.putExtra(MediaStore.EXTRA_OUTPUT, output);
+						} else if (rbtnGallery.isChecked()) {
+							intent = new Intent(
+									Intent.ACTION_PICK,
+									android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+							code = Constants.SELECT_PICTURE;
+						}
+						startActivityForResult(intent, code);
+					}
+				});
 	}
 
 	private void addListenerOnButton() {
@@ -229,7 +216,6 @@ public class NewComplaintFragment extends Fragment implements
 			public void run() {
 				try {
 					sendComplaintRequest();
-					Thread.sleep(10000);
 				} catch (Exception e) {
 
 				}
@@ -237,25 +223,22 @@ public class NewComplaintFragment extends Fragment implements
 				getActivity().runOnUiThread(new Runnable() {
 
 					public void run() {
-						AlertDialog.Builder builder = new AlertDialog.Builder(
-								getActivity());
-						builder.setTitle("Operación exitosa");
-						builder.setMessage("La denuncia se ha registrado exitosamente.");
-						builder.setPositiveButton("Continuar",
-								new OnClickListener() {
-
+						String btnTitle = "Continuar";
+						String title = "Operacion exitosa";
+						String message = "La denuncia se ha registrado exitosamente.";
+						CustomAlertDialog.decisionAlert(getActivity(), title,
+								message, btnTitle,
+								new DialogInterface.OnClickListener() {
 									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										dialog.cancel();
-										Intent i = new Intent(getActivity(),
+									public void onClick(
+											DialogInterface dialogInterface,
+											int i) {
+										Intent intent = new Intent(
+												getActivity(),
 												MainMenuActivity.class);
-										startActivity(i);
-
+										startActivity(intent);
 									}
 								});
-						builder.create();
-						builder.show();
 					}
 				});
 			}
@@ -337,33 +320,19 @@ public class NewComplaintFragment extends Fragment implements
 	}
 
 	private void showGPSAlert() {
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-
-		alertDialog.setTitle("Configuración del GPS");
-		alertDialog.setMessage("Para obtener su localización es necesario"
-				+ "tener habilitado el GPS.\n¿Desea activarlo?");
-		alertDialog.setPositiveButton("Activar GPS",
-				new DialogInterface.OnClickListener() {
-
+		String title = "Configuracion del GPS";
+		String message = "La aplicacion requere su localicazion."
+				+ "�Desea activar el GPS?";
+		String btnTitle = "Activar GPS";
+		CustomAlertDialog.decisionAlert(getActivity(), title, message,
+				btnTitle, new DialogInterface.OnClickListener() {
 					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent i = new Intent(
+					public void onClick(DialogInterface dialogInterface, int i) {
+						Intent intent = new Intent(
 								Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-						startActivity(i);
+						startActivity(intent);
 					}
 				});
-
-		alertDialog.setNegativeButton("Cancelar",
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-
-					}
-				});
-
-		alertDialog.show();
 	}
 
 	private void sendComplaintRequest() {
@@ -380,7 +349,7 @@ public class NewComplaintFragment extends Fragment implements
 			try {
 				Denuncia denuncia = new Denuncia(idCategoria, descripcion,
 						correo, imgString, direccion, latitude, longitude);
-				service = new Service(onResponseListener, getActivity());
+				service = new Service(this, getActivity());
 				service.newComplaintService(denuncia, "Enviando denuncia...");
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -414,28 +383,36 @@ public class NewComplaintFragment extends Fragment implements
 
 	}
 
-	protected OnResponseListener onResponseListener = new OnResponseListener() {
-		public void onSuccess(String result) {
-			System.out.println(result);
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle("Operacion exitosa");
-			builder.setMessage("La denuncia se ha enviado exitosamente.");
-			builder.setPositiveButton("Continuar", new OnClickListener() {
+	@Override
+	public void onSuccess(String result) {
+		System.out.println(result);
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("Operacion exitosa");
+		builder.setMessage("La denuncia se ha enviado exitosamente.");
+		builder.setPositiveButton("Continuar", new OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-					Intent i = new Intent(getActivity(), MainMenuActivity.class);
-					startActivity(i);
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+				Intent i = new Intent(getActivity(), MainMenuActivity.class);
+				startActivity(i);
 
-				}
-			});
-			builder.create();
-			builder.show();
-		};
+			}
+		});
+		builder.create();
+		builder.show();
+	}
 
-		public void onFailure(String message) {
-		};
-	};
-
+	@Override
+	public void onFailure(String message) {
+		String title = "Error";
+		String btnTitle = "Aceptar";
+		CustomAlertDialog.decisionAlert(getActivity(), title, message,
+				btnTitle, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						dialogInterface.dismiss();
+					}
+				});
+	}
 }

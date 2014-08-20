@@ -39,13 +39,13 @@ import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.DenunciaContent;
 import com.upiicsa.denuncia.common.Singleton;
+import com.upiicsa.denuncia.service.OnResponseListener;
 import com.upiicsa.denuncia.service.Service;
 import com.upiicsa.denuncia.util.Constants;
 import com.upiicsa.denuncia.util.CustomAlertDialog;
-import com.upiicsa.denuncia.util.OnResponseListener;
 
 public class ComplaintDetailFragment extends Fragment implements
-		ConnectionCallbacks, OnConnectionFailedListener {
+		ConnectionCallbacks, OnConnectionFailedListener, OnResponseListener {
 	private final String LOG_TAG = "ComplaintDetailFragment";
 	private LocationClient mLocationClient;
 	private Denuncia mItem;
@@ -148,47 +148,31 @@ public class ComplaintDetailFragment extends Fragment implements
 		final EditText userInput = (EditText) promptsView
 				.findViewById(R.id.emailEditText);
 
-		// set dialog message
-		alertDialogBuilder
-				.setCancelable(false)
-				.setPositiveButton("Enviar",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								email = userInput.getText().toString();
-								final ProgressDialog ringProgressDialog = ProgressDialog
-										.show(getActivity(),
-												"Por favor espere ...",
-												"La denuncia se esta actualizando ...",
-												true);
-								ringProgressDialog.setCancelable(false);
-								ringProgressDialog.setIndeterminate(true);
-								new Thread(new Runnable() {
-									@Override
-									public void run() {
-										try {
-											sendComplaint();
-											Thread.sleep(6000);
-										} catch (Exception e) {
+		String btnTitle = "Enviar";
+		CustomAlertDialog.promptAlert(getActivity(), null, promptsView,
+				btnTitle, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						email = userInput.getText().toString();
+						final ProgressDialog ringProgressDialog = ProgressDialog
+								.show(getActivity(), "Por favor espere ...",
+										"La denuncia se esta actualizando ...",
+										true);
+						ringProgressDialog.setCancelable(false);
+						ringProgressDialog.setIndeterminate(true);
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									sendComplaint();
+								} catch (Exception e) {
 
-										}
-										ringProgressDialog.dismiss();
-									}
-								}).start();
-
+								}
+								ringProgressDialog.dismiss();
 							}
-						})
-				.setNegativeButton("Cancelar",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								dialog.cancel();
-							}
-						});
-
-		// create alert dialog
-		AlertDialog alertDialog = alertDialogBuilder.create();
-
-		// show it
-		alertDialog.show();
+						}).start();
+					}
+				});
 	}
 
 	public void sendComplaint() {
@@ -199,7 +183,7 @@ public class ComplaintDetailFragment extends Fragment implements
 		if (isGPSEnabled) {
 			try {
 				Denuncia denuncia = new Denuncia(idDenuncia, idCategoria, email);
-				service = new Service(onResponseListener, getActivity());
+				service = new Service(this, getActivity());
 				service.selectComplaintService(denuncia,
 						"Reenviando denuncia...");
 			} catch (JSONException e) {
@@ -213,7 +197,7 @@ public class ComplaintDetailFragment extends Fragment implements
 	private void showGPSAlert() {
 		String title = "Configuracion del GPS";
 		String message = "La aplicacion requiere tener acceso a su ubicacion."
-				+ "Â¿Desea activar el GPS?";
+				+ "¿Desea activar el GPS?";
 		String btnTitle = "Activar GPS";
 		CustomAlertDialog.decisionAlert(getActivity(), title, message,
 				btnTitle, new DialogInterface.OnClickListener() {
@@ -311,28 +295,37 @@ public class ComplaintDetailFragment extends Fragment implements
 		return Math.round((float) dp * density);
 	}
 
-	protected OnResponseListener onResponseListener = new OnResponseListener() {
-		public void onSuccess(String result) {
-			System.out.println(result);
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle("Operacion exitosa");
-			builder.setMessage("La denuncia se ha reenviado...");
-			builder.setPositiveButton("Continuar", new OnClickListener() {
+	@Override
+	public void onSuccess(String result) {
+		System.out.println(result);
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("Operacion exitosa");
+		builder.setMessage("La denuncia se ha reenviado...");
+		builder.setPositiveButton("Continuar", new OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-					Intent i = new Intent(getActivity(), MainMenuActivity.class);
-					startActivity(i);
-				}
-			});
-			builder.create();
-			builder.show();
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+				Intent i = new Intent(getActivity(), MainMenuActivity.class);
+				startActivity(i);
+			}
+		});
+		builder.create();
+		builder.show();
 
-		};
+	}
 
-		public void onFailure(String message) {
-		};
-	};
+	@Override
+	public void onFailure(String message) {
+		String title = "Error";
+		String btnTitle = "Aceptar";
+		CustomAlertDialog.decisionAlert(getActivity(), title, message,
+				btnTitle, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						dialogInterface.dismiss();
+					}
+				});
+	}
 
 }
