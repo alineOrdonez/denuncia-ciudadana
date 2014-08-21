@@ -35,5 +35,7 @@
     <string name="successful_message">La denuncia ha sido registrada</string>
     <string name="btn_continuar">Continuar</string>
     <string name="error">Error</string>
+    <string name="correo">Correo electrónico</string>
+    <string name="fill_in">Llene todos los siguientes campos.</string>
 
 </resources>

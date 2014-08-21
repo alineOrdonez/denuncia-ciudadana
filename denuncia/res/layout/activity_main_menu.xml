@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:gravity="top"
     tools:context="${packageName}.${activityClass}" >
 
     <Button
@@ -12,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="142dp"
+        android:layout_marginTop="111dp"
         android:background="@drawable/btn_denuncia"
         android:onClick="showPrompt" />
 
@@ -22,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/denuncia"
         android:layout_below="@+id/denuncia"
-        android:layout_marginTop="19dp"
+        android:layout_marginTop="18dp"
         android:background="@drawable/btn_consulta"
         android:onClick="consultComplaint" />
 
