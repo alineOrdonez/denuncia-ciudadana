@@ -21,7 +21,7 @@ public class ComplaintListFragment extends ListFragment {
 	private Callback mCallbacks;
 	private Singleton singleton;
 
-	private static Callback sDummyCallbacks = new Callback() {
+	private static Callback sCallbacks = new Callback() {
 		@Override
 		public void onItemSelected(int id) {
 		}
@@ -68,9 +68,7 @@ public class ComplaintListFragment extends ListFragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
-
-		// Reset the active callbacks interface to the dummy implementation.
-		mCallbacks = sDummyCallbacks;
+		mCallbacks = sCallbacks;
 	}
 
 	@Override

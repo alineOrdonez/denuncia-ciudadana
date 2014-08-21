@@ -3,15 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
+    android:gravity="top"
     tools:context="${packageName}.${activityClass}" >
 
     <Button
         android:id="@+id/denuncia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/consulta"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="146dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="142dp"
         android:background="@drawable/btn_denuncia"
         android:onClick="showPrompt" />
 
@@ -19,9 +20,9 @@
         android:id="@+id/consulta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/denuncia"
         android:layout_below="@+id/denuncia"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="21dp"
+        android:layout_marginTop="19dp"
         android:background="@drawable/btn_consulta"
         android:onClick="consultComplaint" />
 

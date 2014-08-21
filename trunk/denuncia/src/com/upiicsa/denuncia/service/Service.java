@@ -31,8 +31,7 @@ public class Service {
 		httpTaskRequest(json);
 	}
 
-	public void findComplaintsService(Denuncia denuncia)
-			throws JSONException {
+	public void findComplaintsService(Denuncia denuncia) throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		String lat = String.valueOf(denuncia.getLatitud());
 		String lng = String.valueOf(denuncia.getLongitud());
@@ -57,13 +56,14 @@ public class Service {
 		object.put("dd", nueva.getDireccion());
 		object.put("la", lat);
 		object.put("lo", lng);
-		object.put("im", nueva.getImagen());
+		if (nueva.getImagen() != null) {
+			object.put("im", nueva.getImagen());
+		}
 		String json = object.toString();
 		httpTaskRequest(json);
 	}
 
-	public void selectComplaintService(Denuncia denuncia)
-			throws JSONException {
+	public void selectComplaintService(Denuncia denuncia) throws JSONException {
 		JSONObject object = new JSONObject();
 		object.put("i", denuncia.getIdOperacion());
 		object.put("ic", denuncia.getIdCategoria());
@@ -73,8 +73,7 @@ public class Service {
 		httpTaskRequest(json);
 	}
 
-	public void consultComplaintService(Denuncia denuncia)
-			throws JSONException {
+	public void consultComplaintService(Denuncia denuncia) throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		String lat = String.valueOf(denuncia.getLatitud());
 		String lng = String.valueOf(denuncia.getLongitud());

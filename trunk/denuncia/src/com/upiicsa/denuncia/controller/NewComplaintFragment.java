@@ -8,11 +8,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -60,6 +58,7 @@ import com.upiicsa.denuncia.util.CustomAlertDialog;
 public class NewComplaintFragment extends Fragment implements
 		OnResponseListener, ConnectionCallbacks, OnConnectionFailedListener {
 	private static final String LOG_TAG = "NewComplaintFragment";
+	private android.app.ProgressDialog progressDialog;
 	private LocationClient mLocationClient;
 	private Spinner spinner;
 	private EditText address;
@@ -149,7 +148,7 @@ public class NewComplaintFragment extends Fragment implements
 				list);
 
 		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				.setDropDownViewResource(android.R.layout.simple_spinner_item);
 		spinner.setAdapter(dataAdapter);
 		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -207,10 +206,8 @@ public class NewComplaintFragment extends Fragment implements
 	}
 
 	private void addListenerOnButton() {
-		final ProgressDialog ringProgressDialog = ProgressDialog.show(
-				getActivity(), null, null, true);
-		ringProgressDialog.setCancelable(false);
-		ringProgressDialog.setIndeterminate(true);
+		progressDialog = new ProgressDialog(getActivity(), 1);
+		progressDialog.show();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -219,28 +216,6 @@ public class NewComplaintFragment extends Fragment implements
 				} catch (Exception e) {
 
 				}
-				ringProgressDialog.dismiss();
-				getActivity().runOnUiThread(new Runnable() {
-
-					public void run() {
-						String btnTitle = "Continuar";
-						String title = "Operacion exitosa";
-						String message = "La denuncia se ha registrado exitosamente.";
-						CustomAlertDialog.decisionAlert(getActivity(), title,
-								message, btnTitle,
-								new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(
-											DialogInterface dialogInterface,
-											int i) {
-										Intent intent = new Intent(
-												getActivity(),
-												MainMenuActivity.class);
-										startActivity(intent);
-									}
-								});
-					}
-				});
 			}
 		}).start();
 	}
@@ -288,7 +263,6 @@ public class NewComplaintFragment extends Fragment implements
 					msc.disconnect();
 				}
 			};
-			// }
 			break;
 		case 2:
 			Uri selectedImage = data.getData();
@@ -306,7 +280,6 @@ public class NewComplaintFragment extends Fragment implements
 			}
 			break;
 		case 3:
-			// fetch the message String
 			String[] array = data.getStringArrayExtra("ADDRESS");
 			direccion = array[0];
 			address.setText(direccion);
@@ -320,10 +293,9 @@ public class NewComplaintFragment extends Fragment implements
 	}
 
 	private void showGPSAlert() {
-		String title = "Configuracion del GPS";
-		String message = "La aplicacion requere su localicazion."
-				+ "�Desea activar el GPS?";
-		String btnTitle = "Activar GPS";
+		String title = getString(R.string.gps_title);
+		String message = getString(R.string.gps_message);
+		String btnTitle = getString(R.string.gps_btn_title);
 		CustomAlertDialog.decisionAlert(getActivity(), title, message,
 				btnTitle, new DialogInterface.OnClickListener() {
 					@Override
@@ -386,27 +358,31 @@ public class NewComplaintFragment extends Fragment implements
 	@Override
 	public void onSuccess(String result) {
 		System.out.println(result);
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle("Operacion exitosa");
-		builder.setMessage("La denuncia se ha enviado exitosamente.");
-		builder.setPositiveButton("Continuar", new OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-				Intent i = new Intent(getActivity(), MainMenuActivity.class);
-				startActivity(i);
-
-			}
-		});
-		builder.create();
-		builder.show();
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
+		String title = getString(R.string.successful);
+		String message = getString(R.string.successful_message);
+		String btnTitle = getString(R.string.btn_continuar);
+		CustomAlertDialog.decisionAlert(getActivity(), title, message,
+				btnTitle, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						progressDialog.hide();
+						Intent intent = new Intent(getActivity(),
+								MainMenuActivity.class);
+						startActivity(intent);
+					}
+				});
 	}
 
 	@Override
 	public void onFailure(String message) {
-		String title = "Error";
-		String btnTitle = "Aceptar";
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
+		String title = getString(R.string.error);
+		String btnTitle = getString(R.string.aceptar);
 		CustomAlertDialog.decisionAlert(getActivity(), title, message,
 				btnTitle, new DialogInterface.OnClickListener() {
 					@Override

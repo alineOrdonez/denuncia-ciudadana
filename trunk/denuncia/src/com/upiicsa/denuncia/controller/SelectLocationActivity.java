@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,15 +54,12 @@ public class SelectLocationActivity extends Activity {
 		int id = item.getItemId();
 
 		if (id == R.id.action_aceptar) {
-			// TODO:Enviar direccion
 			Intent i = new Intent();
 			String lat = String.valueOf(latitude);
 			String lng = String.valueOf(longitude);
 			String[] address = new String[] { selectedAddress, lat, lng };
 			i.putExtra("ADDRESS", address);
-			// Set The Result in Intent
 			setResult(2, i);
-			// finish The activity
 			finish();
 			return true;
 		} else {
@@ -131,10 +129,11 @@ public class SelectLocationActivity extends Activity {
 
 				@Override
 				public View getInfoContents(Marker marker) {
-					// Getting view from the layout file info_window_layout
+
 					View v = getLayoutInflater().inflate(
-							R.layout.info_window_layout, null);
-					// Getting the position from the marker
+							R.layout.info_window_layout,
+							new LinearLayout(SelectLocationActivity.this),
+							false);
 					LatLng latLng = marker.getPosition();
 
 					latitude = latLng.latitude;
@@ -147,28 +146,22 @@ public class SelectLocationActivity extends Activity {
 
 						if (myList.size() > 0) {
 							Address address = myList.get(0);
-							String line0 = address.getThoroughfare();// address.getAddressLine(0);
+							String line0 = address.getThoroughfare();
 							String line1 = address.getAddressLine(1);
 							String line2 = address.getAddressLine(2);
 							selectedAddress = line0 + ", " + line1 + ", "
 									+ line2;
 
-							// Getting reference to the TextView to set latitude
 							TextView tvLat = (TextView) v
 									.findViewById(R.id.tv_lat);
-							// Getting reference to the TextView to set
-							// longitude
 							TextView tvLng = (TextView) v
 									.findViewById(R.id.tv_lng);
-							// Setting the latitude
 							tvLat.setText(line0 + ", " + line1);
-							// Setting the longitude
 							tvLng.setText(line2);
 						}
 					} catch (Exception ex) {
 						Log.e(TAG, "Impossible to connect to Geocoder", ex);
 					}
-					// Returning the view containing InfoWindow contents
 					return v;
 				}
 			});
