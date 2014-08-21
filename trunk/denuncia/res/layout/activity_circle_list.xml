@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="fill_parent"
     android:layout_weight="1"
-    android:background="@drawable/bckgrnd_logo"
+    android:background="@drawable/background"
     android:orientation="vertical" >
 
     <fragment

@@ -114,7 +114,7 @@ public class Service {
 
 					if (message != null && code.equals("01")) {
 						jsonObject.remove("is");
-						String result = jsonObject.toString();
+						String result = json;// jsonObject.toString();
 						responder.onSuccess(result);
 					} else {
 						String description = jsonObject.getString("ds");

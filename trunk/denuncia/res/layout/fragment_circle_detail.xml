@@ -4,13 +4,12 @@
     android:id="@+id/details_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bckgrnd_logo" >
+    android:background="@drawable/background" >
 
     <LinearLayout
         android:id="@+id/fragmentComplaintDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="fill_horizontal"
         android:orientation="vertical" >
 
         <TextView
@@ -80,10 +79,9 @@
             android:id="@+id/complaint_image_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="image"
             android:layout_gravity="center"
+            android:contentDescription="@string/imagen"
             android:src="@drawable/imagen_no_disponible" />
-
     </LinearLayout>
 
 </ScrollView>

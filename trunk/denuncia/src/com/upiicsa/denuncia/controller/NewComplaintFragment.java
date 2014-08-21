@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -62,9 +65,12 @@ public class NewComplaintFragment extends Fragment implements
 	private LocationClient mLocationClient;
 	private Spinner spinner;
 	private EditText address;
+	private EditText description;
 	private EditText email;
 	private Service service;
 	private String direccion;
+	private String correo;
+	private String denDesc;
 	private String lat;
 	private String lng;
 	private CatDenuncia catDen;
@@ -87,13 +93,14 @@ public class NewComplaintFragment extends Fragment implements
 		final View view = inflater.inflate(R.layout.fragment_new_complaint,
 				container, false);
 		email = (EditText) view.findViewById(R.id.newComplaintEmailEditText);
+		address = (EditText) view.findViewById(R.id.addressEditText);
+		description = (EditText) view.findViewById(R.id.descEditText);
 		name = Environment.getExternalStorageDirectory() + "/DenunciaImg.jpg";
 		addItemsOnSpinner(view);
 		addListenerOnFocus(view);
 
 		final Button selectImg = (Button) view.findViewById(R.id.btnImg);
 		selectImg.setOnClickListener(new View.OnClickListener() {
-
 			@Override
 			public void onClick(View view) {
 				addListenerOnButtonForCamera();
@@ -113,7 +120,15 @@ public class NewComplaintFragment extends Fragment implements
 		int id = item.getItemId();
 
 		if (id == R.id.sendNewComplaint) {
-			addListenerOnButton();
+
+			if (lee(email) && lee(address) && lee(description)) {
+				correo = email.getText().toString();
+				denDesc = description.getText().toString();
+				addListenerOnButton();
+			} else {
+
+			}
+
 			return true;
 		} else {
 			return super.onOptionsItemSelected(item);
@@ -125,6 +140,16 @@ public class NewComplaintFragment extends Fragment implements
 		super.onStart();
 		// Connect the client.
 		mLocationClient.connect();
+	}
+
+	private boolean lee(EditText editText) {
+		String valor = editText.getText().toString().trim();
+		boolean b = true;
+		if (valor.isEmpty()) {
+			editText.setError("Valor incorrecto.");
+			b = false;
+		}
+		return b;
 	}
 
 	/*
@@ -221,7 +246,6 @@ public class NewComplaintFragment extends Fragment implements
 	}
 
 	public void addListenerOnFocus(View view) {
-		address = (EditText) view.findViewById(R.id.addressEditText);
 		address.setOnFocusChangeListener(new OnFocusChangeListener() {
 
 			@Override
@@ -316,11 +340,10 @@ public class NewComplaintFragment extends Fragment implements
 			double longitude = Double.valueOf(lng);
 			double latitude = Double.valueOf(lat);
 			int idCategoria = catDen.getIdCatDenuncia();
-			String descripcion = catDen.getDescripcion();
-			String correo = email.getText().toString();
+			// String descripcion = catDen.getDescripcion();
 			try {
-				Denuncia denuncia = new Denuncia(idCategoria, descripcion,
-						correo, imgString, direccion, latitude, longitude);
+				Denuncia denuncia = new Denuncia(idCategoria, denDesc, correo,
+						imgString, direccion, latitude, longitude);
 				service = new Service(this);
 				service.newComplaintService(denuncia, "Enviando denuncia...");
 			} catch (Exception e) {
@@ -361,6 +384,13 @@ public class NewComplaintFragment extends Fragment implements
 		if (this.progressDialog.isShowing()) {
 			this.progressDialog.dismiss();
 		}
+		try {
+			JSONObject json = new JSONObject(result);
+			singleton.setImage(json.getString("im"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
 		String title = getString(R.string.successful);
 		String message = getString(R.string.successful_message);
 		String btnTitle = getString(R.string.btn_continuar);
