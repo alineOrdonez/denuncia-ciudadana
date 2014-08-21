@@ -31,5 +31,9 @@
     <string name="gps_message">La aplicación requiere su localicazión.\n¿Desea activar el GPS?"</string>
     <string name="gps_btn_title">Activar GPS</string>
     <string name="insert_email">Ingrese su correo electronico</string>
+    <string name="successful">Operación exitosa</string>
+    <string name="successful_message">La denuncia ha sido registrada</string>
+    <string name="btn_continuar">Continuar</string>
+    <string name="error">Error</string>
 
 </resources>

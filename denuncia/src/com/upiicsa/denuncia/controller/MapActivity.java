@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.upiicsa.denuncia.R;
+import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.util.Constants;
@@ -77,32 +78,46 @@ public class MapActivity extends Activity {
 
 				Log.e("Random", "> " + latitude + ", " + longitude);
 
-				// changing marker color
+				// TODO:
+				int idCategoria = 2;// denuncia.getIdCategoria();
+				CatDenuncia categoria = singleton.getDenuncias().get(
+						idCategoria);
+				String descripcion = categoria.getDescripcion().toLowerCase();
 
-				switch (denuncia.getIdCategoria()) {
-				case 1:
+				if (descripcion.contains("accidente")) {
 					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-				case 2:
+							.fromResource(R.drawable.accidente_vi));
+				} else if (descripcion.contains("cable")) {
 					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-				case 3:
+							.fromResource(R.drawable.cables_caidos));
+				} else if (descripcion.contains("derrumbe")) {
 					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-				case 4:
+							.fromResource(R.drawable.derrumbe));
+				} else if (descripcion.contains("agua")) {
 					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-				case 5:
+							.fromResource(R.drawable.fuga_agua));
+				} else if (descripcion.contains("gas")) {
 					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-					break;
-
-				default:
+							.fromResource(R.drawable.fuga_gas));
+				} else if (descripcion.contains("huelga")) {
 					marker.icon(BitmapDescriptorFactory
-							.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
-					break;
+							.fromResource(R.drawable.huelga));
+				} else if (descripcion.contains("incendio")) {
+					marker.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.incendio));
+				} else if (descripcion.contains("inundacion")) {
+					marker.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.inundacion));
+				} else if (descripcion.contains("cadaver")) {
+					marker.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.rescate_cadaver));
+				} else if (descripcion.contains("robo")) {
+					marker.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.robo));
+				} else if (descripcion.contains("arbol")) {
+					marker.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.seccionar_arbol));
 				}
-
 				googleMap.addMarker(marker);
 
 				// Move the camera to last position with a zoom level

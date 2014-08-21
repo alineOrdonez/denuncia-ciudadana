@@ -3,9 +3,9 @@ package com.upiicsa.denuncia.controller;
 import org.json.JSONException;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -45,6 +45,7 @@ import com.upiicsa.denuncia.util.CustomAlertDialog;
 public class ComplaintDetailFragment extends Fragment implements
 		ConnectionCallbacks, OnConnectionFailedListener, OnResponseListener {
 	private final String LOG_TAG = "ComplaintDetailFragment";
+	private android.app.ProgressDialog progressDialog;
 	private LocationClient mLocationClient;
 	private Denuncia mItem;
 	private Singleton singleton;
@@ -88,6 +89,7 @@ public class ComplaintDetailFragment extends Fragment implements
 							.setText(cat.getDescripcion());
 				}
 			}
+			// TODO: cambiar por la imagen que obtengo en la respuesta
 			if (!singleton.getImage().isEmpty()) {
 				setImage(singleton.getImage(), rootView);
 				scaleImage(rootView);
@@ -133,7 +135,7 @@ public class ComplaintDetailFragment extends Fragment implements
 	}
 
 	public void addListenerOnButton() {
-		// get prompts.xml view
+
 		LayoutInflater li = LayoutInflater.from(getActivity());
 		View promptsView = li.inflate(R.layout.prompts, new LinearLayout(
 				getActivity()), false);
@@ -141,7 +143,6 @@ public class ComplaintDetailFragment extends Fragment implements
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 				getActivity());
 
-		// set prompts.xml to alert dialog builder
 		alertDialogBuilder.setView(promptsView);
 
 		final EditText userInput = (EditText) promptsView
@@ -153,7 +154,19 @@ public class ComplaintDetailFragment extends Fragment implements
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
 						email = userInput.getText().toString();
-						sendComplaint();
+
+						progressDialog = new ProgressDialog(getActivity(), 1);
+						progressDialog.show();
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									sendComplaint();
+								} catch (Exception e) {
+
+								}
+							}
+						}).start();
 					}
 				});
 	}
@@ -176,10 +189,9 @@ public class ComplaintDetailFragment extends Fragment implements
 	}
 
 	private void showGPSAlert() {
-		String title = "Configuracion del GPS";
-		String message = "La aplicacion requiere tener acceso a su ubicacion."
-				+ "¿Desea activar el GPS?";
-		String btnTitle = "Activar GPS";
+		String title = getString(R.string.gps_title);
+		String message = getString(R.string.gps_message);
+		String btnTitle = getString(R.string.gps_btn_title);
 		CustomAlertDialog.decisionAlert(getActivity(), title, message,
 				btnTitle, new DialogInterface.OnClickListener() {
 					@Override
@@ -279,28 +291,30 @@ public class ComplaintDetailFragment extends Fragment implements
 	@Override
 	public void onSuccess(String result) {
 		System.out.println(result);
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle("Operacion exitosa");
-		builder.setMessage("La denuncia se ha reenviado...");
-		builder.setPositiveButton("Continuar", new OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-				Intent i = new Intent(getActivity(), MainMenuActivity.class);
-				startActivity(i);
-				getActivity().finish();
-			}
-		});
-		builder.create();
-		builder.show();
-
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
+		String title = getString(R.string.successful);
+		String message = getString(R.string.successful_message);
+		String btnTitle = getString(R.string.btn_continuar);
+		CustomAlertDialog.decisionAlert(getActivity(), title, message,
+				btnTitle, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						Intent intent = new Intent(getActivity(),
+								MainMenuActivity.class);
+						startActivity(intent);
+					}
+				});
 	}
 
 	@Override
 	public void onFailure(String message) {
-		String title = "Error";
-		String btnTitle = "Aceptar";
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
+		String title = getString(R.string.error);
+		String btnTitle = getString(R.string.aceptar);
 		CustomAlertDialog.decisionAlert(getActivity(), title, message,
 				btnTitle, new DialogInterface.OnClickListener() {
 					@Override

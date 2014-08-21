@@ -397,7 +397,9 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 
 	@Override
 	public void onSuccess(String result) throws JSONException {
-		progressDialog.hide();
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
 		System.out.println("Result:" + result);
 		JSONObject json;
 		String ld;
@@ -434,9 +436,11 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 
 	@Override
 	public void onFailure(String message) {
-		progressDialog.hide();
-		String title = "Error";
-		String btnTitle = "Aceptar";
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
+		String title = getString(R.string.error);
+		String btnTitle = getString(R.string.aceptar);
 		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,
 				new DialogInterface.OnClickListener() {
 					@Override

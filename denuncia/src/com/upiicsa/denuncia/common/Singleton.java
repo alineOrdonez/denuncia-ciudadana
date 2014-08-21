@@ -33,6 +33,10 @@ public class Singleton {
 	}
 
 	public void listaDeDenuncias(String string) {
+		if (!ITEMS.isEmpty() && ITEM_MAP != null) {
+			ITEMS.clear();
+			ITEM_MAP.clear();
+		}
 		List<String> stringList = Util.stringToList(string);
 		for (int i = 0; i < stringList.size(); i++) {
 			List<String> list = Util.detailList(stringList.get(i));
