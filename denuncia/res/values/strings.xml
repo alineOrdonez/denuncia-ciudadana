@@ -37,5 +37,7 @@
     <string name="error">Error</string>
     <string name="correo">Correo electrónico</string>
     <string name="fill_in">Llene todos los siguientes campos.</string>
+    <string name="no_network_connection">El dispositivo no tiene accesso a Internet.</string>
+    <string name="invalid_email">El correo electrónico es incorrecto.</string>
 
 </resources>

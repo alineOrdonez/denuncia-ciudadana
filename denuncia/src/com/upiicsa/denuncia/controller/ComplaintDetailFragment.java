@@ -38,9 +38,10 @@ import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.OnResponseListener;
-import com.upiicsa.denuncia.service.Service;
-import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.service.RequestMessage;
+import com.upiicsa.denuncia.util.Constant;
 import com.upiicsa.denuncia.util.CustomAlertDialog;
+import com.upiicsa.denuncia.util.Util;
 
 public class ComplaintDetailFragment extends Fragment implements
 		ConnectionCallbacks, OnConnectionFailedListener, OnResponseListener {
@@ -52,7 +53,7 @@ public class ComplaintDetailFragment extends Fragment implements
 	private int idDenuncia;
 	private int idCategoria;
 	private String email;
-	private Service service;
+	private RequestMessage service;
 
 	public ComplaintDetailFragment() {
 	}
@@ -61,10 +62,10 @@ public class ComplaintDetailFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		if (getArguments().containsKey(Constants.ARG_ITEM_ID)) {
-			String string = getArguments().getString(Constants.ARG_ITEM_ID);
+		if (getArguments().containsKey(Constant.ARG_ITEM_ID)) {
+			String string = getArguments().getString(Constant.ARG_ITEM_ID);
 			singleton = Singleton.getInstance();
-			service = new Service(this);
+			service = new RequestMessage(this);
 			idDenuncia = Integer.valueOf(string);
 			mItem = singleton.getITEM_MAP().get(idDenuncia);
 			mLocationClient = new LocationClient(getActivity(), this, this);
@@ -154,19 +155,24 @@ public class ComplaintDetailFragment extends Fragment implements
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
 						email = userInput.getText().toString();
+						if (Util.isValidEmail(email)) {
+							progressDialog = new ProgressDialog(getActivity(),
+									1);
+							progressDialog.show();
+							new Thread(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										sendComplaint();
+									} catch (Exception e) {
 
-						progressDialog = new ProgressDialog(getActivity(), 1);
-						progressDialog.show();
-						new Thread(new Runnable() {
-							@Override
-							public void run() {
-								try {
-									sendComplaint();
-								} catch (Exception e) {
-
+									}
 								}
-							}
-						}).start();
+							}).start();
+						} else {
+							userInput
+									.setError(getString(R.string.invalid_email));
+						}
 					}
 				});
 	}

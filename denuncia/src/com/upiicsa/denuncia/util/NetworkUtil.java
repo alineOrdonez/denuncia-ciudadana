@@ -13,10 +13,10 @@ public class NetworkUtil {
 		NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
 		if (activeNetwork != null) {
 			if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
-				return Constants.TYPE_WIFI;
+				return Constant.TYPE_WIFI;
 			if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)
-				return Constants.TYPE_MOBILE;
+				return Constant.TYPE_MOBILE;
 		}
-		return Constants.TYPE_NO_CONNECCTION;
+		return Constant.TYPE_NO_CONNECCTION;
 	}
 }

@@ -13,7 +13,7 @@ import android.widget.ListView;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Callback;
-import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.Constant;
 
 public class ComplaintListFragment extends ListFragment {
 
@@ -46,9 +46,9 @@ public class ComplaintListFragment extends ListFragment {
 		// Restore the previously serialized activated item position.
 		if (savedInstanceState != null
 				&& savedInstanceState
-						.containsKey(Constants.STATE_ACTIVATED_POSITION)) {
+						.containsKey(Constant.STATE_ACTIVATED_POSITION)) {
 			setActivatedPosition(savedInstanceState
-					.getInt(Constants.STATE_ACTIVATED_POSITION));
+					.getInt(Constant.STATE_ACTIVATED_POSITION));
 		}
 	}
 
@@ -83,7 +83,7 @@ public class ComplaintListFragment extends ListFragment {
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		if (mActivatedPosition != ListView.INVALID_POSITION) {
-			outState.putInt(Constants.STATE_ACTIVATED_POSITION,
+			outState.putInt(Constant.STATE_ACTIVATED_POSITION,
 					mActivatedPosition);
 		}
 	}

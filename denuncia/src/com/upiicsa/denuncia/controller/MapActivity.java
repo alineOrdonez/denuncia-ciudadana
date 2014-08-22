@@ -20,7 +20,7 @@ import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
-import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.Constant;
 
 public class MapActivity extends Activity {
 
@@ -35,7 +35,7 @@ public class MapActivity extends Activity {
 		if (savedInstanceState == null) {
 			singleton = Singleton.getInstance();
 			if (getIntent().getExtras() != null) {
-				String lista = getIntent().getStringExtra(Constants.EXTRA_LIST);
+				String lista = getIntent().getStringExtra(Constant.EXTRA_LIST);
 				singleton.listaDeDenuncias(lista);
 			}
 		}
