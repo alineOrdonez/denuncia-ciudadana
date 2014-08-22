@@ -41,17 +41,19 @@ public class Singleton {
 		for (int i = 0; i < stringList.size(); i++) {
 			List<String> list = Util.detailList(stringList.get(i));
 			Denuncia item = new Denuncia();
-			int id = Integer.valueOf(list.get(0));
-			item.setIdDenuncia(id);
-			item.setDescripcion(list.get(1));
-			item.setCorreo(list.get(2));
-			item.setDireccion(list.get(3));
-			double latitud = Double.valueOf(list.get(4));
+			int idDenuncia = Integer.valueOf(list.get(0));
+			item.setIdDenuncia(idDenuncia);
+			int idCategoria = Integer.valueOf(list.get(1));
+			item.setIdCategoria(idCategoria);
+			item.setDescripcion(list.get(2));
+			item.setCorreo(list.get(3));
+			item.setDireccion(list.get(4));
+			double latitud = Double.valueOf(list.get(5));
 			item.setLatitud(latitud);
-			double longitud = Double.valueOf(list.get(5));
+			double longitud = Double.valueOf(list.get(6));
 			item.setLongitud(longitud);
 			ITEMS.add(item);
-			ITEM_MAP.put(id, item);
+			ITEM_MAP.put(idDenuncia, item);
 		}
 	}
 

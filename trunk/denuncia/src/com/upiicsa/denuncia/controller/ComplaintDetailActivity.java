@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.upiicsa.denuncia.R;
-import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.Constant;
 import com.upiicsa.denuncia.util.NetworkUtil;
 
 public class ComplaintDetailActivity extends ActionBarActivity {
@@ -27,8 +27,8 @@ public class ComplaintDetailActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_circle_detail);
 		if (savedInstanceState == null) {
 			Bundle arguments = new Bundle();
-			arguments.putString(Constants.ARG_ITEM_ID, getIntent()
-					.getStringExtra(Constants.ARG_ITEM_ID));
+			arguments.putString(Constant.ARG_ITEM_ID, getIntent()
+					.getStringExtra(Constant.ARG_ITEM_ID));
 			ComplaintDetailFragment fragment = new ComplaintDetailFragment();
 			fragment.setArguments(arguments);
 			getSupportFragmentManager().beginTransaction()
@@ -72,10 +72,8 @@ public class ComplaintDetailActivity extends ActionBarActivity {
 				if (intent.getAction().equals(
 						ConnectivityManager.CONNECTIVITY_ACTION)) {
 					int connection = NetworkUtil.getConnectivityStatus(context);
-					String status = null;
-
-					if (connection == Constants.TYPE_NO_CONNECCTION) {
-						status = "El dispositivo no tiene accesso a Internet.";
+					if (connection == Constant.TYPE_NO_CONNECCTION) {
+						String status = getString(R.string.no_network_connection);
 						Toast.makeText(context, status, Toast.LENGTH_LONG)
 								.show();
 					}

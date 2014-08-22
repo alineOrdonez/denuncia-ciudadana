@@ -47,6 +47,14 @@ public class Util {
 		return true;
 	}
 
+	public static boolean isValidEmail(String email) {
+		String regularExpression = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
+				+ "(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"
+				+ "(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+"
+				+ "[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+		return email.matches(regularExpression) ? true : false;
+	}
+
 	public static List<Object> categories() throws JSONException {
 		List<Object> list = new ArrayList<Object>();
 		String[] descripcion = new String[] { "Fuga de agua", "Incendio",
@@ -87,13 +95,13 @@ public class Util {
 		for (int i = 1; i < 4; i++) {
 			List<Object> obj = new ArrayList<Object>();
 			obj.add(i);
+			obj.add(1);
 			obj.add(descripcion[i - 1]);
 			obj.add(email[i - 1]);
 			obj.add(direccion[i - 1]);
 			// Para consulta
 			obj.add(latitude[i - 1]);
 			obj.add(longitude[i - 1]);
-			// obj.add()
 			list.add(obj);
 		}
 		return list;

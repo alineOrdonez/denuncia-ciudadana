@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Callback;
-import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.Constant;
 
 public class ComplaintListActivity extends ActionBarActivity implements Callback {
 	private boolean mTwoPane;
@@ -23,7 +23,7 @@ public class ComplaintListActivity extends ActionBarActivity implements Callback
 
 		if (savedInstanceState == null) {
 			if (getIntent().getExtras() != null) {
-				String lista = getIntent().getStringExtra(Constants.EXTRA_LIST);
+				String lista = getIntent().getStringExtra(Constant.EXTRA_LIST);
 				singleton = Singleton.getInstance();
 				singleton.listaDeDenuncias(lista);
 			}
@@ -63,7 +63,7 @@ public class ComplaintListActivity extends ActionBarActivity implements Callback
 		String idStr = String.valueOf(id);
 		if (mTwoPane) {
 			Bundle arguments = new Bundle();
-			arguments.putString(Constants.ARG_ITEM_ID, idStr);
+			arguments.putString(Constant.ARG_ITEM_ID, idStr);
 			ComplaintDetailFragment fragment = new ComplaintDetailFragment();
 			fragment.setArguments(arguments);
 			getSupportFragmentManager().beginTransaction()
@@ -72,7 +72,7 @@ public class ComplaintListActivity extends ActionBarActivity implements Callback
 		} else {
 			Intent detailIntent = new Intent(this,
 					ComplaintDetailActivity.class);
-			detailIntent.putExtra(Constants.ARG_ITEM_ID, idStr);
+			detailIntent.putExtra(Constant.ARG_ITEM_ID, idStr);
 			startActivity(detailIntent);
 		}
 	}

@@ -77,7 +77,10 @@
         <ImageView
             android:id="@+id/complaint_image_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/imagen_no_disponible"
+            android:contentDescription="@string/imagen" />
     </LinearLayout>
 
 </ScrollView>

@@ -11,20 +11,16 @@ import android.util.Log;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.util.Util;
 
-public class Service {
+public class RequestMessage {
 	private static final String LOG_TAG = "Service";
 	private HttpHandler httpHandler;
 	private OnResponseListener responder;
 
-	/**
-	 * @param responder
-	 * @param context
-	 */
-	public Service(OnResponseListener responder) {
+	public RequestMessage(OnResponseListener responder) {
 		this.responder = responder;
 	}
 
-	public void configService(String message) throws JSONException {
+	public void configService() throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("i", "1");
 		String json = jsonObject.toString();

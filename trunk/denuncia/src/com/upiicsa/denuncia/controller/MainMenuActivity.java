@@ -38,8 +38,8 @@ import com.upiicsa.denuncia.common.CatIntTiempo;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.OnResponseListener;
-import com.upiicsa.denuncia.service.Service;
-import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.service.RequestMessage;
+import com.upiicsa.denuncia.util.Constant;
 import com.upiicsa.denuncia.util.CustomAlertDialog;
 import com.upiicsa.denuncia.util.NetworkUtil;
 import com.upiicsa.denuncia.util.Util;
@@ -59,7 +59,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 	private int operacion;
 	private boolean isGPSEnabled;
 	Context context;
-	private Service service;
+	private RequestMessage service;
 	Singleton singleton;
 
 	@Override
@@ -68,7 +68,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		setContentView(R.layout.activity_main_menu);
 		context = this;
 		singleton = Singleton.getInstance();
-		service = new Service(this);
+		service = new RequestMessage(this);
 		mNetworkStateChangedFilter = new IntentFilter();
 		mNetworkStateChangedFilter
 				.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -97,13 +97,82 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		mLocationClient.connect();
 	}
 
-	/*
-	 * Called when the Activity is no longer visible.
-	 */
 	@Override
 	protected void onStop() {
 		mLocationClient.disconnect();
 		super.onStop();
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		Log.d(LOG_TAG, "onConnectionFailed");
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		Log.d(LOG_TAG, "onConnected");
+	}
+
+	@Override
+	public void onDisconnected() {
+		Log.d(LOG_TAG, "onDisconnected");
+
+	}
+
+	@Override
+	public void onSuccess(String result) throws JSONException {
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
+		System.out.println("Result:" + result);
+		JSONObject json;
+		String ld;
+		switch (operacion) {
+		case 1:
+			result = Util.configResult();
+			json = new JSONObject(result);
+			List<String> descripcion = new ArrayList<String>();
+			List<String> intervalo = new ArrayList<String>();
+			ld = json.getString("ld");
+			descripcion = Util.stringToList(ld);
+			denuncias(descripcion);
+			String lt = json.getString("lt");
+			intervalo = Util.stringToList(lt);
+			intervalos(intervalo);
+			break;
+		case 2:
+			result = Util.complaintResult();
+			json = new JSONObject(result);
+			ld = json.getString("ld");
+			addExtraToIntent(ComplaintListActivity.class, ld);
+			break;
+		case 5:
+			result = Util.complaintResult();
+			json = new JSONObject(result);
+			ld = json.getString("ld");
+			addExtraToIntent(MapActivity.class, ld);
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void onFailure(String message) {
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
+		String title = getString(R.string.error);
+		String btnTitle = getString(R.string.aceptar);
+		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						dialogInterface.dismiss();
+					}
+				});
+
 	}
 
 	public void addCategoriesOnSpinner(View view, int id) {
@@ -117,7 +186,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 				MainMenuActivity.this,
 				android.R.layout.simple_spinner_dropdown_item, consultList);
 		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_item);
+				.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
 		category.setAdapter(dataAdapter);
 		category.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -155,7 +224,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 				android.R.layout.simple_spinner_dropdown_item, rangeList);
 
 		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_item);
+				.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
 		consultRange.setAdapter(dataAdapter);
 		consultRange.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -262,7 +331,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 				public void run() {
 					try {
 						operacion = 1;
-						service.configService("Cargando configuracion");
+						service.configService();
 					} catch (Exception e) {
 
 					}
@@ -364,7 +433,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 					int connection = NetworkUtil.getConnectivityStatus(context);
 					String status = null;
 
-					if (connection == Constants.TYPE_NO_CONNECCTION) {
+					if (connection == Constant.TYPE_NO_CONNECCTION) {
 						status = "El dispositivo no tiene accesso a Internet.";
 						Toast.makeText(context, status, Toast.LENGTH_LONG)
 								.show();
@@ -377,78 +446,6 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 				}
 			}
 		};
-	}
-
-	@Override
-	public void onConnectionFailed(ConnectionResult arg0) {
-		Log.d(LOG_TAG, "onConnectionFailed");
-	}
-
-	@Override
-	public void onConnected(Bundle arg0) {
-		Log.d(LOG_TAG, "onConnected");
-	}
-
-	@Override
-	public void onDisconnected() {
-		Log.d(LOG_TAG, "onDisconnected");
-
-	}
-
-	@Override
-	public void onSuccess(String result) throws JSONException {
-		if (this.progressDialog.isShowing()) {
-			this.progressDialog.dismiss();
-		}
-		System.out.println("Result:" + result);
-		JSONObject json;
-		String ld;
-		switch (operacion) {
-		case 1:
-			result = Util.configResult();
-			json = new JSONObject(result);
-			List<String> descripcion = new ArrayList<String>();
-			List<String> intervalo = new ArrayList<String>();
-			ld = json.getString("ld");
-			descripcion = Util.stringToList(ld);
-			denuncias(descripcion);
-			String lt = json.getString("lt");
-			intervalo = Util.stringToList(lt);
-			intervalos(intervalo);
-			break;
-		case 2:
-			result = Util.complaintResult();
-			json = new JSONObject(result);
-			ld = json.getString("ld");
-			addExtraToIntent(ComplaintListActivity.class, ld);
-			break;
-		case 5:
-			result = Util.complaintResult();
-			json = new JSONObject(result);
-			ld = json.getString("ld");
-			addExtraToIntent(MapActivity.class, ld);
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	@Override
-	public void onFailure(String message) {
-		if (this.progressDialog.isShowing()) {
-			this.progressDialog.dismiss();
-		}
-		String title = getString(R.string.error);
-		String btnTitle = getString(R.string.aceptar);
-		CustomAlertDialog.decisionAlert(context, title, message, btnTitle,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						dialogInterface.dismiss();
-					}
-				});
-
 	}
 
 }

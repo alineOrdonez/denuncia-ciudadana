@@ -54,8 +54,8 @@ import com.upiicsa.denuncia.common.CatDenuncia;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.OnResponseListener;
-import com.upiicsa.denuncia.service.Service;
-import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.service.RequestMessage;
+import com.upiicsa.denuncia.util.Constant;
 import com.upiicsa.denuncia.util.CustomAlertDialog;
 
 public class NewComplaintFragment extends Fragment implements
@@ -67,7 +67,7 @@ public class NewComplaintFragment extends Fragment implements
 	private EditText address;
 	private EditText description;
 	private EditText email;
-	private Service service;
+	private RequestMessage service;
 	private String direccion;
 	private String correo;
 	private String denDesc;
@@ -173,7 +173,7 @@ public class NewComplaintFragment extends Fragment implements
 				list);
 
 		dataAdapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_item);
+				.setDropDownViewResource(android.R.layout.simple_list_item_single_choice);
 		spinner.setAdapter(dataAdapter);
 		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -215,7 +215,7 @@ public class NewComplaintFragment extends Fragment implements
 					public void onClick(DialogInterface dialog, int id) {
 						Intent intent = new Intent(
 								MediaStore.ACTION_IMAGE_CAPTURE);
-						int code = Constants.TAKE_PICTURE;
+						int code = Constant.TAKE_PICTURE;
 						if (rbtnFull.isChecked()) {
 							Uri output = Uri.fromFile(new File(name));
 							intent.putExtra(MediaStore.EXTRA_OUTPUT, output);
@@ -223,7 +223,7 @@ public class NewComplaintFragment extends Fragment implements
 							intent = new Intent(
 									Intent.ACTION_PICK,
 									android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-							code = Constants.SELECT_PICTURE;
+							code = Constant.SELECT_PICTURE;
 						}
 						startActivityForResult(intent, code);
 					}
@@ -259,7 +259,7 @@ public class NewComplaintFragment extends Fragment implements
 
 	public void showMap() {
 		Intent i = new Intent(getActivity(), SelectLocationActivity.class);
-		startActivityForResult(i, Constants.RETURN_FROM_MAP);
+		startActivityForResult(i, Constant.RETURN_FROM_MAP);
 	}
 
 	@Override
@@ -344,7 +344,7 @@ public class NewComplaintFragment extends Fragment implements
 			try {
 				Denuncia denuncia = new Denuncia(idCategoria, denDesc, correo,
 						imgString, direccion, latitude, longitude);
-				service = new Service(this);
+				service = new RequestMessage(this);
 				service.newComplaintService(denuncia, "Enviando denuncia...");
 			} catch (Exception e) {
 				e.printStackTrace();

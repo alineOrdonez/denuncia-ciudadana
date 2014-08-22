@@ -12,7 +12,7 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import com.upiicsa.denuncia.R;
-import com.upiicsa.denuncia.util.Constants;
+import com.upiicsa.denuncia.util.Constant;
 import com.upiicsa.denuncia.util.NetworkUtil;
 
 public class NewComplaintActivity extends ActionBarActivity {
@@ -66,7 +66,7 @@ public class NewComplaintActivity extends ActionBarActivity {
 					int connection = NetworkUtil.getConnectivityStatus(context);
 					String status = null;
 
-					if (connection == Constants.TYPE_NO_CONNECCTION) {
+					if (connection == Constant.TYPE_NO_CONNECCTION) {
 						status = "El dispositivo no tiene accesso a Internet.";
 						Toast.makeText(context, status, Toast.LENGTH_LONG)
 								.show();

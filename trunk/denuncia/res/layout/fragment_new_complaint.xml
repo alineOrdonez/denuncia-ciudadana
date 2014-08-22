@@ -14,7 +14,6 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="@string/fill_in"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -66,7 +65,8 @@
             android:id="@+id/spinner1"
             style="@style/SpinnerAppTheme"
             android:layout_width="270dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:spinnerMode="dialog" />
 
         <TextView
             android:id="@+id/textView5"
