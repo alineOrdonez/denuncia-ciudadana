@@ -1,7 +1,16 @@
 package com.upiicsa.denuncia.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +20,7 @@ import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -31,6 +41,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.upiicsa.denuncia.R;
+import com.upiicsa.denuncia.util.Constant;
+import com.upiicsa.denuncia.util.GeocodeJSONParser;
 
 public class SelectLocationActivity extends Activity {
 
@@ -159,17 +171,22 @@ public class SelectLocationActivity extends Activity {
 							tvLat.setText(line0 + ", " + line1);
 							tvLng.setText(line2);
 						}
+						String url = Constant.MAP_URL;
+						// Instantiating DownloadTask to get places from Google
+						// Geocoding service
+						// in a non-ui thread
+						DownloadTask downloadTask = new DownloadTask();
+						// Start downloading the geocoding places
+						downloadTask.execute(url);
 					} catch (Exception ex) {
 						Log.e(TAG, "Impossible to connect to Geocoder", ex);
 					}
 					return v;
 				}
 			});
-
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.d(TAG, e.toString());
 		}
-
 	}
 
 	@Override
@@ -217,5 +234,82 @@ public class SelectLocationActivity extends Activity {
 
 		googleMap.animateCamera(CameraUpdateFactory
 				.newCameraPosition(cameraPosition));
+	}
+
+	private String downloadUrl(String strUrl) throws IOException {
+		String data = "";
+		InputStream iStream = null;
+		HttpURLConnection urlConnection = null;
+		try {
+			URL url = new URL(strUrl);
+			urlConnection = (HttpURLConnection) url.openConnection();
+			urlConnection.connect();
+			iStream = urlConnection.getInputStream();
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					iStream));
+			StringBuffer sb = new StringBuffer();
+			String line = "";
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			data = sb.toString();
+			br.close();
+
+		} catch (Exception e) {
+			Log.d("Exception while downloading url", e.toString());
+		} finally {
+			iStream.close();
+			urlConnection.disconnect();
+		}
+
+		return data;
+	}
+
+	private class DownloadTask extends AsyncTask<String, Integer, String> {
+		String data = null;
+
+		@Override
+		protected String doInBackground(String... url) {
+			try {
+				data = downloadUrl(url[0]);
+			} catch (Exception e) {
+				Log.d("Background Task", e.toString());
+			}
+			return data;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			ParserTask parserTask = new ParserTask();
+			parserTask.execute(result);
+		}
+	}
+
+	class ParserTask extends
+			AsyncTask<String, Integer, List<HashMap<String, String>>> {
+		JSONObject jObject;
+
+		@Override
+		protected List<HashMap<String, String>> doInBackground(
+				String... jsonData) {
+			List<HashMap<String, String>> places = null;
+			GeocodeJSONParser parser = new GeocodeJSONParser();
+			try {
+				jObject = new JSONObject(jsonData[0]);
+				places = parser.parse(jObject);
+			} catch (Exception e) {
+				Log.d("Exception", e.toString());
+			}
+			return places;
+		}
+
+		// Executed after the complete execution of doInBackground() method
+		@Override
+		protected void onPostExecute(List<HashMap<String, String>> list) {
+			final HashMap<String, String> county = list.get(3);
+			String[] cStr = county.get("formatted_address").split(", ");
+			selectedAddress = selectedAddress + ", " + cStr[0];
+			Log.d(TAG, selectedAddress);
+		}
 	}
 }

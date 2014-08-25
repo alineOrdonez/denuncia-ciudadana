@@ -89,9 +89,9 @@ public class Util {
 				"me@mail.com" };
 		String[] direccion = new String[] { "Hortaliza No. 49", "Wetter 16",
 				"Homero No 12" };
-		double[] latitude = new double[] { 19.4217617, 26.0733591, 26.089542 };
-		double[] longitude = new double[] { -99.1886779, -98.2853973,
-				-98.292741 };
+		double[] latitude = new double[] { 19.3952204, 19.4952204, 19.4952204 };
+		double[] longitude = new double[] { -99.0907235, -99.1917235,
+				-99.2907235, -98.292741 };
 		for (int i = 1; i < 4; i++) {
 			List<Object> obj = new ArrayList<Object>();
 			obj.add(i);

@@ -5,11 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -271,7 +269,12 @@ public class NewComplaintFragment extends Fragment implements
 		case 1:
 			bitMap = BitmapFactory.decodeFile(name);
 			bytes = getBytesFromBitmap(bitMap);
-			imgString = Base64.encodeToString(bytes, Base64.NO_WRAP);
+			try {
+				imgString = new String(bytes, "UTF-8");// Base64.encodeToString(bytes,
+														// Base64.NO_WRAP);
+			} catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
+			}
 			new MediaScannerConnectionClient() {
 				private MediaScannerConnection msc = null;
 				{
@@ -297,7 +300,13 @@ public class NewComplaintFragment extends Fragment implements
 				BufferedInputStream bis = new BufferedInputStream(is);
 				bitMap = BitmapFactory.decodeStream(bis);
 				bytes = getBytesFromBitmap(bitMap);
-				imgString = Base64.encodeToString(bytes, Base64.NO_WRAP);
+				try {
+					imgString = new String(bytes, "UTF-8");// Base64.encodeToString(bytes,
+					// Base64.NO_WRAP);
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				Log.d(LOG_TAG, "***[" + imgString + "]***");
 
 			} catch (FileNotFoundException e) {
@@ -344,6 +353,8 @@ public class NewComplaintFragment extends Fragment implements
 			try {
 				Denuncia denuncia = new Denuncia(idCategoria, denDesc, correo,
 						imgString, direccion, latitude, longitude);
+				singleton.addItems(denuncia);
+				singleton.setImage(imgString);
 				service = new RequestMessage(this);
 				service.newComplaintService(denuncia, "Enviando denuncia...");
 			} catch (Exception e) {
@@ -384,12 +395,11 @@ public class NewComplaintFragment extends Fragment implements
 		if (this.progressDialog.isShowing()) {
 			this.progressDialog.dismiss();
 		}
-		try {
-			JSONObject json = new JSONObject(result);
-			singleton.setImage(json.getString("im"));
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		/*
+		 * try { JSONObject json = new JSONObject(result);
+		 * singleton.setImage(json.getString("im")); } catch (JSONException e) {
+		 * e.printStackTrace(); }
+		 */
 
 		String title = getString(R.string.successful);
 		String message = getString(R.string.successful_message);

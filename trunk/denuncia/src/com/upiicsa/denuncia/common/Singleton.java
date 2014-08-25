@@ -14,6 +14,7 @@ public class Singleton {
 	private static List<Denuncia> ITEMS;
 	private static SparseArray<Denuncia> ITEM_MAP;
 	private static String image;
+	private static Denuncia den;
 
 	private static Singleton instance = null;
 
@@ -55,6 +56,16 @@ public class Singleton {
 			ITEMS.add(item);
 			ITEM_MAP.put(idDenuncia, item);
 		}
+		if (den != null) {
+			ITEMS.add(den);
+			ITEM_MAP.put(4, den);
+		}
+	}
+
+	public void addItems(Denuncia denuncia) {
+		den = denuncia;
+		ITEMS.add(denuncia);
+		ITEM_MAP.put(4, denuncia);
 	}
 
 	/**

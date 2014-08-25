@@ -12,7 +12,8 @@ import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Callback;
 import com.upiicsa.denuncia.util.Constant;
 
-public class ComplaintListActivity extends ActionBarActivity implements Callback {
+public class ComplaintListActivity extends ActionBarActivity implements
+		Callback {
 	private boolean mTwoPane;
 	private Singleton singleton;
 
@@ -23,9 +24,13 @@ public class ComplaintListActivity extends ActionBarActivity implements Callback
 
 		if (savedInstanceState == null) {
 			if (getIntent().getExtras() != null) {
-				String lista = getIntent().getStringExtra(Constant.EXTRA_LIST);
 				singleton = Singleton.getInstance();
-				singleton.listaDeDenuncias(lista);
+				if (singleton.getITEMS().isEmpty()
+						&& singleton.getITEM_MAP() == null) {
+					String lista = getIntent().getStringExtra(
+							Constant.EXTRA_LIST);
+					singleton.listaDeDenuncias(lista);
+				}
 			}
 		}
 
