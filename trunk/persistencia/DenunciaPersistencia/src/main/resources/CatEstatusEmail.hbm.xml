@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 24/08/2014 12:41:27 AM by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="com.denuncia.domain.CatEstatusEmail" table="cat_estatus_email" catalog="appdenuncia">
+        <id name="idEstatusEmail" type="java.lang.Integer">
+            <column name="Id_Estatus_Email" />
+            <generator class="identity" />
+        </id>
+        <property name="descripcion" type="string">
+            <column name="Descripcion" length="100" not-null="true" />
+        </property>
+        <set name="emailDenuncias" table="email_denuncia" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Estatus_Email" not-null="true" />
+            </key>
+            <one-to-many class="com.denuncia.domain.EmailDenuncia" />
+        </set>
+    </class>
+</hibernate-mapping>
