@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 24/08/2014 12:41:27 AM by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="com.denuncia.domain.Denuncia" table="denuncia" catalog="appdenuncia">
+        <id name="idDenuncia" type="java.lang.Integer">
+            <column name="Id_Denuncia" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="catCategoriaDenuncia" class="com.denuncia.domain.CatCategoriaDenuncia" fetch="select">
+            <column name="Id_Cat_Denuncia" not-null="true" />
+        </many-to-one>
+        <property name="direccion" type="string">
+            <column name="Direccion" />
+        </property>
+        <property name="emailUsuario" type="string">
+            <column name="Email_Usuario" length="50" />
+        </property>
+        <property name="contador" type="java.lang.Integer">
+            <column name="Contador" />
+        </property>
+        <property name="latitud" type="big_decimal">
+            <column name="Latitud" precision="9" scale="6" />
+        </property>
+        <property name="longitud" type="big_decimal">
+            <column name="Longitud" precision="9" scale="6" />
+        </property>
+        <property name="fechaHoraDenuncia" type="timestamp">
+            <column name="Fecha_Hora_Denuncia" length="19" not-null="true" />
+        </property>
+        <property name="fechaHoraActCont" type="timestamp">
+            <column name="Fecha_Hora_ActCont" length="19" not-null="true" />
+        </property>
+        <set name="emailDenuncias" table="email_denuncia" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Id_Denuncia" not-null="true" />
+            </key>
+            <one-to-many class="com.denuncia.domain.EmailDenuncia" />
+        </set>
+    </class>
+</hibernate-mapping>
