@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 26/08/2014 05:00:33 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="CatContacto" table="cat_contacto" catalog="denuncia">
+        <id name="idContacto" type="java.lang.Integer">
+            <column name="Id_Contacto" />
+            <generator class="identity" />
+        </id>
+        <property name="nombre" type="string">
+            <column name="Nombre" length="100" not-null="true" />
+        </property>
+        <property name="email" type="string">
+            <column name="Email" length="50" not-null="true" />
+        </property>
+        <set name="instConDels" table="inst_con_del" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Id_Contacto" not-null="true" />
+            </key>
+            <one-to-many class="InstConDel" />
+        </set>
+        <set name="emailDenuncias" table="email_denuncia" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Id_Contacto" not-null="true" />
+            </key>
+            <one-to-many class="EmailDenuncia" />
+        </set>
+    </class>
+</hibernate-mapping>
