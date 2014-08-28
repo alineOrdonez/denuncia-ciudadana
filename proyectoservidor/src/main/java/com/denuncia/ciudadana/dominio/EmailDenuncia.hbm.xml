@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 26/08/2014 05:00:33 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="EmailDenuncia" table="email_denuncia" catalog="denuncia">
+        <id name="idEmailDenuncia" type="java.lang.Integer">
+            <column name="Id_Email_Denuncia" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="catContacto" class="CatContacto" fetch="select">
+            <column name="Id_Contacto" not-null="true" />
+        </many-to-one>
+        <many-to-one name="denuncia" class="Denuncia" fetch="select">
+            <column name="Id_Denuncia" not-null="true" />
+        </many-to-one>
+        <many-to-one name="catEstatusEmail" class="CatEstatusEmail" fetch="select">
+            <column name="Estatus_Email" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>
