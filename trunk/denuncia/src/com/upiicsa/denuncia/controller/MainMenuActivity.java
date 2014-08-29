@@ -2,6 +2,7 @@ package com.upiicsa.denuncia.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -129,27 +130,24 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		String ld;
 		switch (operacion) {
 		case 1:
-			result = Util.configResult();
-			json = new JSONObject(result);
-			List<String> descripcion = new ArrayList<String>();
-			List<String> intervalo = new ArrayList<String>();
-			ld = json.getString("ld");
-			descripcion = Util.stringToList(ld);
-			denuncias(descripcion);
-			String lt = json.getString("lt");
-			intervalo = Util.stringToList(lt);
-			intervalos(intervalo);
+			// Proceso para agregar las listas al singleton
+			List<Map<String, Object>> categorias = new ArrayList<Map<String, Object>>();
+			categorias = Util.jsonToList(result, "ld");
+			fillCatalog(categorias);
+			List<Map<String, Object>> intTiempo = new ArrayList<Map<String, Object>>();
+			intTiempo = Util.jsonToList(result, "lt");
+			fillCatalog(intTiempo);
 			break;
 		case 2:
 			result = Util.complaintResult();
 			json = new JSONObject(result);
-			ld = json.getString("ld");
+			ld = json.getJSONObject("ld").toString();
 			addExtraToIntent(ComplaintListActivity.class, ld);
 			break;
 		case 5:
 			result = Util.complaintResult();
 			json = new JSONObject(result);
-			ld = json.getString("ld");
+			ld = json.getJSONObject("ld").toString();
 			addExtraToIntent(MapActivity.class, ld);
 			break;
 
@@ -398,30 +396,25 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		startActivity(intent);
 	}
 
-	private void denuncias(List<String> stringList) {
-		List<CatDenuncia> catalogo = new ArrayList<CatDenuncia>();
-		for (int i = 0; i < stringList.size(); i++) {
-			List<String> list = Util.detailList(stringList.get(i));
-			int id = Integer.valueOf(list.get(0));
-			CatDenuncia denuncias = new CatDenuncia();
-			denuncias.setIdCatDenuncia(id);
-			denuncias.setDescripcion(list.get(1));
-			catalogo.add(denuncias);
+	private void fillCatalog(List<Map<String, Object>> mapList) {
+		List<CatDenuncia> catDenList = new ArrayList<CatDenuncia>();
+		List<CatIntTiempo> catIntT = new ArrayList<CatIntTiempo>();
+		for (Map<String, Object> map : mapList) {
+			if (map.containsKey("va")) {
+				CatIntTiempo catInt = new CatIntTiempo(map);
+				catIntT.add(catInt);
+			} else {
+				CatDenuncia catDen = new CatDenuncia(map);
+				catDenList.add(catDen);
+			}
 		}
-		singleton.setDenuncias(catalogo);
-	}
 
-	private void intervalos(List<String> stringList) {
-		List<CatIntTiempo> catalogo = new ArrayList<CatIntTiempo>();
-		for (int i = 0; i < stringList.size(); i++) {
-			List<String> list = Util.detailList(stringList.get(i));
-			int id = Integer.valueOf(list.get(0));
-			CatIntTiempo intervalos = new CatIntTiempo();
-			intervalos.setIdCatIntTiempo(id);
-			intervalos.setDescripcion(list.get(1));
-			catalogo.add(intervalos);
+		if (catIntT != null) {
+			singleton.setIntervalos(catIntT);
 		}
-		singleton.setIntervalos(catalogo);
+		if (catDenList != null) {
+			singleton.setDenuncias(catDenList);
+		}
 	}
 
 	public void networkState() {

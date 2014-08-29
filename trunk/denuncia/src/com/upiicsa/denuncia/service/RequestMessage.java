@@ -2,13 +2,13 @@ package com.upiicsa.denuncia.service;
 
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
 
 import com.upiicsa.denuncia.common.Denuncia;
+import com.upiicsa.denuncia.util.Constant;
 import com.upiicsa.denuncia.util.Util;
 
 public class RequestMessage {
@@ -24,7 +24,7 @@ public class RequestMessage {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("i", "1");
 		String json = jsonObject.toString();
-		httpTaskRequest(json);
+		httpTaskRequest(json, Constant.URL);
 	}
 
 	public void findComplaintsService(Denuncia denuncia) throws JSONException {
@@ -37,7 +37,7 @@ public class RequestMessage {
 		jsonObject.put("la", lat);
 		jsonObject.put("lo", lng);
 		String json = jsonObject.toString();
-		httpTaskRequest(json);
+		httpTaskRequest(json, Constant.LIST_URL);
 	}
 
 	public void newComplaintService(Denuncia nueva, String message)
@@ -56,7 +56,7 @@ public class RequestMessage {
 			object.put("im", nueva.getImagen());
 		}
 		String json = object.toString();
-		httpTaskRequest(json);
+		httpTaskRequest(json, Constant.SAVE_URL);
 	}
 
 	public void selectComplaintService(Denuncia denuncia) throws JSONException {
@@ -66,7 +66,7 @@ public class RequestMessage {
 		object.put("em", denuncia.getCorreo());
 		object.put("ic", denuncia.getIdDenuncia());
 		String json = object.toString();
-		httpTaskRequest(json);
+		httpTaskRequest(json, Constant.UPDATE_URL);
 	}
 
 	public void consultComplaintService(Denuncia denuncia) throws JSONException {
@@ -80,24 +80,16 @@ public class RequestMessage {
 		jsonObject.put("la", lat);
 		jsonObject.put("lo", lng);
 		String json = jsonObject.toString();
-		httpTaskRequest(json);
+		httpTaskRequest(json, null);
 	}
 
-	public void httpTaskRequest(final String json) {
-		Log.d(LOG_TAG, "*****httpTaskRequest:" + json);
+	public void httpTaskRequest(final String json, final String url) {
+		Log.d(LOG_TAG, "*****url:" + url);
 
 		httpHandler = new HttpHandler() {
 			@Override
 			public HttpUriRequest getHttpRequestMethod() {
-
-				HttpPost httpPost = new HttpPost(
-						"http://hmkcode.com/examples/index.php");
-				try {
-					StringEntity stringEntity = new StringEntity(json);
-					httpPost.setEntity(stringEntity);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				HttpPost httpPost = new HttpPost(url);
 				return httpPost;
 			}
 

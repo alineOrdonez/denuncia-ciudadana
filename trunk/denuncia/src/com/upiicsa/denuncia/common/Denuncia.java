@@ -1,6 +1,7 @@
 package com.upiicsa.denuncia.common;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class Denuncia implements Serializable {
 
@@ -20,6 +21,20 @@ public class Denuncia implements Serializable {
 	private double longitud;
 
 	public Denuncia() {
+	}
+
+	public Denuncia(Map<String, Object> map) {
+		this.idDenuncia = (Integer) map.get("id");
+		this.idCategoria = (Integer) map.get("ic");
+		this.descripcion = (String) map.get("ds");
+		this.direccion = (String) map.get("dd");
+		if (map.containsKey("la")) {
+			this.latitud = (Double) map.get("la");
+		}
+		if (map.containsKey("lo")) {
+			this.longitud = (Double) map.get("lo");
+		}
+
 	}
 
 	/**

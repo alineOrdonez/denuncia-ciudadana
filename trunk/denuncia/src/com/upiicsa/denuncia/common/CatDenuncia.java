@@ -1,6 +1,7 @@
 package com.upiicsa.denuncia.common;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class CatDenuncia implements Serializable {
 
@@ -12,6 +13,11 @@ public class CatDenuncia implements Serializable {
 	private String descripcion;
 
 	public CatDenuncia() {
+	}
+
+	public CatDenuncia(Map<String, Object> map) {
+		this.idCatDenuncia = (Integer) map.get("id");
+		this.descripcion = (String) map.get("ds");
 	}
 
 	/**

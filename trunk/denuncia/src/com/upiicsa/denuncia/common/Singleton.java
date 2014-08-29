@@ -2,6 +2,9 @@ package com.upiicsa.denuncia.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.json.JSONException;
 
 import android.util.SparseArray;
 
@@ -11,10 +14,9 @@ public class Singleton {
 
 	private static List<CatDenuncia> denuncias;
 	private static List<CatIntTiempo> intervalos;
-	private static List<Denuncia> ITEMS;
-	private static SparseArray<Denuncia> ITEM_MAP;
+	private static List<Denuncia> items;
+	private static SparseArray<Denuncia> item_map;
 	private static String image;
-	private static Denuncia den;
 
 	private static Singleton instance = null;
 
@@ -27,45 +29,27 @@ public class Singleton {
 			denuncias = new ArrayList<CatDenuncia>();
 			intervalos = new ArrayList<CatIntTiempo>();
 			image = new String();
-			ITEMS = new ArrayList<Denuncia>();
-			ITEM_MAP = new SparseArray<Denuncia>();
+			items = new ArrayList<Denuncia>();
 		}
 		return instance;
 	}
 
-	public void listaDeDenuncias(String string) {
-		if (!ITEMS.isEmpty() && ITEM_MAP != null) {
-			ITEMS.clear();
-			ITEM_MAP.clear();
+	public void listaDeDenuncias(String string) throws JSONException {
+		if (!items.isEmpty() && item_map != null) {
+			items.clear();
+			item_map.clear();
 		}
-		List<String> stringList = Util.stringToList(string);
-		for (int i = 0; i < stringList.size(); i++) {
-			List<String> list = Util.detailList(stringList.get(i));
-			Denuncia item = new Denuncia();
-			int idDenuncia = Integer.valueOf(list.get(0));
-			item.setIdDenuncia(idDenuncia);
-			int idCategoria = Integer.valueOf(list.get(1));
-			item.setIdCategoria(idCategoria);
-			item.setDescripcion(list.get(2));
-			item.setCorreo(list.get(3));
-			item.setDireccion(list.get(4));
-			double latitud = Double.valueOf(list.get(5));
-			item.setLatitud(latitud);
-			double longitud = Double.valueOf(list.get(6));
-			item.setLongitud(longitud);
-			ITEMS.add(item);
-			ITEM_MAP.put(idDenuncia, item);
+		List<Map<String, Object>> mapStr = Util.jsonToList(string, null);
+		for (int i = 0; i < mapStr.size(); i++) {
+			Denuncia item = new Denuncia(mapStr.get(i));
+			items.add(item);
+			item_map.put(item.getIdCategoria(), item);
 		}
-		if (den != null) {
-			ITEMS.add(den);
-			ITEM_MAP.put(4, den);
-		}
+
 	}
 
 	public void addItems(Denuncia denuncia) {
-		den = denuncia;
-		ITEMS.add(denuncia);
-		ITEM_MAP.put(4, denuncia);
+		items.add(denuncia);
 	}
 
 	/**
@@ -102,7 +86,7 @@ public class Singleton {
 	 * @return the iTEMS
 	 */
 	public List<Denuncia> getITEMS() {
-		return ITEMS;
+		return items;
 	}
 
 	/**
@@ -110,22 +94,22 @@ public class Singleton {
 	 *            the iTEMS to set
 	 */
 	public void setITEMS(List<Denuncia> iTEMS) {
-		ITEMS = iTEMS;
+		items = iTEMS;
 	}
 
 	/**
-	 * @return the iTEM_MAP
+	 * @return the item_map
 	 */
-	public SparseArray<Denuncia> getITEM_MAP() {
-		return ITEM_MAP;
+	public SparseArray<Denuncia> getItem_map() {
+		return item_map;
 	}
 
 	/**
-	 * @param iTEM_MAP
-	 *            the iTEM_MAP to set
+	 * @param item_map
+	 *            the item_map to set
 	 */
-	public void setITEM_MAP(SparseArray<Denuncia> iTEM_MAP) {
-		ITEM_MAP = iTEM_MAP;
+	public void setItem_map(SparseArray<Denuncia> item_map) {
+		Singleton.item_map = item_map;
 	}
 
 	/**

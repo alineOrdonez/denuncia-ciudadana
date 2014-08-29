@@ -1,5 +1,7 @@
 package com.upiicsa.denuncia.controller;
 
+import org.json.JSONException;
+
 import android.app.Activity;
 import android.content.Context;
 import android.location.Criteria;
@@ -36,7 +38,12 @@ public class MapActivity extends Activity {
 			singleton = Singleton.getInstance();
 			if (getIntent().getExtras() != null) {
 				String lista = getIntent().getStringExtra(Constant.EXTRA_LIST);
-				singleton.listaDeDenuncias(lista);
+				try {
+					singleton.listaDeDenuncias(lista);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		try {
