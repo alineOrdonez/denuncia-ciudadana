@@ -9,5 +9,11 @@
         android:icon="@drawable/ic_action_save"
         android:title="@string/guardar"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/share_action"
+        android:actionLayout="@layout/menulayout"
+        android:icon="@drawable/share"
+        android:title="@string/action_settings"
+        app:showAsAction="always"/>
 
 </menu>
