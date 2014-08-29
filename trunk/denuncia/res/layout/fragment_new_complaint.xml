@@ -46,7 +46,6 @@
 
         <EditText
             android:id="@+id/addressEditText"
-            style="@style/EditTextAppTheme"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -63,7 +62,6 @@
 
         <Spinner
             android:id="@+id/spinner1"
-            style="@style/SpinnerAppTheme"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:spinnerMode="dialog" />
@@ -78,7 +76,6 @@
 
         <EditText
             android:id="@+id/descEditText"
-            style="@style/EditTextAppTheme"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:ems="10"
