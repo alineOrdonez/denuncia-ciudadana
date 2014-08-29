@@ -6,10 +6,13 @@ public final class Constant {
 	public static final String ARG_ITEM_ID = "ITEM_ID";
 	public static final String STATE_ACTIVATED_POSITION = "activated_position";
 	public static final String URL = "http://hmkcode.com/examples/index.php";
+	public static final String CONFIG_URL = "http://192.168.1.39:8080/denunciaciudadana/service/denuncia";
+	public static final String LIST_URL = "http://192.168.1.39:8080/denunciaciudadana/service/denuncia/list/";
+	public static final String SAVE_URL = "http://192.168.1.39:8080/denunciaciudadana/service/denuncia/incidencia/";
+	public static final String UPDATE_URL = "http://192.168.1.39:8080/denunciaciudadana/service/denuncia/eventualidad/";
 	public static final String ERROR_GENERICO = "ERROR GENERICO";
 	public static final String CONNECTION_ERROR = "El dispositivo no tiene acceso a Internet.";
-	public static final String GPS_ERROR = "El GPS no est· activado.";
-	public static final String IO_ERROR = "";
+	public static final String GPS_ERROR = "El GPS no est√° activado.";
 	public static final int TYPE_WIFI = 1;
 	public static final int TYPE_MOBILE = 2;
 	public static final int TYPE_NO_CONNECCTION = 0;

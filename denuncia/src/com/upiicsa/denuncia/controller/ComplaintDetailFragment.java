@@ -67,7 +67,7 @@ public class ComplaintDetailFragment extends Fragment implements
 			singleton = Singleton.getInstance();
 			service = new RequestMessage(this);
 			idDenuncia = Integer.valueOf(string);
-			mItem = singleton.getITEM_MAP().get(idDenuncia);
+			mItem = singleton.getItem_map().get(idDenuncia);
 			mLocationClient = new LocationClient(getActivity(), this, this);
 		}
 	}

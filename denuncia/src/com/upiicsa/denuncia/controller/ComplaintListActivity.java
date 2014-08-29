@@ -1,5 +1,7 @@
 package com.upiicsa.denuncia.controller;
 
+import org.json.JSONException;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -25,11 +27,15 @@ public class ComplaintListActivity extends ActionBarActivity implements
 		if (savedInstanceState == null) {
 			if (getIntent().getExtras() != null) {
 				singleton = Singleton.getInstance();
-				if (singleton.getITEMS().isEmpty()
-						&& singleton.getITEM_MAP() == null) {
+				if (singleton.getITEMS().isEmpty()) {
 					String lista = getIntent().getStringExtra(
 							Constant.EXTRA_LIST);
-					singleton.listaDeDenuncias(lista);
+					try {
+						singleton.listaDeDenuncias(lista);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}

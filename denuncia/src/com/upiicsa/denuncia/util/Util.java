@@ -1,26 +1,48 @@
 package com.upiicsa.denuncia.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Util {
 
-	public static List<String> stringToList(String string) {
-		String s = string.substring(2, string.length() - 2);
-		String[] split = s.split("\\], \\[");
-		List<String> list = Arrays.asList(split);
+	public static List<Map<String, Object>> jsonToList(String strJson,
+			String key) throws JSONException {
+		JSONObject jsonResponse = new JSONObject(strJson);
+		JSONArray jsonMainNode = jsonResponse.optJSONArray(key);
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		int length = jsonMainNode.length();
+
+		for (int i = 0; i < length; i++) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			JSONObject jsonChild = jsonMainNode.getJSONObject(i);
+			map = objectToMap(jsonChild);
+			list.add(map);
+		}
 		return list;
 	}
 
-	public static List<String> detailList(String row) {
-		String string = row.trim();
-		String[] split = string.split(", ");
-		List<String> list = Arrays.asList(split);
-		return list;
+	@SuppressWarnings("unchecked")
+	private static Map<String, Object> objectToMap(JSONObject jsonChild) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<String> keysList = new ArrayList<String>();
+		Iterator<String> keys = jsonChild.keys();
+		while (keys.hasNext()) {
+			keysList.add(keys.next());
+		}
+		Collections.sort(keysList);
+
+		for (String keyStr : keysList) {
+			map.put(keyStr, jsonChild.optString(keyStr));
+		}
+		return map;
 	}
 
 	public static boolean isInteger(String str) {
