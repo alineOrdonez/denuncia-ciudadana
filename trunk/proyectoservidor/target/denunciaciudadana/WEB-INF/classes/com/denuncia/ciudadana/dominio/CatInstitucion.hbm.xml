@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 26/08/2014 05:00:33 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="CatInstitucion" table="cat_institucion" catalog="denuncia">
+        <id name="idInstitucion" type="java.lang.Integer">
+            <column name="Id_Institucion" />
+            <generator class="identity" />
+        </id>
+        <property name="nombre" type="string">
+            <column name="Nombre" not-null="true" />
+        </property>
+        <set name="instConDels" table="inst_con_del" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Id_Institucion" not-null="true" />
+            </key>
+            <one-to-many class="InstConDel" />
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 26/08/2014 05:00:33 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="CatCategoriaDenuncia" table="cat_categoria_denuncia" catalog="denuncia">
+        <id name="idCatDenuncia" type="java.lang.Integer">
+            <column name="Id_Cat_Denuncia" />
+            <generator class="identity" />
+        </id>
+        <property name="descripcion" type="string">
+            <column name="Descripcion" length="50" not-null="true" />
+        </property>
+        <property name="envioEmail" type="short">
+            <column name="Envio_Email" not-null="true" />
+        </property>
+        <set name="instConDels" table="inst_con_del" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Id_Cat_Denuncia" not-null="true" />
+            </key>
+            <one-to-many class="InstConDel" />
+        </set>
+        <set name="denuncias" table="denuncia" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Id_Cat_Denuncia" not-null="true" />
+            </key>
+            <one-to-many class="Denuncia" />
+        </set>
+    </class>
+</hibernate-mapping>

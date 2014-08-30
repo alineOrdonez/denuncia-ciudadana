@@ -9,7 +9,7 @@ import java.util.List;
 import com.denuncia.ciudadana.dominio.Denuncia;
 
 /**
- * @author amaro
+ * @author Aline Ordoñez
  *
  */
 public interface DenunciaServicio {
@@ -21,6 +21,11 @@ public interface DenunciaServicio {
 
 	String saveImage(String image) throws ServicioException;
 
-	boolean addDenuncia(int idDenuncia) throws ServicioException;
+	String getImage(int idDenuncia) throws ServicioException;
+
+	boolean addDenuncia(Denuncia dominio) throws ServicioException;
+
+	List<Denuncia> findByDateAndLocation(BigDecimal latitud,
+			BigDecimal longitud, int pt) throws ServicioException;
 
 }

@@ -13,7 +13,7 @@ import com.denuncia.ciudadana.persistencia.dao.DenunciaConfigDAO;
 import com.denuncia.ciudadana.servicio.DenunciaConfigServicio;
 
 /**
- * @author amaro
+ * @author Aline Ordoñez
  *
  */
 @Service
@@ -21,16 +21,16 @@ public class DenunciaConfigServicioImpl implements DenunciaConfigServicio {
 
 	@Autowired
 	private DenunciaConfigDAO daoDenunciaConfig;
-	
+
 	@Override
-	@Transactional(readOnly=true)
-	public DenunciaConfig findConfig(){
-		try{
+	@Transactional(readOnly = true)
+	public DenunciaConfig findConfig() {
+		try {
 			DenunciaConfig config = daoDenunciaConfig.getAll().get(0);
 			return config;
-		}catch(PersistenciaException e){
+		} catch (PersistenciaException e) {
 			return null;
 		}
 	}
-	
+
 }

@@ -4,7 +4,7 @@
 package com.denuncia.ciudadana.util;
 
 /**
- * @author amaro
+ * @author Aline Ordoñez
  *
  */
 public class Constantes {
