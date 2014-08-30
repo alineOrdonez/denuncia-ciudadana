@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 26/08/2014 05:00:33 PM by Hibernate Tools 4.0.0 -->
+<hibernate-mapping>
+    <class name="Bitacora" table="bitacora" catalog="denuncia">
+        <id name="idBitacora" type="java.lang.Integer">
+            <column name="Id_Bitacora" />
+            <generator class="identity" />
+        </id>
+        <property name="peticion" type="string">
+            <column name="Peticion" not-null="true" />
+        </property>
+        <property name="respuesta" type="string">
+            <column name="Respuesta" />
+        </property>
+        <property name="fechaHoraPeticion" type="timestamp">
+            <column name="Fecha_Hora_Peticion" length="19" not-null="true" />
+        </property>
+        <property name="fechaHoraRespuesta" type="timestamp">
+            <column name="Fecha_Hora_Respuesta" length="19" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

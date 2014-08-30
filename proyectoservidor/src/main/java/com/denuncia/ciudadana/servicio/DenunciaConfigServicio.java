@@ -6,7 +6,7 @@ package com.denuncia.ciudadana.servicio;
 import com.denuncia.ciudadana.dominio.DenunciaConfig;
 
 /**
- * @author amaro
+ * @author Aline Ordoñez
  *
  */
 public interface DenunciaConfigServicio {

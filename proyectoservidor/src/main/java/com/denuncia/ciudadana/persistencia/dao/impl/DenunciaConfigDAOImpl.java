@@ -9,7 +9,7 @@ import com.denuncia.ciudadana.dominio.DenunciaConfig;
 import com.denuncia.ciudadana.persistencia.dao.DenunciaConfigDAO;
 
 /**
- * @author amaro
+ * @author Aline Ordoñez
  *
  */
 @Repository

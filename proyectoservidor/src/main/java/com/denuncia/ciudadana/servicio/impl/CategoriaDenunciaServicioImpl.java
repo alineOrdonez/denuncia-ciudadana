@@ -17,7 +17,7 @@ import com.denuncia.ciudadana.servicio.CategoriaDenunciaServicio;
 import com.denuncia.ciudadana.servicio.ServicioException;
 
 /**
- * @author amaro
+ * @author Aline Ordoñez
  *
  */
 @Service
@@ -25,16 +25,18 @@ public class CategoriaDenunciaServicioImpl implements CategoriaDenunciaServicio 
 
 	@Autowired
 	private CategoriaDenunciaDAO daoCatDen;
-	
+
 	@Override
-	@Transactional(readOnly=true)
-	public List<CatCategoriaDenuncia> findAllCategorias() throws ServicioException{
-		try{
+	@Transactional(readOnly = true)
+	public List<CatCategoriaDenuncia> findAllCategorias()
+			throws ServicioException {
+		try {
 			List<CatCategoriaDenuncia> list = daoCatDen.getAll();
 			return list;
-		}catch(PersistenciaException e){
-			throw new ServiceException("Error en findAllCategorias:"+e.getMessage(), e);
+		} catch (PersistenciaException e) {
+			throw new ServiceException("Error en findAllCategorias:"
+					+ e.getMessage(), e);
 		}
 	}
-	
+
 }

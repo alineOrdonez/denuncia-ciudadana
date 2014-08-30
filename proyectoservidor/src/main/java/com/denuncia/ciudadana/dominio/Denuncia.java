@@ -3,15 +3,17 @@ package com.denuncia.ciudadana.dominio;
 /// default package
 // Generated 26/08/2014 05:00:32 PM by Hibernate Tools 4.0.0
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -38,6 +40,7 @@ public class Denuncia implements java.io.Serializable {
 	private Date fechaHoraActCont;
 	private Set<EmailDenuncia> emailDenuncias = new HashSet<EmailDenuncia>(0);
 	private String imgPath;
+	private String descripcion;
 
 	public Denuncia() {
 	}
@@ -166,10 +169,27 @@ public class Denuncia implements java.io.Serializable {
 	}
 
 	/**
-	 * @param imgPath the imgPath to set
+	 * @param imgPath
+	 *            the imgPath to set
 	 */
 	public void setImgPath(String imgPath) {
 		this.imgPath = imgPath;
+	}
+
+	/**
+	 * @return the descripcion
+	 */
+	@Column(name = "Descripcion", length = 55)
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	/**
+	 * @param descripcion
+	 *            the descripcion to set
+	 */
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
 }

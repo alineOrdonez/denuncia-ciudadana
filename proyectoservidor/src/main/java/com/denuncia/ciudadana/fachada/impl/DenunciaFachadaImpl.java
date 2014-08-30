@@ -23,14 +23,13 @@ import com.denuncia.ciudadana.dto.ResultadoDTO;
 import com.denuncia.ciudadana.fachada.DenunciaFachada;
 import com.denuncia.ciudadana.servicio.CategoriaDenunciaServicio;
 import com.denuncia.ciudadana.servicio.ConfiguracionServicio;
-import com.denuncia.ciudadana.servicio.DenunciaConfigServicio;
 import com.denuncia.ciudadana.servicio.DenunciaServicio;
 import com.denuncia.ciudadana.servicio.ServicioException;
 import com.denuncia.ciudadana.util.Constantes;
 import com.denuncia.ciudadana.util.TransformUtils;
 
 /**
- * @author amaro
+ * @author Aline Ordoñez
  *
  */
 @Component
@@ -76,12 +75,15 @@ public class DenunciaFachadaImpl implements DenunciaFachada {
 		}
 
 	}
-	
+
 	@Override
-	public boolean aumentaContador(int idDenuncia){
+	public boolean aumentaContador(int idDenuncia, String email) {
 		boolean result;
 		try {
-			result = servicioDenuncia.addDenuncia(idDenuncia);
+			Denuncia dominio = new Denuncia();
+			dominio.setIdDenuncia(idDenuncia);
+			dominio.setEmailUsuario(email);
+			result = servicioDenuncia.addDenuncia(dominio);
 		} catch (ServicioException e) {
 			return false;
 		}
@@ -89,13 +91,41 @@ public class DenunciaFachadaImpl implements DenunciaFachada {
 	}
 
 	@Override
-	public int save(int idCatDenuncia, String direccion, String email,
-			String imagen, BigDecimal latitud, BigDecimal longitud) {
+	public String getImage(int idDenuncia) {
+		String imagen;
+		try {
+			imagen = servicioDenuncia.getImage(idDenuncia);
+		} catch (ServicioException e) {
+			return null;
+		}
+		return imagen;
+	}
+
+	@Override
+	public ListadoDenunciasDTO findWithPeriod(BigDecimal latitud,
+			BigDecimal longitud, String ic, int pt) {
+		ListadoDenunciasDTO dto = new ListadoDenunciasDTO();
+		try {
+			dto.setIs(Constantes.ESTATUS_EXITOSO);
+			dto.setDs(Constantes.DSC_ESTATUS_EXITOSO);
+			List<Denuncia> listDenuncia = servicioDenuncia
+					.findByDateAndLocation(latitud, longitud, pt);
+			dto.setLd(getDenuncias(listDenuncia, null, ic));
+		} catch (ServicioException e) {
+			return null;
+		}
+		return dto;
+	}
+
+	@Override
+	public int save(int idCatDenuncia, String descripcion, String direccion,
+			String email, String imagen, BigDecimal latitud, BigDecimal longitud) {
 		try {
 			Denuncia dominio = new Denuncia();
 			CatCategoriaDenuncia cat = new CatCategoriaDenuncia();
 			cat.setIdCatDenuncia(idCatDenuncia);
 			dominio.setCatCategoriaDenuncia(cat);
+			dominio.setDescripcion(descripcion);
 			dominio.setDireccion(direccion);
 			dominio.setEmailUsuario(email);
 			dominio.setFechaHoraActCont(new Date());
@@ -135,4 +165,5 @@ public class DenunciaFachadaImpl implements DenunciaFachada {
 				.transformDenuncia(x, ds, ic)));
 		return result;
 	}
+
 }

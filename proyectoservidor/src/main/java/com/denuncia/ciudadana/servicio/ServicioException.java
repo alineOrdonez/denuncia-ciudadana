@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Exception for services tier
- * @author Jorge Amaro
+ * @author Aline Ordoñez
  *
  */
 public class ServicioException extends Exception{

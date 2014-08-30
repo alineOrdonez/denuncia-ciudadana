@@ -12,9 +12,13 @@ public interface DenunciaFachada {
 	ListadoDenunciasDTO findNear(BigDecimal latitud, BigDecimal longitud,
 			String ds, String ic);
 
-	int save(int idCatDenuncia, String direccion, String email, String imagen,
-			BigDecimal latitud, BigDecimal longitud);
+	int save(int idCatDenuncia, String descripcion, String direccion,
+			String email, String imagen, BigDecimal latitud, BigDecimal longitud);
 
-	boolean aumentaContador(int idDenuncia);
+	boolean aumentaContador(int idDenuncia, String email);
 
+	String getImage(int idDenuncia);
+
+	ListadoDenunciasDTO findWithPeriod(BigDecimal latitud, BigDecimal longitud,
+			String ic, int pt);
 }

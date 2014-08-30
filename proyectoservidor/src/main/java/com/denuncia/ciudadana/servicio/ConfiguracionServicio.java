@@ -8,7 +8,7 @@ import java.util.List;
 import com.denuncia.ciudadana.dominio.Configuracion;
 
 /**
- * @author amaro
+ * @author Aline Ordoñez
  *
  */
 public interface ConfiguracionServicio {

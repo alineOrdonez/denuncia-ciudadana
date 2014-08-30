@@ -16,7 +16,7 @@ import com.denuncia.ciudadana.servicio.ConfiguracionServicio;
 import com.denuncia.ciudadana.servicio.ServicioException;
 
 /**
- * @author amaro
+ * @author Aline Ordoñez
  *
  */
 @Service
@@ -24,16 +24,17 @@ public class ConfiguracionServicioImpl implements ConfiguracionServicio {
 
 	@Autowired
 	private ConfiguracionDAO daoConfig;
-	
+
 	@Override
-	@Transactional(readOnly=true)
-	public List<Configuracion> findAllConfig() throws ServicioException{
-		try{
+	@Transactional(readOnly = true)
+	public List<Configuracion> findAllConfig() throws ServicioException {
+		try {
 			List<Configuracion> list = daoConfig.getAll();
 			return list;
-		}catch(PersistenciaException e){
-			throw new ServicioException("Error en findAllConfig:"+e.getMessage(),e );
+		} catch (PersistenciaException e) {
+			throw new ServicioException("Error en findAllConfig:"
+					+ e.getMessage(), e);
 		}
 	}
-	
+
 }
