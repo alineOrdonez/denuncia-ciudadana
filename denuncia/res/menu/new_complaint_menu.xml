@@ -10,10 +10,9 @@
         android:title="@string/guardar"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/share_action"
-        android:actionLayout="@layout/menulayout"
+        android:id="@+id/share"
         android:icon="@drawable/share"
-        android:title="@string/action_settings"
+        android:title="@string/guardar"
         app:showAsAction="always"/>
 
 </menu>

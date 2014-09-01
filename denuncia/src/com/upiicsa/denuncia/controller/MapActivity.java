@@ -85,8 +85,7 @@ public class MapActivity extends Activity {
 
 				Log.e("Random", "> " + latitude + ", " + longitude);
 
-				// TODO:
-				int idCategoria = 2;// denuncia.getIdCategoria();
+				int idCategoria = denuncia.getIdCategoria() - 1;
 				CatDenuncia categoria = singleton.getDenuncias().get(
 						idCategoria);
 				String descripcion = categoria.getDescripcion().toLowerCase();

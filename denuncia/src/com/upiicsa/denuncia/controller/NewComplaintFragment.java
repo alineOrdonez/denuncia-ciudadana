@@ -9,6 +9,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.brickred.socialauth.android.DialogListener;
+import org.brickred.socialauth.android.SocialAuthAdapter;
+import org.brickred.socialauth.android.SocialAuthError;
+import org.brickred.socialauth.android.SocialAuthListener;
+
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,8 +46,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -54,6 +63,7 @@ import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.OnResponseListener;
 import com.upiicsa.denuncia.service.RequestMessage;
 import com.upiicsa.denuncia.util.Constant;
+import com.upiicsa.denuncia.util.CustomAdapter;
 import com.upiicsa.denuncia.util.CustomAlertDialog;
 
 public class NewComplaintFragment extends Fragment implements
@@ -76,6 +86,18 @@ public class NewComplaintFragment extends Fragment implements
 	private List<String> list;
 	public String imgString;
 	private String name = "";
+	// SocialAuth Components
+	private static SocialAuthAdapter adapter;
+
+	// Android Components
+	private ListView listview;
+	private AlertDialog dialog;
+	private TextView title;
+	private ProgressDialog mDialog;
+
+	// Variables
+	private String providerName;
+	public static int pos;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -128,9 +150,16 @@ public class NewComplaintFragment extends Fragment implements
 			}
 
 			return true;
-		} else {
-			return super.onOptionsItemSelected(item);
+		} else if (id == R.id.share) {
+			LayoutInflater li = LayoutInflater.from(getActivity());
+			View view = li.inflate(R.layout.main, new LinearLayout(
+					getActivity()), false);
+			// Adapter initialization
+			adapter = new SocialAuthAdapter(new ResponseListener());
+			listview = (ListView) view.findViewById(R.id.listview);
+			listview.setAdapter(new CustomAdapter(getActivity(), adapter));
 		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -138,6 +167,10 @@ public class NewComplaintFragment extends Fragment implements
 		super.onStart();
 		// Connect the client.
 		mLocationClient.connect();
+	}
+
+	public static SocialAuthAdapter getSocialAuthAdapter() {
+		return adapter;
 	}
 
 	private boolean lee(EditText editText) {
@@ -269,12 +302,7 @@ public class NewComplaintFragment extends Fragment implements
 		case 1:
 			bitMap = BitmapFactory.decodeFile(name);
 			bytes = getBytesFromBitmap(bitMap);
-			try {
-				imgString = new String(bytes, "UTF-8");// Base64.encodeToString(bytes,
-														// Base64.NO_WRAP);
-			} catch (UnsupportedEncodingException e1) {
-				e1.printStackTrace();
-			}
+			imgString = Base64.encodeToString(bytes, Base64.NO_WRAP);
 			new MediaScannerConnectionClient() {
 				private MediaScannerConnection msc = null;
 				{
@@ -300,13 +328,7 @@ public class NewComplaintFragment extends Fragment implements
 				BufferedInputStream bis = new BufferedInputStream(is);
 				bitMap = BitmapFactory.decodeStream(bis);
 				bytes = getBytesFromBitmap(bitMap);
-				try {
-					imgString = new String(bytes, "UTF-8");// Base64.encodeToString(bytes,
-					// Base64.NO_WRAP);
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				imgString = Base64.encodeToString(bytes, Base64.NO_WRAP);
 				Log.d(LOG_TAG, "***[" + imgString + "]***");
 
 			} catch (FileNotFoundException e) {
@@ -328,16 +350,21 @@ public class NewComplaintFragment extends Fragment implements
 	private void showGPSAlert() {
 		String title = getString(R.string.gps_title);
 		String message = getString(R.string.gps_message);
-		String btnTitle = getString(R.string.gps_btn_title);
+		String positiveBtnTitle = getString(R.string.gps_btn_title);
 		CustomAlertDialog.decisionAlert(getActivity(), title, message,
-				btnTitle, new DialogInterface.OnClickListener() {
+				positiveBtnTitle, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
-						Intent intent = new Intent(
-								Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-						startActivity(intent);
+						if (DialogInterface.BUTTON_POSITIVE == i) {
+							Intent intent = new Intent(
+									Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+							startActivity(intent);
+						} else {
+
+						}
 					}
 				});
+
 	}
 
 	private void sendComplaintRequest() {
@@ -430,5 +457,88 @@ public class NewComplaintFragment extends Fragment implements
 						dialogInterface.dismiss();
 					}
 				});
+	}
+
+	// To receive the response after authentication
+	private final class ResponseListener implements DialogListener {
+
+		@Override
+		public void onComplete(Bundle values) {
+
+			Log.d("Custom-UI", "Successful");
+
+			// Changing Sign In Text to Sign Out
+			View v = listview.getChildAt(pos
+					- listview.getFirstVisiblePosition());
+			TextView pText = (TextView) v.findViewById(R.id.signstatus);
+			pText.setText("Sign Out");
+
+			// Get the provider
+			providerName = values.getString(SocialAuthAdapter.PROVIDER);
+			Log.d("Custom-UI", "providername = " + providerName);
+
+			Toast.makeText(getActivity(), "Esta conectado a " + providerName,
+					Toast.LENGTH_SHORT).show();
+			Events(providerName);
+		}
+
+		public void Events(final String provider) {
+			if (provider.equalsIgnoreCase("facebook")) {
+				try {
+					adapter.updateStory(
+							"Hello SocialAuth Android"
+									+ System.currentTimeMillis(),
+							"Google SDK for Android",
+							"Build great social apps and get more installs.",
+							"The Facebook SDK for Android makes it easier and faster to develop Facebook integrated Android apps.",
+							"https://www.facebook.com",
+							"http://carbonfreepress.gr/images/facebook.png",
+							new MessageListener());
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+		// To get status of message after authentication
+		private final class MessageListener implements
+				SocialAuthListener<Integer> {
+			@Override
+			public void onExecute(String provider, Integer t) {
+				Integer status = t;
+				if (status.intValue() == 200 || status.intValue() == 201
+						|| status.intValue() == 204)
+					Toast.makeText(getActivity(),
+							"El mensaje ha sido posteado" + provider,
+							Toast.LENGTH_LONG).show();
+				else
+					Toast.makeText(getActivity(),
+							"Error al postear el mensaje" + provider,
+							Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void onError(SocialAuthError e) {
+
+			}
+		}
+
+		@Override
+		public void onError(SocialAuthError error) {
+			Log.d("Custom-UI", "Error");
+			error.printStackTrace();
+		}
+
+		@Override
+		public void onCancel() {
+			Log.d("Custom-UI", "Cancelled");
+		}
+
+		@Override
+		public void onBack() {
+			Log.d("Custom-UI", "Dialog Closed by pressing Back Key");
+
+		}
 	}
 }

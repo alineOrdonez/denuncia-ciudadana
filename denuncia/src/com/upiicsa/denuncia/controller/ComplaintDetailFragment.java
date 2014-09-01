@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -91,7 +92,7 @@ public class ComplaintDetailFragment extends Fragment implements
 				}
 			}
 			// TODO: cambiar por la imagen que obtengo en la respuesta
-			if (!singleton.getImage().isEmpty()) {
+			if (singleton.getImage() != null) {
 				setImage(singleton.getImage(), rootView);
 				scaleImage(rootView);
 			}
@@ -210,9 +211,10 @@ public class ComplaintDetailFragment extends Fragment implements
 	}
 
 	private void setImage(String myImageData, View view) {
-		byte[] imageAsBytes = Base64.decode(myImageData, Base64.DEFAULT);
 		ImageView image = (ImageView) view
 				.findViewById(R.id.complaint_image_view);
+		String strImg = singleton.getImage();
+		byte[] imageAsBytes = Base64.decode(strImg, Base64.URL_SAFE);
 		Bitmap decodedByte = BitmapFactory.decodeByteArray(imageAsBytes, 0,
 				imageAsBytes.length);
 		image.setImageBitmap(decodedByte);
