@@ -32,6 +32,7 @@ public class DenunciaController {
 		return rs;
 	}
 
+	// TODO: Trae todos los registros, modificar las restricciones
 	@RequestMapping(value = "/list/", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ListadoDenunciasDTO getIncidencias(@RequestBody String json) {
 		JSONParser parser = new JSONParser();
@@ -85,8 +86,8 @@ public class DenunciaController {
 		JSONParser parser = new JSONParser();
 		try {
 			JSONObject jsonObj = (JSONObject) parser.parse(json);
-			String ic = (String) jsonObj.get("ic");
-			String i = (String) jsonObj.get("i");
+			String ic = String.valueOf(jsonObj.get("ic"));
+			String i = String.valueOf(jsonObj.get("i"));
 			String em = (String) jsonObj.get("em");
 			String id = (String) jsonObj.get("id");
 			int idInteger = Integer.parseInt(id);
@@ -122,6 +123,7 @@ public class DenunciaController {
 		}
 	}
 
+	// TODO: Trae todos los registros, modificar las restricciones
 	@RequestMapping(value = "/consulta/", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ListadoDenunciasDTO getConsulta(@RequestBody String json) {
 		JSONParser parser = new JSONParser();
