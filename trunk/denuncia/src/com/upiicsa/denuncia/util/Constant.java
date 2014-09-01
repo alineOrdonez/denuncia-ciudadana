@@ -6,10 +6,12 @@ public final class Constant {
 	public static final String ARG_ITEM_ID = "ITEM_ID";
 	public static final String STATE_ACTIVATED_POSITION = "activated_position";
 	public static final String URL = "http://hmkcode.com/examples/index.php";
-	public static final String CONFIG_URL = "http://192.168.1.39:8080/denunciaciudadana/service/denuncia";
-	public static final String LIST_URL = "http://192.168.1.39:8080/denunciaciudadana/service/denuncia/list/";
-	public static final String SAVE_URL = "http://192.168.1.39:8080/denunciaciudadana/service/denuncia/incidencia/";
-	public static final String UPDATE_URL = "http://192.168.1.39:8080/denunciaciudadana/service/denuncia/eventualidad/";
+	public static final String CONFIG_URL = "http://192.168.1.73:8080/denunciaciudadana/service/denuncia/";
+	public static final String LIST_URL = "http://192.168.1.73:8080/denunciaciudadana/service/denuncia/list/";
+	public static final String DETAIL_URL = "http://192.168.1.73:8080/denunciaciudadana/service/denuncia/detalle/";
+	public static final String SAVE_URL = "http://192.168.1.73:8080/denunciaciudadana/service/denuncia/incidencia/";
+	public static final String CONSULT_URL = "http://192.168.1.73:8080/denunciaciudadana/service/denuncia/consulta/";
+	public static final String UPDATE_URL = "http://192.168.1.73:8080/denunciaciudadana/service/denuncia/eventualidad/";
 	public static final String ERROR_GENERICO = "ERROR GENERICO";
 	public static final String CONNECTION_ERROR = "El dispositivo no tiene acceso a Internet.";
 	public static final String GPS_ERROR = "El GPS no está activado.";

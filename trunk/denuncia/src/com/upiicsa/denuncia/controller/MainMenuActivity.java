@@ -59,9 +59,9 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 	private List<String> consultList, rangeList;
 	private int operacion;
 	private boolean isGPSEnabled;
-	Context context;
-	private RequestMessage service;
-	Singleton singleton;
+	private Context context;
+	private RequestMessage request;
+	private Singleton singleton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		setContentView(R.layout.activity_main_menu);
 		context = this;
 		singleton = Singleton.getInstance();
-		service = new RequestMessage(this);
+		request = new RequestMessage(this);
 		mNetworkStateChangedFilter = new IntentFilter();
 		mNetworkStateChangedFilter
 				.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -126,8 +126,8 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 			this.progressDialog.dismiss();
 		}
 		System.out.println("Result:" + result);
-		JSONObject json;
 		String ld;
+		JSONObject json;
 		switch (operacion) {
 		case 1:
 			// Proceso para agregar las listas al singleton
@@ -139,16 +139,11 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 			fillCatalog(intTiempo);
 			break;
 		case 2:
-			result = Util.complaintResult();
-			json = new JSONObject(result);
-			ld = json.getJSONObject("ld").toString();
-			addExtraToIntent(ComplaintListActivity.class, ld);
+			addExtraToIntent(ComplaintListActivity.class, result);
 			break;
 		case 5:
-			result = Util.complaintResult();
-			json = new JSONObject(result);
-			ld = json.getJSONObject("ld").toString();
-			addExtraToIntent(MapActivity.class, ld);
+			addExtraToIntent(MapActivity.class, result);
+
 			break;
 
 		default:
@@ -329,7 +324,7 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 				public void run() {
 					try {
 						operacion = 1;
-						service.configService();
+						request.configService();
 					} catch (Exception e) {
 
 					}
@@ -344,14 +339,15 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		Location mCurrentLocation;
 		mCurrentLocation = mLocationClient.getLastLocation();
 		operacion = 2;
-		double longitude = mCurrentLocation.getLongitude();
-		double latitude = mCurrentLocation.getLatitude();
+		// TODO: Quitar coordenadas hardcodeadas
+		double longitude = -99.0915207;// mCurrentLocation.getLongitude();
+		double latitude = 19.4003685; // mCurrentLocation.getLatitude();
 		int idCategoria = catDen.getIdCatDenuncia();
 		String descripcion = catDen.getDescripcion();
 		try {
 			Denuncia denuncia = new Denuncia(idCategoria, descripcion,
 					latitude, longitude);
-			service.findComplaintsService(denuncia);
+			request.findComplaintsService(denuncia);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -364,12 +360,12 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 		double longitude = mCurrentLocation.getLongitude();
 		double latitude = mCurrentLocation.getLatitude();
 		int idCategoria = catDen.getIdCatDenuncia();
-		int idIntervalo = catIntT.getIdCatIntTiempo();
+		int idIntervalo = Integer.parseInt(catIntT.getValor());
 		String descripcion = catDen.getDescripcion();
 		try {
 			Denuncia denuncia = new Denuncia(idCategoria, idIntervalo,
 					descripcion, latitude, longitude);
-			service.consultComplaintService(denuncia);
+			request.consultComplaintService(denuncia);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -409,10 +405,10 @@ public class MainMenuActivity extends Activity implements ConnectionCallbacks,
 			}
 		}
 
-		if (catIntT != null) {
+		if (!catIntT.isEmpty()) {
 			singleton.setIntervalos(catIntT);
 		}
-		if (catDenList != null) {
+		if (!catDenList.isEmpty()) {
 			singleton.setDenuncias(catDenList);
 		}
 	}

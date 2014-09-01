@@ -30,6 +30,7 @@ public class Singleton {
 			intervalos = new ArrayList<CatIntTiempo>();
 			image = new String();
 			items = new ArrayList<Denuncia>();
+			item_map = new SparseArray<Denuncia>();
 		}
 		return instance;
 	}
@@ -39,13 +40,13 @@ public class Singleton {
 			items.clear();
 			item_map.clear();
 		}
-		List<Map<String, Object>> mapStr = Util.jsonToList(string, null);
+		List<Map<String, Object>> mapStr = Util.jsonToList(string, "ld");
 		for (int i = 0; i < mapStr.size(); i++) {
 			Denuncia item = new Denuncia(mapStr.get(i));
+			int id = item.getIdDenuncia();
 			items.add(item);
-			item_map.put(item.getIdCategoria(), item);
+			item_map.put(id, item);
 		}
-
 	}
 
 	public void addItems(Denuncia denuncia) {

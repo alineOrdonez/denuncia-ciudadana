@@ -1,6 +1,11 @@
 package com.upiicsa.denuncia.controller;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.Menu;
@@ -10,16 +15,23 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.upiicsa.denuncia.R;
 import com.upiicsa.denuncia.common.Denuncia;
 import com.upiicsa.denuncia.common.Singleton;
 import com.upiicsa.denuncia.service.Callback;
+import com.upiicsa.denuncia.service.OnResponseListener;
+import com.upiicsa.denuncia.service.RequestMessage;
 import com.upiicsa.denuncia.util.Constant;
+import com.upiicsa.denuncia.util.CustomAlertDialog;
 
-public class ComplaintListFragment extends ListFragment {
-
+public class ComplaintListFragment extends ListFragment implements
+		OnResponseListener {
+	private static final String LOG_TAG = "ComplaintListFragment";
+	private android.app.ProgressDialog progressDialog;
 	private int mActivatedPosition = ListView.INVALID_POSITION;
 	private Callback mCallbacks;
 	private Singleton singleton;
+	private int currentPosition;
 
 	private static Callback sCallbacks = new Callback() {
 		@Override
@@ -75,8 +87,9 @@ public class ComplaintListFragment extends ListFragment {
 	public void onListItemClick(ListView listView, View view, int position,
 			long id) {
 		super.onListItemClick(listView, view, position, id);
-		mCallbacks.onItemSelected(singleton.getITEMS().get(position)
-				.getIdDenuncia());
+		// TODO:
+		currentPosition = singleton.getITEMS().get(position).getIdDenuncia();
+		showDetail();
 	}
 
 	@Override
@@ -115,6 +128,56 @@ public class ComplaintListFragment extends ListFragment {
 			getListView().setItemChecked(position, true);
 		}
 		mActivatedPosition = position;
+	}
+
+	private void showDetail() {
+		progressDialog = new ProgressDialog(getActivity(), 1);
+		progressDialog.show();
+		final RequestMessage request = new RequestMessage(this);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Denuncia denuncia = new Denuncia();
+					denuncia.setIdDenuncia(currentPosition);
+					denuncia.setIdOperacion(6);
+					request.showDetailService(denuncia);
+				} catch (Exception e) {
+
+				}
+			}
+		}).start();
+	}
+
+	@Override
+	public void onSuccess(String message) throws JSONException {
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
+		JSONObject json = new JSONObject(message);
+		if (json.getString("im") != null) {
+			String imagen = json.getString("im");
+			Singleton singleton = Singleton.getInstance();
+			singleton.setImage(imagen);
+		}
+
+		mCallbacks.onItemSelected(currentPosition);
+	}
+
+	@Override
+	public void onFailure(String message) throws JSONException {
+		if (this.progressDialog.isShowing()) {
+			this.progressDialog.dismiss();
+		}
+		String title = getString(R.string.error);
+		String btnTitle = getString(R.string.aceptar);
+		CustomAlertDialog.decisionAlert(getActivity(), title, message,
+				btnTitle, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						dialogInterface.dismiss();
+					}
+				});
 	}
 
 }

@@ -16,7 +16,7 @@ public class CatDenuncia implements Serializable {
 	}
 
 	public CatDenuncia(Map<String, Object> map) {
-		this.idCatDenuncia = (Integer) map.get("id");
+		this.idCatDenuncia = Integer.valueOf((String) map.get("id"));
 		this.descripcion = (String) map.get("ds");
 	}
 

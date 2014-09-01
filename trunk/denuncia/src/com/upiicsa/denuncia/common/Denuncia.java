@@ -24,15 +24,15 @@ public class Denuncia implements Serializable {
 	}
 
 	public Denuncia(Map<String, Object> map) {
-		this.idDenuncia = (Integer) map.get("id");
-		this.idCategoria = (Integer) map.get("ic");
+		this.idDenuncia = Integer.parseInt((String) map.get("id"));
+		this.idCategoria = Integer.parseInt((String) map.get("ic"));
 		this.descripcion = (String) map.get("ds");
 		this.direccion = (String) map.get("dd");
 		if (map.containsKey("la")) {
-			this.latitud = (Double) map.get("la");
+			this.latitud = Double.parseDouble((String) map.get("la"));
 		}
 		if (map.containsKey("lo")) {
-			this.longitud = (Double) map.get("lo");
+			this.longitud = Double.parseDouble((String) map.get("lo"));
 		}
 
 	}

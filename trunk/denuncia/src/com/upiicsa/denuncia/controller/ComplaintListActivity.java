@@ -31,9 +31,10 @@ public class ComplaintListActivity extends ActionBarActivity implements
 					String lista = getIntent().getStringExtra(
 							Constant.EXTRA_LIST);
 					try {
-						singleton.listaDeDenuncias(lista);
+						if (lista != null) {
+							singleton.listaDeDenuncias(lista);
+						}
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

@@ -17,7 +17,7 @@ public class CatIntTiempo implements Serializable {
 	}
 
 	public CatIntTiempo(Map<String, Object> map) {
-		this.idCatIntTiempo = (Integer) map.get("id");
+		this.idCatIntTiempo = Integer.valueOf((String) map.get("id"));
 		this.descripcion = (String) map.get("ds");
 		this.valor = (String) map.get("va");
 	}
